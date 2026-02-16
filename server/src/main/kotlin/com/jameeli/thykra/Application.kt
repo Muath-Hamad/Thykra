@@ -1,10 +1,13 @@
 package com.jameeli.thykra
 
-import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import com.jameeli.thykra.plugins.configureCors
+import com.jameeli.thykra.plugins.configureMonitoring
+import com.jameeli.thykra.plugins.configureRouting
+import com.jameeli.thykra.plugins.configureSerialization
+import com.jameeli.thykra.plugins.configureStatusPages
+import io.ktor.server.application.Application
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
 
 fun main() {
     embeddedServer(Netty, port = SERVER_PORT, host = "0.0.0.0", module = Application::module)
@@ -12,9 +15,9 @@ fun main() {
 }
 
 fun Application.module() {
-    routing {
-        get("/") {
-            call.respondText("Ktor: ${Greeting().greet()}")
-        }
-    }
+    configureSerialization()
+    configureMonitoring()
+    configureCors()
+    configureStatusPages()
+    configureRouting()
 }
