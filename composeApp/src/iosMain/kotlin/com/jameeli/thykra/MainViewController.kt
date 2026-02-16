@@ -4,10 +4,10 @@ import androidx.compose.ui.window.ComposeUIViewController
 import com.jameeli.thykra.api.AuthApi
 import com.jameeli.thykra.api.createApiClient
 import com.jameeli.thykra.auth.AuthViewModel
-import com.jameeli.thykra.auth.InMemoryTokenProvider
+import com.jameeli.thykra.auth.IosTokenStorage
 
 fun MainViewController() = ComposeUIViewController {
-    val tokenProvider = InMemoryTokenProvider()
+    val tokenProvider = IosTokenStorage()
     val httpClient = createApiClient(tokenProvider)
     val authApi = AuthApi(httpClient)
     val authViewModel = AuthViewModel(authApi, tokenProvider)
