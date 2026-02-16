@@ -4,10 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.jameeli.thykra.auth.AuthViewModel
+import com.jameeli.thykra.auth.PlatformGoogleSignInButton
 
 @Composable
 fun LoginScreenContent(authViewModel: AuthViewModel) {
@@ -37,28 +36,9 @@ fun LoginScreenContent(authViewModel: AuthViewModel) {
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(48.dp))
-        GoogleSignInButton(
-            onClick = { /* Platform-specific sign-in triggered from here */ },
-            modifier = Modifier.fillMaxWidth()
+        PlatformGoogleSignInButton(
+            onIdToken = { idToken -> authViewModel.loginWithGoogle(idToken) },
+            onError = { /* TODO: show error */ }
         )
-        Spacer(modifier = Modifier.height(16.dp))
-        AppleSignInButton(
-            onClick = { /* Platform-specific sign-in triggered from here */ },
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
-
-@Composable
-fun GoogleSignInButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Button(onClick = onClick, modifier = modifier) {
-        Text("Sign in with Google")
-    }
-}
-
-@Composable
-fun AppleSignInButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Button(onClick = onClick, modifier = modifier) {
-        Text("Sign in with Apple")
     }
 }
