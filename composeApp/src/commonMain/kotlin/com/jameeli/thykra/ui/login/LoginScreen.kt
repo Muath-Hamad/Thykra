@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.jameeli.thykra.auth.AuthViewModel
+import com.jameeli.thykra.auth.PlatformAppleSignInButton
 import com.jameeli.thykra.auth.PlatformGoogleSignInButton
 
 @Composable
@@ -38,6 +39,11 @@ fun LoginScreenContent(authViewModel: AuthViewModel) {
         Spacer(modifier = Modifier.height(48.dp))
         PlatformGoogleSignInButton(
             onIdToken = { idToken -> authViewModel.loginWithGoogle(idToken) },
+            onError = { /* TODO: show error */ }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        PlatformAppleSignInButton(
+            onIdToken = { idToken -> authViewModel.loginWithApple(idToken) },
             onError = { /* TODO: show error */ }
         )
     }
