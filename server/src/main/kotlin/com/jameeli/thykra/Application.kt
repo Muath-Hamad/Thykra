@@ -10,6 +10,9 @@ import com.jameeli.thykra.plugins.configureRouting
 import com.jameeli.thykra.plugins.configureSecurity
 import com.jameeli.thykra.plugins.configureSerialization
 import com.jameeli.thykra.plugins.configureStatusPages
+import com.jameeli.thykra.repository.AlbumInviteRepository
+import com.jameeli.thykra.repository.AlbumMemberRepository
+import com.jameeli.thykra.repository.AlbumRepository
 import com.jameeli.thykra.repository.RefreshTokenRepository
 import com.jameeli.thykra.repository.UserRepository
 import com.jameeli.thykra.service.AuthService
@@ -32,6 +35,9 @@ fun Application.module() {
     val jwtService = JwtService(environment)
     val userRepository = UserRepository()
     val refreshTokenRepository = RefreshTokenRepository()
+    val albumRepository = AlbumRepository()
+    val albumMemberRepository = AlbumMemberRepository()
+    val albumInviteRepository = AlbumInviteRepository()
 
     val oauthHttpClient = HttpClient(CIO) {
         install(ContentNegotiation) { json() }
@@ -45,5 +51,5 @@ fun Application.module() {
     configureCors()
     configureStatusPages()
     configureSecurity(jwtService)
-    configureRouting(authService, userRepository)
+    configureRouting(authService, userRepository, albumRepository, albumMemberRepository, albumInviteRepository)
 }
