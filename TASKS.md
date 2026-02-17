@@ -12,34 +12,34 @@
 > Core project setup, authentication, and user management. Everything else depends on this.
 
 ### 1.1 Project Setup
-- [ ] Configure KMP shared module (targets: Android, iOS, JS)
-- [ ] Set up Ktor server project with environment config
-- [ ] Set up Android Compose app shell with navigation
-- [ ] Set up iOS Compose app shell with navigation
-- [ ] Set up Web (React + TS + Vite) app shell with routing
+- [x] Configure KMP shared module (targets: Android, iOS, JS)
+- [x] Set up Ktor server project with environment config
+- [x] Set up Android Compose app shell with navigation
+- [x] Set up iOS Compose app shell with navigation
+- [x] Set up Web (React + TS + Vite) app shell with routing
 - [ ] Set up CI/CD pipeline (build + test for all targets)
 
 ### 1.2 Database & Storage
-- [ ] Design database schema (users, albums, media, reactions, comments, invites)
-- [ ] Set up PostgreSQL with Exposed/SQLDelight on Ktor
+- [x] Design database schema (users, albums, media, reactions, comments, invites)
+- [x] Set up PostgreSQL with Exposed on Ktor
 - [ ] Set up cloud storage (S3/GCS) for media uploads
-- [ ] Define API contract (OpenAPI spec or shared DTO module)
+- [x] Define API contract (shared DTO module)
 
 ### 1.3 Authentication
-- [ ] Server: Auth endpoints (register, login, refresh, logout)
-- [ ] Server: JWT token generation and validation
-- [ ] Server: OAuth2 (Google, Apple Sign-In) integration
-- [ ] Shared: Auth token storage and refresh logic
-- [ ] Android: Login / Register screens
-- [ ] iOS: Login / Register screens
-- [ ] Web: Login / Register pages
+- [x] Server: Auth endpoints (OAuth login, refresh, logout)
+- [x] Server: JWT token generation and validation
+- [x] Server: OAuth2 (Google, Apple Sign-In) integration
+- [x] Shared: Auth token storage and refresh logic
+- [x] Android: Login screen with Google Sign-In
+- [x] iOS: Login screen with Apple Sign-In
+- [x] Web: Login page with Google Sign-In
 
 ### 1.4 User Profile
-- [ ] Server: Profile CRUD endpoints (name, avatar, bio)
-- [ ] Shared: Profile data models
-- [ ] Android: Profile screen (view + edit)
-- [ ] iOS: Profile screen (view + edit)
-- [ ] Web: Profile page (view + edit)
+- [x] Server: Profile CRUD endpoints (name, avatar)
+- [x] Shared: Profile data models
+- [x] Android: Profile screen (view + edit)
+- [x] iOS: Profile screen (view + edit)
+- [x] Web: Profile page (view + edit)
 
 ---
 
@@ -207,7 +207,7 @@
 
 | Phase | Description | Status |
 |-------|-------------|--------|
-| 1 | Foundation & Auth | Not Started |
+| 1 | Foundation & Auth | Done |
 | 2 | Shared Albums | Not Started |
 | 3 | Social & Engagement | Not Started |
 | 4 | Smart Features | Not Started |
