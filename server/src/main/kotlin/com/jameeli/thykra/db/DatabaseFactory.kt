@@ -1,5 +1,8 @@
 package com.jameeli.thykra.db
 
+import com.jameeli.thykra.db.tables.AlbumInvitesTable
+import com.jameeli.thykra.db.tables.AlbumMembersTable
+import com.jameeli.thykra.db.tables.AlbumsTable
 import com.jameeli.thykra.db.tables.RefreshTokensTable
 import com.jameeli.thykra.db.tables.UsersTable
 import com.zaxxer.hikari.HikariConfig
@@ -27,7 +30,7 @@ object DatabaseFactory {
         Database.connect(HikariDataSource(hikariConfig))
 
         transaction {
-            SchemaUtils.create(UsersTable, RefreshTokensTable)
+            SchemaUtils.create(UsersTable, RefreshTokensTable, AlbumsTable, AlbumMembersTable, AlbumInvitesTable)
         }
     }
 }
