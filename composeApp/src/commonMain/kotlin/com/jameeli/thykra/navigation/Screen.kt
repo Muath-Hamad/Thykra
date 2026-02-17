@@ -10,3 +10,9 @@ object HomeScreen
 
 @Serializable
 object ProfileScreen
+
+@Serializable
+object AlbumListScreen
+
+@Serializable
+data class AlbumDetailScreen(val albumId: String)

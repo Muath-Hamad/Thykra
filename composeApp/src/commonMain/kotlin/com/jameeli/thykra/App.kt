@@ -2,12 +2,13 @@ package com.jameeli.thykra
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import com.jameeli.thykra.api.AlbumApi
 import com.jameeli.thykra.auth.AuthViewModel
 import com.jameeli.thykra.navigation.AppNavHost
 
 @Composable
-fun App(authViewModel: AuthViewModel) {
+fun App(authViewModel: AuthViewModel, albumApi: AlbumApi) {
     MaterialTheme {
-        AppNavHost(authViewModel = authViewModel)
+        AppNavHost(authViewModel = authViewModel, albumApi = albumApi)
     }
 }
