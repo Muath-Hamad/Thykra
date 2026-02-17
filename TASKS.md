@@ -48,16 +48,16 @@
 > The heart of Thykra — creating, joining, and contributing to shared trip albums.
 
 ### 2.1 Album Management
-- [ ] Server: Album CRUD endpoints (create, read, update, delete)
-- [ ] Server: Album invitation system (invite by link / user search)
-- [ ] Server: Album membership roles (owner, contributor, viewer)
-- [ ] Shared: Album data models and state management
-- [ ] Android: Create album flow (name, cover, date range, invite members)
-- [ ] iOS: Create album flow
-- [ ] Web: Create album flow
-- [ ] Android: Album list / home feed screen
-- [ ] iOS: Album list / home feed screen
-- [ ] Web: Album list / home feed page
+- [x] Server: Album CRUD endpoints (create, read, update, delete)
+- [x] Server: Album invitation system (invite by link / user search)
+- [x] Server: Album membership roles (owner, contributor, viewer)
+- [x] Shared: Album data models and state management
+- [x] Android: Create album flow (name, cover, date range, invite members)
+- [x] iOS: Create album flow
+- [x] Web: Create album flow
+- [x] Android: Album list / home feed screen
+- [x] iOS: Album list / home feed screen
+- [x] Web: Album list / home feed page
 
 ### 2.2 Media Upload & Display
 - [ ] Server: Media upload endpoints (photos, videos) with presigned URLs
@@ -208,7 +208,7 @@
 | Phase | Description | Status |
 |-------|-------------|--------|
 | 1 | Foundation & Auth | Done |
-| 2 | Shared Albums | Not Started |
+| 2 | Shared Albums | In Progress (2.1 Done) |
 | 3 | Social & Engagement | Not Started |
 | 4 | Smart Features | Not Started |
 | 5 | Widgets | Not Started |
