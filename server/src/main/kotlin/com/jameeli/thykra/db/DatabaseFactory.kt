@@ -16,14 +16,17 @@ object DatabaseFactory {
 
     fun init(environment: ApplicationEnvironment) {
         val config = environment.config
+        val driver = config.property("database.driver").getString()
         val hikariConfig = HikariConfig().apply {
             jdbcUrl = config.property("database.url").getString()
-            driverClassName = config.property("database.driver").getString()
+            driverClassName = driver
             username = config.property("database.user").getString()
             password = config.property("database.password").getString()
             maximumPoolSize = config.property("database.maxPoolSize").getString().toInt()
             isAutoCommit = false
-            transactionIsolation = "TRANSACTION_REPEATABLE_READ"
+            if (driver.contains("postgresql", ignoreCase = true)) {
+                transactionIsolation = "TRANSACTION_REPEATABLE_READ"
+            }
             validate()
         }
 
