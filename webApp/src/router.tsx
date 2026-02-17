@@ -8,6 +8,8 @@ import {
 import { LoginPage } from './routes/login';
 import { HomePage } from './routes/index';
 import { ProfilePage } from './routes/profile';
+import { AlbumsPage } from './routes/albums';
+import { AlbumDetailPage } from './routes/albums/detail';
 import { getAccessToken } from './api/client';
 
 const rootRoute = createRootRoute({
@@ -40,7 +42,27 @@ const profileRoute = createRoute({
   component: ProfilePage,
 });
 
-const routeTree = rootRoute.addChildren([loginRoute, indexRoute, profileRoute]);
+const albumsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/albums',
+  beforeLoad: requireAuth,
+  component: AlbumsPage,
+});
+
+const albumDetailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/albums/$albumId',
+  beforeLoad: requireAuth,
+  component: AlbumDetailPage,
+});
+
+const routeTree = rootRoute.addChildren([
+  loginRoute,
+  indexRoute,
+  profileRoute,
+  albumsRoute,
+  albumDetailRoute,
+]);
 
 export const router = createRouter({ routeTree });
 
