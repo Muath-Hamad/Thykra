@@ -23,8 +23,9 @@ class AlbumListViewModel(private val albumApi: AlbumApi) : ViewModel() {
             _isLoading.value = true
             try {
                 val response = albumApi.getAlbums()
-                if (response.success && response.data != null) {
-                    _albums.value = response.data
+                val data = response.data
+                if (response.success && data != null) {
+                    _albums.value = data
                 }
             } catch (_: Exception) {
             } finally {
@@ -37,9 +38,10 @@ class AlbumListViewModel(private val albumApi: AlbumApi) : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = albumApi.createAlbum(CreateAlbumRequest(title, description))
-                if (response.success && response.data != null) {
-                    _albums.value = _albums.value + response.data
-                    onCreated(response.data)
+                val data = response.data
+                if (response.success && data != null) {
+                    _albums.value = _albums.value + data
+                    onCreated(data)
                 }
             } catch (_: Exception) {
             }

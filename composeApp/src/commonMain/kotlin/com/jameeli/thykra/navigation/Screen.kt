@@ -16,3 +16,6 @@ object AlbumListScreen
 
 @Serializable
 data class AlbumDetailScreen(val albumId: String)
+
+@Serializable
+data class MediaViewerScreen(val albumId: String, val initialMediaId: String)

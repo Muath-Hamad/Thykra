@@ -110,9 +110,10 @@ private fun AlbumCard(album: AlbumDto, onClick: () -> Unit) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = album.title, style = MaterialTheme.typography.titleMedium)
-            if (!album.description.isNullOrBlank()) {
+            val desc = album.description
+            if (!desc.isNullOrBlank()) {
                 Text(
-                    text = album.description,
+                    text = desc,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

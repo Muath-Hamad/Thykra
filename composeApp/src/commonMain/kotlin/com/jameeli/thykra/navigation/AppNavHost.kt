@@ -9,6 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.jameeli.thykra.api.AlbumApi
+import com.jameeli.thykra.api.MediaApi
+import com.jameeli.thykra.api.UploadQueueManager
 import com.jameeli.thykra.auth.AuthState
 import com.jameeli.thykra.auth.AuthViewModel
 import com.jameeli.thykra.ui.albums.AlbumDetailScreenContent
@@ -16,10 +18,17 @@ import com.jameeli.thykra.ui.albums.AlbumDetailViewModel
 import com.jameeli.thykra.ui.albums.AlbumListScreenContent
 import com.jameeli.thykra.ui.albums.AlbumListViewModel
 import com.jameeli.thykra.ui.login.LoginScreenContent
+import com.jameeli.thykra.ui.media.MediaViewerScreenContent
+import com.jameeli.thykra.ui.media.MediaViewerViewModel
 import com.jameeli.thykra.ui.profile.ProfileScreenContent
 
 @Composable
-fun AppNavHost(authViewModel: AuthViewModel, albumApi: AlbumApi) {
+fun AppNavHost(
+    authViewModel: AuthViewModel,
+    albumApi: AlbumApi,
+    mediaApi: MediaApi,
+    uploadQueueManager: UploadQueueManager
+) {
     val authState by authViewModel.authState.collectAsState()
     val navController = rememberNavController()
 
@@ -52,7 +61,19 @@ fun AppNavHost(authViewModel: AuthViewModel, albumApi: AlbumApi) {
             val route = backStackEntry.toRoute<AlbumDetailScreen>()
             AlbumDetailScreenContent(
                 albumId = route.albumId,
-                viewModel = AlbumDetailViewModel(albumApi),
+                viewModel = AlbumDetailViewModel(albumApi, mediaApi, uploadQueueManager),
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToViewer = { mediaId ->
+                    navController.navigate(MediaViewerScreen(route.albumId, mediaId))
+                }
+            )
+        }
+        composable<MediaViewerScreen> { backStackEntry ->
+            val route = backStackEntry.toRoute<MediaViewerScreen>()
+            MediaViewerScreenContent(
+                albumId = route.albumId,
+                initialMediaId = route.initialMediaId,
+                viewModel = MediaViewerViewModel(mediaApi),
                 onNavigateBack = { navController.popBackStack() }
             )
         }

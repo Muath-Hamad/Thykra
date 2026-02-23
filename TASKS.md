@@ -63,13 +63,13 @@
 - [x] Server: Media upload endpoints (photos, videos) with presigned URLs
 - [x] Server: Image processing pipeline (thumbnails, compression, EXIF extraction)
 - [x] Shared: Upload queue manager with retry logic
-- [ ] Android: Photo/video picker and upload UI
+- [x] Android: Photo/video picker and upload UI
 - [ ] iOS: Photo/video picker and upload UI
 - [ ] Web: Drag-and-drop / file picker upload UI
-- [ ] Android: Album media grid view with lazy loading
+- [x] Android: Album media grid view with lazy loading
 - [ ] iOS: Album media grid view with lazy loading
 - [ ] Web: Album media gallery with lazy loading
-- [ ] Android: Full-screen media viewer (swipe, pinch-zoom)
+- [x] Android: Full-screen media viewer (swipe, pinch-zoom)
 - [ ] iOS: Full-screen media viewer
 - [ ] Web: Lightbox media viewer
 
@@ -208,7 +208,7 @@
 | Phase | Description | Status |
 |-------|-------------|--------|
 | 1 | Foundation & Auth | Done |
-| 2 | Shared Albums | In Progress (2.1 Done, 2.2 Server+Shared Done) |
+| 2 | Shared Albums | In Progress (2.1 Done, 2.2 Server+Shared+Android Done) |
 | 3 | Social & Engagement | Not Started |
 | 4 | Smart Features | Not Started |
 | 5 | Widgets | Not Started |

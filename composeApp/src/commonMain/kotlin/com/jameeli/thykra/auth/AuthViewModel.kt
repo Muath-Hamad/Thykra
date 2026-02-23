@@ -36,9 +36,10 @@ class AuthViewModel(
                 val response = authApi.loginWithOAuth(
                     OAuthRequest(provider = OAuthProvider.GOOGLE, idToken = idToken)
                 )
-                if (response.success && response.data != null) {
-                    tokenProvider.saveTokens(response.data.accessToken, response.data.refreshToken)
-                    _authState.value = AuthState.Authenticated(userId = response.data.user.id)
+                val data = response.data
+                if (response.success && data != null) {
+                    tokenProvider.saveTokens(data.accessToken, data.refreshToken)
+                    _authState.value = AuthState.Authenticated(userId = data.user.id)
                 } else {
                     _authState.value = AuthState.Unauthenticated
                 }
@@ -54,9 +55,10 @@ class AuthViewModel(
                 val response = authApi.loginWithOAuth(
                     OAuthRequest(provider = OAuthProvider.APPLE, idToken = idToken)
                 )
-                if (response.success && response.data != null) {
-                    tokenProvider.saveTokens(response.data.accessToken, response.data.refreshToken)
-                    _authState.value = AuthState.Authenticated(userId = response.data.user.id)
+                val data = response.data
+                if (response.success && data != null) {
+                    tokenProvider.saveTokens(data.accessToken, data.refreshToken)
+                    _authState.value = AuthState.Authenticated(userId = data.user.id)
                 } else {
                     _authState.value = AuthState.Unauthenticated
                 }

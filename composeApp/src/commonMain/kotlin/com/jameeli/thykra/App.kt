@@ -3,12 +3,24 @@ package com.jameeli.thykra
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import com.jameeli.thykra.api.AlbumApi
+import com.jameeli.thykra.api.MediaApi
+import com.jameeli.thykra.api.UploadQueueManager
 import com.jameeli.thykra.auth.AuthViewModel
 import com.jameeli.thykra.navigation.AppNavHost
 
 @Composable
-fun App(authViewModel: AuthViewModel, albumApi: AlbumApi) {
+fun App(
+    authViewModel: AuthViewModel,
+    albumApi: AlbumApi,
+    mediaApi: MediaApi,
+    uploadQueueManager: UploadQueueManager
+) {
     MaterialTheme {
-        AppNavHost(authViewModel = authViewModel, albumApi = albumApi)
+        AppNavHost(
+            authViewModel = authViewModel,
+            albumApi = albumApi,
+            mediaApi = mediaApi,
+            uploadQueueManager = uploadQueueManager
+        )
     }
 }
