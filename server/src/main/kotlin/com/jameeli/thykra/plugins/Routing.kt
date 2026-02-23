@@ -3,11 +3,15 @@ package com.jameeli.thykra.plugins
 import com.jameeli.thykra.repository.AlbumInviteRepository
 import com.jameeli.thykra.repository.AlbumMemberRepository
 import com.jameeli.thykra.repository.AlbumRepository
+import com.jameeli.thykra.repository.MediaRepository
 import com.jameeli.thykra.repository.UserRepository
 import com.jameeli.thykra.routes.albumRoutes
 import com.jameeli.thykra.routes.authRoutes
+import com.jameeli.thykra.routes.mediaRoutes
 import com.jameeli.thykra.routes.profileRoutes
 import com.jameeli.thykra.service.AuthService
+import com.jameeli.thykra.service.MediaService
+import com.jameeli.thykra.storage.StorageService
 import io.ktor.server.application.Application
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
@@ -19,7 +23,10 @@ fun Application.configureRouting(
     userRepository: UserRepository,
     albumRepository: AlbumRepository,
     albumMemberRepository: AlbumMemberRepository,
-    albumInviteRepository: AlbumInviteRepository
+    albumInviteRepository: AlbumInviteRepository,
+    mediaService: MediaService,
+    mediaRepository: MediaRepository,
+    storageService: StorageService
 ) {
     routing {
         get("/") {
@@ -32,6 +39,7 @@ fun Application.configureRouting(
             authRoutes(authService)
             profileRoutes(userRepository)
             albumRoutes(albumRepository, albumMemberRepository, albumInviteRepository)
+            mediaRoutes(mediaService, mediaRepository, albumMemberRepository, storageService)
         }
     }
 }

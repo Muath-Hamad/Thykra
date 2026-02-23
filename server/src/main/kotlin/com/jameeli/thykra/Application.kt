@@ -13,9 +13,14 @@ import com.jameeli.thykra.plugins.configureStatusPages
 import com.jameeli.thykra.repository.AlbumInviteRepository
 import com.jameeli.thykra.repository.AlbumMemberRepository
 import com.jameeli.thykra.repository.AlbumRepository
+import com.jameeli.thykra.repository.MediaRepository
 import com.jameeli.thykra.repository.RefreshTokenRepository
 import com.jameeli.thykra.repository.UserRepository
 import com.jameeli.thykra.service.AuthService
+import com.jameeli.thykra.service.MediaService
+import com.jameeli.thykra.storage.LocalStorageService
+import com.jameeli.thykra.storage.S3StorageService
+import com.jameeli.thykra.storage.StorageService
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -37,6 +42,17 @@ fun Application.module() {
     val albumMemberRepository = AlbumMemberRepository()
     val albumInviteRepository = AlbumInviteRepository()
 
+    val storageType = environment.config.propertyOrNull("storage.type")?.getString() ?: "local"
+    val storageService: StorageService = when (storageType) {
+        "s3" -> S3StorageService()
+        else -> LocalStorageService(
+            baseUrl = environment.config.property("storage.baseUrl").getString(),
+            storagePath = environment.config.property("storage.localPath").getString()
+        )
+    }
+    val mediaRepository = MediaRepository(storageService)
+    val mediaService = MediaService(mediaRepository, storageService)
+
     val oauthHttpClient = HttpClient(CIO) {
         install(ContentNegotiation) { json() }
     }
@@ -49,5 +65,8 @@ fun Application.module() {
     configureCors()
     configureStatusPages()
     configureSecurity(jwtService)
-    configureRouting(authService, userRepository, albumRepository, albumMemberRepository, albumInviteRepository)
+    configureRouting(
+        authService, userRepository, albumRepository, albumMemberRepository, albumInviteRepository,
+        mediaService, mediaRepository, storageService
+    )
 }
