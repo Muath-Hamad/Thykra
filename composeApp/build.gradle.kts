@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -64,6 +65,17 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+
+        val localProps = rootProject.file("local.properties")
+        val props = Properties().apply {
+            if (localProps.exists()) localProps.inputStream().use { load(it) }
+        }
+        val googleClientId = props.getProperty("GOOGLE_CLIENT_ID") ?: ""
+        buildConfigField("String", "GOOGLE_CLIENT_ID", "\"$googleClientId\"")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
     packaging {
         resources {
