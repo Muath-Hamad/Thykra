@@ -10,7 +10,8 @@ import java.util.UUID
 
 class MediaService(
     private val mediaRepository: MediaRepository,
-    private val storageService: StorageService
+    private val storageService: StorageService,
+    private val imageProcessingService: ImageProcessingService
 ) {
 
     suspend fun requestUploadUrl(
@@ -45,7 +46,30 @@ class MediaService(
         height: Int?,
         durationMs: Long?,
         takenAt: Instant?
-    ): MediaDto? = mediaRepository.activate(mediaId, width, height, durationMs, takenAt)
+    ): MediaDto? {
+        val media = mediaRepository.findById(mediaId) ?: return null
+
+        var finalWidth = width
+        var finalHeight = height
+        var finalTakenAt = takenAt
+        var thumbnailKey: String? = null
+
+        if (media.type == MediaType.PHOTO) {
+            val processed = try {
+                imageProcessingService.processImage(media.storageKey)
+            } catch (_: Exception) {
+                null
+            }
+            if (processed != null) {
+                if (finalWidth == null) finalWidth = processed.width
+                if (finalHeight == null) finalHeight = processed.height
+                if (finalTakenAt == null) finalTakenAt = processed.takenAt
+                thumbnailKey = processed.thumbnailKey
+            }
+        }
+
+        return mediaRepository.activate(mediaId, finalWidth, finalHeight, durationMs, finalTakenAt, thumbnailKey)
+    }
 
     suspend fun listMedia(albumId: UUID): List<MediaDto> = mediaRepository.findAllForAlbum(albumId)
 

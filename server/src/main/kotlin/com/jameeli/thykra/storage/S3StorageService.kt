@@ -19,4 +19,12 @@ class S3StorageService : StorageService {
     override suspend fun delete(key: String) {
         throw NotImplementedError("S3 storage not yet configured.")
     }
+
+    override suspend fun readBytes(key: String): ByteArray? {
+        throw NotImplementedError("S3 storage not yet configured.")
+    }
+
+    override suspend fun writeBytes(key: String, bytes: ByteArray) {
+        throw NotImplementedError("S3 storage not yet configured.")
+    }
 }

@@ -36,6 +36,23 @@ class LocalStorageService(
         }
     }
 
+    override suspend fun readBytes(key: String): ByteArray? {
+        val base = File(storagePath).canonicalFile
+        val file = File(base, key).canonicalFile
+        if (!file.toPath().startsWith(base.toPath()) || !file.exists()) return null
+        return withContext(Dispatchers.IO) { file.readBytes() }
+    }
+
+    override suspend fun writeBytes(key: String, bytes: ByteArray) {
+        val base = File(storagePath).canonicalFile
+        val file = File(base, key).canonicalFile
+        require(file.toPath().startsWith(base.toPath())) { "Invalid storage key" }
+        withContext(Dispatchers.IO) {
+            file.parentFile?.mkdirs()
+            file.writeBytes(bytes)
+        }
+    }
+
     fun getFile(key: String): File? {
         val base = File(storagePath).canonicalFile
         val resolved = File(base, key).canonicalFile

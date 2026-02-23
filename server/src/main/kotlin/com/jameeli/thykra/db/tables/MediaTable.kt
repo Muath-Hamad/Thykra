@@ -10,6 +10,7 @@ object MediaTable : UUIDTable("media") {
     val type = varchar("type", 20)
     val status = varchar("status", 20)
     val storageKey = varchar("storage_key", 1024).uniqueIndex()
+    val thumbnailKey = varchar("thumbnail_key", 1024).nullable()
     val filename = varchar("filename", 512)
     val contentType = varchar("content_type", 128)
     val fileSize = long("file_size")

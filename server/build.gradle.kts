@@ -43,6 +43,8 @@ dependencies {
     implementation(libs.postgresql)
     implementation(libs.h2)
     implementation(libs.hikariCp)
+    implementation(libs.thumbnailator)
+    implementation(libs.metadataExtractor)
 
     // Serialization
     implementation(libs.kotlinx.serialization.json)

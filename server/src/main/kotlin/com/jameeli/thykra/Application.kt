@@ -17,6 +17,7 @@ import com.jameeli.thykra.repository.MediaRepository
 import com.jameeli.thykra.repository.RefreshTokenRepository
 import com.jameeli.thykra.repository.UserRepository
 import com.jameeli.thykra.service.AuthService
+import com.jameeli.thykra.service.ImageProcessingService
 import com.jameeli.thykra.service.MediaService
 import com.jameeli.thykra.storage.LocalStorageService
 import com.jameeli.thykra.storage.S3StorageService
@@ -51,7 +52,8 @@ fun Application.module() {
         )
     }
     val mediaRepository = MediaRepository(storageService)
-    val mediaService = MediaService(mediaRepository, storageService)
+    val imageProcessingService = ImageProcessingService(storageService)
+    val mediaService = MediaService(mediaRepository, storageService, imageProcessingService)
 
     val oauthHttpClient = HttpClient(CIO) {
         install(ContentNegotiation) { json() }

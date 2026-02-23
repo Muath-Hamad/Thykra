@@ -81,7 +81,8 @@ class MediaRepository(private val storageService: StorageService) {
         width: Int?,
         height: Int?,
         durationMs: Long?,
-        takenAt: Instant?
+        takenAt: Instant?,
+        thumbnailKey: String?
     ): MediaDto? = newSuspendedTransaction {
         val now = Clock.System.now()
         MediaTable.update({ MediaTable.id eq id }) {
@@ -90,6 +91,7 @@ class MediaRepository(private val storageService: StorageService) {
             if (height != null) it[MediaTable.height] = height
             if (durationMs != null) it[MediaTable.durationMs] = durationMs
             if (takenAt != null) it[MediaTable.takenAt] = takenAt
+            if (thumbnailKey != null) it[MediaTable.thumbnailKey] = thumbnailKey
             it[MediaTable.updatedAt] = now
         }
         MediaTable.selectAll().where { MediaTable.id eq id }.singleOrNull()?.toMediaDto()
@@ -109,6 +111,7 @@ class MediaRepository(private val storageService: StorageService) {
         status = MediaStatus.valueOf(this[MediaTable.status]),
         storageKey = this[MediaTable.storageKey],
         url = storageService.getPublicUrl(this[MediaTable.storageKey]),
+        thumbnailUrl = this[MediaTable.thumbnailKey]?.let { storageService.getPublicUrl(it) },
         filename = this[MediaTable.filename],
         contentType = this[MediaTable.contentType],
         fileSize = this[MediaTable.fileSize],

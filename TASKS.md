@@ -61,7 +61,7 @@
 
 ### 2.2 Media Upload & Display
 - [x] Server: Media upload endpoints (photos, videos) with presigned URLs
-- [ ] Server: Image processing pipeline (thumbnails, compression, EXIF extraction)
+- [x] Server: Image processing pipeline (thumbnails, compression, EXIF extraction)
 - [ ] Shared: Upload queue manager with retry logic
 - [ ] Android: Photo/video picker and upload UI
 - [ ] iOS: Photo/video picker and upload UI

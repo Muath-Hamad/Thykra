@@ -25,6 +25,8 @@ material3 = "1.10.0-alpha05"
 navigation = "2.9.6"
 h2 = "2.3.232"
 postgresql = "42.7.5"
+thumbnailator = "0.4.20"
+metadataExtractor = "2.19.0"
 
 [libraries]
 # Kotlin
@@ -95,6 +97,8 @@ exposed-kotlinDatetime = { module = "org.jetbrains.exposed:exposed-kotlin-dateti
 h2 = { module = "com.h2database:h2", version.ref = "h2" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 hikariCp = { module = "com.zaxxer:HikariCP", version.ref = "hikariCp" }
+thumbnailator = { module = "net.coobird:thumbnailator", version.ref = "thumbnailator" }
+metadataExtractor = { module = "com.drewnoakes:metadata-extractor", version.ref = "metadataExtractor" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
