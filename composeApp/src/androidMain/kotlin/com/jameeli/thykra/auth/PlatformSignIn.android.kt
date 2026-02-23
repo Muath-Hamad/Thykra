@@ -1,5 +1,6 @@
 package com.jameeli.thykra.auth
 
+import com.jameeli.thykra.BuildConfig
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,7 +26,7 @@ actual fun PlatformGoogleSignInButton(
                 val credentialManager = CredentialManager.create(context)
                 val googleIdOption = GetGoogleIdOption.Builder()
                     .setFilterByAuthorizedAccounts(false)
-                    .setServerClientId(GOOGLE_SERVER_CLIENT_ID)
+                    .setServerClientId(BuildConfig.GOOGLE_CLIENT_ID)
                     .build()
                 val request = GetCredentialRequest.Builder()
                     .addCredentialOption(googleIdOption)
@@ -41,5 +42,3 @@ actual fun PlatformGoogleSignInButton(
         Text("Sign in with Google")
     }
 }
-
-private const val GOOGLE_SERVER_CLIENT_ID = "" // Set via BuildConfig or resource
