@@ -62,7 +62,7 @@
 ### 2.2 Media Upload & Display
 - [x] Server: Media upload endpoints (photos, videos) with presigned URLs
 - [x] Server: Image processing pipeline (thumbnails, compression, EXIF extraction)
-- [ ] Shared: Upload queue manager with retry logic
+- [x] Shared: Upload queue manager with retry logic
 - [ ] Android: Photo/video picker and upload UI
 - [ ] iOS: Photo/video picker and upload UI
 - [ ] Web: Drag-and-drop / file picker upload UI
@@ -208,7 +208,7 @@
 | Phase | Description | Status |
 |-------|-------------|--------|
 | 1 | Foundation & Auth | Done |
-| 2 | Shared Albums | In Progress (2.1 Done) |
+| 2 | Shared Albums | In Progress (2.1 Done, 2.2 Server+Shared Done) |
 | 3 | Social & Engagement | Not Started |
 | 4 | Smart Features | Not Started |
 | 5 | Widgets | Not Started |
