@@ -35,7 +35,8 @@ actual fun PlatformGoogleSignInButton(
                 val googleCredential = GoogleIdTokenCredential.createFrom(result.credential.data)
                 onIdToken(googleCredential.idToken)
             } catch (e: Exception) {
-                onError(e.message ?: "Google Sign-In failed")
+                android.util.Log.e("GoogleSignIn", "Sign-in failed: ${e::class.simpleName}: ${e.message}", e)
+                onError("${e::class.simpleName}: ${e.message}")
             }
         }
     }) {
