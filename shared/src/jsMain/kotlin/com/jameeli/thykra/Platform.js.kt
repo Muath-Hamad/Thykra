@@ -5,3 +5,5 @@ class JsPlatform: Platform {
 }
 
 actual fun getPlatform(): Platform = JsPlatform()
+
+actual val API_HOST: String = "localhost"
