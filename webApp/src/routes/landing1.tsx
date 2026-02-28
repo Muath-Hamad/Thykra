@@ -84,41 +84,41 @@ interface LocationImage {
 }
 
 const imagePool: LocationImage[][] = [
-  // Pool A — Mediterranean / Middle East
+  // Pool A — Mediterranean (warm, iconic, sun-drenched)
   [
-    { url: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=800&q=80', label: { en: 'Santorini, Greece', ar: 'سانتوريني، اليونان' } },
-    { url: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?w=800&q=80', label: { en: 'Santorini — 2024', ar: 'سانتوريني — ٢٠٢٤' } },
-    { url: 'https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=800&q=80', label: { en: 'Oia, Santorini', ar: 'أويا، سانتوريني' } },
+    { url: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=1600&q=85', label: { en: 'Santorini, Greece', ar: 'سانتوريني، اليونان' } },
+    { url: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?w=1600&q=85', label: { en: 'Santorini Sunset', ar: 'غروب سانتوريني' } },
+    { url: 'https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=1600&q=85', label: { en: 'Positano, Italy', ar: 'بوزيتانو، إيطاليا' } },
   ],
-  // Pool B — East Asia
+  // Pool B — East Asia (warm-toned, cultural, vibrant)
   [
-    { url: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&q=80', label: { en: 'Kyoto, Japan', ar: 'كيوتو، اليابان' } },
-    { url: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=800&q=80', label: { en: 'Fushimi Inari, Kyoto', ar: 'فوشيمي إناري، كيوتو' } },
-    { url: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=800&q=80', label: { en: 'Tokyo at Night', ar: 'طوكيو ليلاً' } },
+    { url: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1600&q=85', label: { en: 'Kyoto, Japan', ar: 'كيوتو، اليابان' } },
+    { url: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1600&q=85', label: { en: 'Fushimi Inari, Kyoto', ar: 'فوشيمي إناري، كيوتو' } },
+    { url: 'https://images.unsplash.com/photo-1542332213-31f87348057f?w=1600&q=85', label: { en: 'Osaka Temple', ar: 'معبد أوساكا' } },
   ],
-  // Pool C — South America
+  // Pool C — Adventure & Nature (travelers, warm landscapes)
   [
-    { url: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&q=80', label: { en: 'Patagonia, Argentina', ar: 'باتاغونيا، الأرجنتين' } },
-    { url: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80', label: { en: 'Lake Pehoé, Chile', ar: 'بحيرة بيهوي، تشيلي' } },
-    { url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80', label: { en: 'Torres del Paine', ar: 'توريس ديل باينه' } },
+    { url: 'https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=1600&q=85', label: { en: 'Friends on the Trail', ar: 'أصدقاء في الطبيعة' } },
+    { url: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1600&q=85', label: { en: 'Lake Pehoé, Chile', ar: 'بحيرة بيهوي، تشيلي' } },
+    { url: 'https://images.unsplash.com/photo-1504150558240-0b4fd8946624?w=1600&q=85', label: { en: 'Mountain Adventure', ar: 'مغامرة جبلية' } },
   ],
-  // Pool D — Middle East / North Africa
+  // Pool D — Middle East / North Africa (warm, colorful)
   [
-    { url: 'https://images.unsplash.com/photo-1539768942893-daf53e736b68?w=800&q=80', label: { en: 'Marrakech, Morocco', ar: 'مراكش، المغرب' } },
-    { url: 'https://images.unsplash.com/photo-1548018560-c7196c4d79c6?w=800&q=80', label: { en: 'Chefchaouen, Morocco', ar: 'شفشاون، المغرب' } },
-    { url: 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=800&q=80', label: { en: 'Dubai Creek', ar: 'خور دبي' } },
+    { url: 'https://images.unsplash.com/photo-1539768942893-daf53e736b68?w=1600&q=85', label: { en: 'Marrakech, Morocco', ar: 'مراكش، المغرب' } },
+    { url: 'https://images.unsplash.com/photo-1548018560-c7196c4d79c6?w=1600&q=85', label: { en: 'Chefchaouen, Morocco', ar: 'شفشاون، المغرب' } },
+    { url: 'https://images.unsplash.com/photo-1518684079-3c830dcef090?w=1600&q=85', label: { en: 'Dubai Skyline', ar: 'أفق دبي' } },
   ],
-  // Pool E — Europe
+  // Pool E — Europe (golden-hour, romantic, warm)
   [
-    { url: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&q=80', label: { en: 'Paris, France', ar: 'باريس، فرنسا' } },
-    { url: 'https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?w=800&q=80', label: { en: 'Amalfi Coast, Italy', ar: 'ساحل أمالفي، إيطاليا' } },
-    { url: 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=800&q=80', label: { en: 'Tuscany, Italy', ar: 'توسكانا، إيطاليا' } },
+    { url: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=1600&q=85', label: { en: 'Paris, France', ar: 'باريس، فرنسا' } },
+    { url: 'https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?w=1600&q=85', label: { en: 'Amalfi Coast, Italy', ar: 'ساحل أمالفي، إيطاليا' } },
+    { url: 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=1600&q=85', label: { en: 'Tuscany, Italy', ar: 'توسكانا، إيطاليا' } },
   ],
-  // Pool F — Southeast Asia
+  // Pool F — Tropical & Beach (vibrant, warm, group-travel vibe)
   [
-    { url: 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=800&q=80', label: { en: 'Bali, Indonesia', ar: 'بالي، إندونيسيا' } },
-    { url: 'https://images.unsplash.com/photo-1506665531195-3566af2b4dfa?w=800&q=80', label: { en: 'Ha Long Bay, Vietnam', ar: 'خليج ها لونغ، فيتنام' } },
-    { url: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800&q=80', label: { en: 'Ubud Rice Terraces', ar: 'مدرجات أرز أوبود' } },
+    { url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&q=85', label: { en: 'Tropical Paradise', ar: 'جنة استوائية' } },
+    { url: 'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=1600&q=85', label: { en: 'Island Cove', ar: 'خليج الجزيرة' } },
+    { url: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1600&q=85', label: { en: 'Overwater Villa', ar: 'فيلا فوق الماء' } },
   ],
 ];
 

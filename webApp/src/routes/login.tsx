@@ -4,14 +4,22 @@ import { useNavigate } from '@tanstack/react-router';
 import { useAuth } from '../auth/AuthContext';
 
 const loginImages = [
-  'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=1200&q=80',
-  'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1200&q=80',
-  'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200&q=80',
-  'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=1200&q=80',
-  'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=1200&q=80',
-  'https://images.unsplash.com/photo-1539768942893-daf53e736b68?w=1200&q=80',
-  'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=1200&q=80',
-  'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1200&q=80',
+  // Friends looking out at mountain vista together
+  'https://images.unsplash.com/photo-1539635278303-d4002c07eae3?w=1920&q=85',
+  // Group of friends at golden-hour beach
+  'https://images.unsplash.com/photo-1527631746610-bca00a040d60?w=1920&q=85',
+  // Friends road-tripping through warm landscape
+  'https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=1920&q=85',
+  // Traveler arms wide at sunlit mountain overlook
+  'https://images.unsplash.com/photo-1504150558240-0b4fd8946624?w=1920&q=85',
+  // Warm sunset over golden road — wanderlust
+  'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1920&q=85',
+  // Friends silhouetted against sunset sky
+  'https://images.unsplash.com/photo-1473625247510-8ceb1760943f?w=1920&q=85',
+  // Warm Tuscan countryside — golden hour
+  'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=1920&q=85',
+  // Group of friends walking together on adventure
+  'https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=1920&q=85',
 ];
 
 export function LoginPage() {
