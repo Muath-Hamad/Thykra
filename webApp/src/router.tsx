@@ -10,6 +10,7 @@ import { HomePage } from './routes/index';
 import { ProfilePage } from './routes/profile';
 import { AlbumsPage } from './routes/albums';
 import { AlbumDetailPage } from './routes/albums/detail';
+import { LandingPage1 } from './routes/landing1';
 import { getAccessToken } from './api/client';
 
 const rootRoute = createRootRoute({
@@ -56,12 +57,19 @@ const albumDetailRoute = createRoute({
   component: AlbumDetailPage,
 });
 
+const landing1Route = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/1',
+  component: LandingPage1,
+});
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   indexRoute,
   profileRoute,
   albumsRoute,
   albumDetailRoute,
+  landing1Route,
 ]);
 
 export const router = createRouter({ routeTree });

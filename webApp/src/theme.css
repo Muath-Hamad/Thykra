@@ -1,0 +1,56 @@
+/* ═══════════════════════════════════════════════════════════
+   Thykra Design Tokens — Wanderlust Bold Theme
+   ═══════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,700&family=Inter:wght@300;400;500;600&family=Noto+Kufi+Arabic:wght@300;400;500;700;900&display=swap');
+
+:root {
+  /* ─── Colors ─── */
+  --color-sky-blue:      #1B7FCC;
+  --color-ocean-blue:    #4FA3E0;
+  --color-sunrise-orange:#F47820;
+  --color-sandy:         #F5E6C8;
+  --color-warm-white:    #FDF8EF;
+  --color-deep-navy:     #1A1A2E;
+  --color-muted-slate:   #5C6B7A;
+  --color-soft-red:      #E05252;
+
+  /* ─── Spacing ─── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ─── Border Radius ─── */
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-full: 9999px;
+
+  /* ─── Shadows ─── */
+  --shadow-sm:     0 2px 8px rgba(27, 127, 204, 0.08);
+  --shadow-md:     0 4px 16px rgba(27, 127, 204, 0.12);
+  --shadow-lg:     0 8px 32px rgba(27, 127, 204, 0.18);
+  --shadow-orange: 0 4px 12px rgba(244, 120, 32, 0.24);
+
+  /* ─── Typography ─── */
+  --font-display: 'Nunito', sans-serif;
+  --font-body:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-arabic:  'Noto Kufi Arabic', 'Nunito', sans-serif;
+}
+
+/* ─── Global resets ─── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-warm-white);
+  color: var(--color-deep-navy);
+  min-height: 100vh;
+  line-height: 1.5;
+}
