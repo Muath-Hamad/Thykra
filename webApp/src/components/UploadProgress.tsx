@@ -25,6 +25,16 @@ function statusIcon(status: UploadState['status']): string {
   }
 }
 
+function statusColor(status: UploadState['status']): string {
+  switch (status) {
+    case 'QUEUED': return 'var(--color-muted-slate)';
+    case 'UPLOADING': return 'var(--color-sky-blue)';
+    case 'CONFIRMING': return 'var(--color-sky-blue)';
+    case 'DONE': return '#2e9e50';
+    case 'FAILED': return 'var(--color-soft-red)';
+  }
+}
+
 export function UploadProgress({ uploads, albumId }: UploadProgressProps) {
   const albumUploads = uploads.filter((u) => u.albumId === albumId);
   const active = albumUploads.filter((u) => u.status !== 'DONE');
@@ -32,7 +42,7 @@ export function UploadProgress({ uploads, albumId }: UploadProgressProps) {
   if (active.length === 0) return null;
 
   return (
-    <div style={{ marginBottom: '1rem' }}>
+    <div style={{ marginBottom: '1.5rem' }}>
       {active.map((upload) => (
         <div
           key={upload.id}
@@ -40,18 +50,29 @@ export function UploadProgress({ uploads, albumId }: UploadProgressProps) {
             display: 'flex',
             alignItems: 'center',
             gap: '0.75rem',
-            padding: '0.5rem 0.75rem',
-            borderBottom: '1px solid #eee',
-            fontSize: '0.875rem',
+            padding: '0.6rem 0.75rem',
+            borderBottom: '1px solid rgba(27,127,204,0.06)',
+            fontFamily: 'var(--font-body)',
+            fontSize: '0.85rem',
           }}
         >
-          <span style={{ color: upload.status === 'FAILED' ? '#d32f2f' : upload.status === 'DONE' ? '#2e7d32' : '#666' }}>
+          <span style={{ color: statusColor(upload.status), fontSize: '1rem' }}>
             {statusIcon(upload.status)}
           </span>
-          <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <span style={{
+            flex: 1,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            color: 'var(--color-deep-navy)',
+          }}>
             {upload.filename}
           </span>
-          <span style={{ color: '#999', fontSize: '0.75rem' }}>
+          <span style={{
+            color: 'var(--color-muted-slate)',
+            fontSize: '0.75rem',
+            fontWeight: 500,
+          }}>
             {statusText(upload.status)}
             {upload.attempt > 1 && ` (attempt ${upload.attempt}/3)`}
           </span>
