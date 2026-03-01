@@ -99,7 +99,7 @@ const imagePool: string[][] = [
   // Pool D — Middle East & Culture
   [
     'https://images.unsplash.com/photo-1489749798305-4fea3ae63d43?w=1600&q=85', // Marrakech medina
-    'https://images.unsplash.com/photo-1549060279-7e168fcee0c2?w=1600&q=85', // Morocco vibrant streets
+    'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=1600&q=85', // Morocco spice market
     'https://images.unsplash.com/photo-1518684079-3c830dcef090?w=1600&q=85', // Dubai skyline
     'https://images.unsplash.com/photo-1569383746724-6f1b882b8f46?w=1600&q=85', // Moroccan riad courtyard
   ],
@@ -115,7 +115,7 @@ const imagePool: string[][] = [
     'https://images.unsplash.com/photo-1473625247510-8ceb1760943f?w=1600&q=85', // Friends sunset silhouette
     'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600&q=85', // Sunset golden road
     'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=1600&q=85', // Tuscany golden hour
-    'https://images.unsplash.com/photo-1609921212029-bb5a28e60960?w=1600&q=85', // Friends at sunset pier
+    'https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=1600&q=85', // Friends hiking scenic trail
   ],
 ];
 

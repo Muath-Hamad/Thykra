@@ -22,8 +22,8 @@ const loginImages = [
   'https://images.unsplash.com/photo-1536940385103-c729049165e6?w=1920&q=85',
   // Road trip van adventure
   'https://images.unsplash.com/photo-1454391304352-2bf4678b1a7a?w=1920&q=85',
-  // Friends at sunset pier
-  'https://images.unsplash.com/photo-1609921212029-bb5a28e60960?w=1920&q=85',
+  // Friends on vacation by pool
+  'https://images.unsplash.com/photo-1602002418816-5c0aeef426aa?w=1920&q=85',
 ];
 
 export function LoginPage() {
