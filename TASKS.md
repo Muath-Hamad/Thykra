@@ -203,6 +203,12 @@
 
 ---
 
+## Known Bugs
+
+- [ ] **Android: Albums not displaying correctly** — Albums screen has a rendering/display bug that prevents albums from showing properly. Needs investigation (data loading, state management, or UI rendering issue).
+
+---
+
 ## Progress Summary
 
 | Phase | Description | Status |
