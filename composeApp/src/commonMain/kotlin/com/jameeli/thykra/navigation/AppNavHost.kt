@@ -17,7 +17,7 @@ import com.jameeli.thykra.ui.albums.AlbumDetailScreenContent
 import com.jameeli.thykra.ui.albums.AlbumDetailViewModel
 import com.jameeli.thykra.ui.albums.AlbumListScreenContent
 import com.jameeli.thykra.ui.albums.AlbumListViewModel
-import com.jameeli.thykra.ui.login.LoginScreenContent
+import com.jameeli.thykra.ui.landing.LandingScreenContent
 import com.jameeli.thykra.ui.media.MediaViewerScreenContent
 import com.jameeli.thykra.ui.media.MediaViewerViewModel
 import com.jameeli.thykra.ui.profile.ProfileScreenContent
@@ -46,7 +46,7 @@ fun AppNavHost(
 
     NavHost(navController = navController, startDestination = LoginScreen) {
         composable<LoginScreen> {
-            LoginScreenContent(authViewModel = authViewModel)
+            LandingScreenContent(authViewModel = authViewModel)
         }
         composable<AlbumListScreen> {
             AlbumListScreenContent(
