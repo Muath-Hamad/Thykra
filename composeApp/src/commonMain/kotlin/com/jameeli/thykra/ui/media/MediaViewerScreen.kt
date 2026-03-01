@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -30,6 +31,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
+import com.jameeli.thykra.ui.theme.ThykraColors
+import com.jameeli.thykra.ui.theme.ThykraIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,23 +54,30 @@ fun MediaViewerScreenContent(
     val pagerState = rememberPagerState(initialPage = initialPage) { media.size }
 
     Scaffold(
-        containerColor = Color.Black,
+        containerColor = ThykraColors.DeepNavy,
         topBar = {
             TopAppBar(
                 title = {
                     if (media.isNotEmpty()) {
                         Text(
                             text = "${pagerState.currentPage + 1} / ${media.size}",
-                            color = Color.White
+                            color = Color.White.copy(alpha = 0.8f),
+                            style = MaterialTheme.typography.titleSmall
                         )
                     }
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Text("\u2715", color = Color.White, style = MaterialTheme.typography.titleMedium)
+                        Icon(
+                            imageVector = ThykraIcons.Close,
+                            contentDescription = "Close",
+                            tint = Color.White
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = ThykraColors.DeepNavy
+                )
             )
         }
     ) { padding ->
@@ -75,18 +85,22 @@ fun MediaViewerScreenContent(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black)
+                    .background(ThykraColors.DeepNavy)
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Loading...", color = Color.White)
+                Text(
+                    "Loading...",
+                    color = Color.White.copy(alpha = 0.7f),
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         } else {
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black)
+                    .background(ThykraColors.DeepNavy)
                     .padding(padding)
             ) { page ->
                 ZoomableAsyncImage(
