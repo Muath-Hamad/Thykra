@@ -16,16 +16,24 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -35,13 +43,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.jameeli.thykra.api.UploadStatus
+import com.jameeli.thykra.model.MemberRole
 import com.jameeli.thykra.ui.media.rememberMediaPickerLauncher
+import com.jameeli.thykra.ui.theme.ThykraColors
+import com.jameeli.thykra.ui.theme.ThykraIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,19 +92,41 @@ fun AlbumDetailScreenContent(
     }
 
     Scaffold(
+        containerColor = ThykraColors.WarmWhite,
         topBar = {
             TopAppBar(
-                title = { Text(album?.title ?: "Album") },
+                title = {
+                    Text(
+                        album?.title ?: "Album",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Text("\u2190")
+                        Icon(
+                            imageVector = ThykraIcons.ArrowBack,
+                            contentDescription = "Back",
+                            tint = ThykraColors.DeepNavy
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = ThykraColors.WarmWhite,
+                    titleContentColor = ThykraColors.DeepNavy
+                )
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { pickerLauncher() }) {
-                Text("+", style = MaterialTheme.typography.titleLarge)
+            FloatingActionButton(
+                onClick = { pickerLauncher() },
+                containerColor = ThykraColors.SkyBlue,
+                contentColor = Color.White,
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Icon(
+                    imageVector = ThykraIcons.Add,
+                    contentDescription = "Add Photos"
+                )
             }
         }
     ) { padding ->
@@ -101,7 +135,7 @@ fun AlbumDetailScreenContent(
                 modifier = Modifier.fillMaxSize().padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = ThykraColors.SkyBlue)
             }
         } else if (album != null) {
             LazyColumn(
@@ -113,7 +147,8 @@ fun AlbumDetailScreenContent(
                         Spacer(Modifier.height(12.dp))
                         Text(
                             text = album!!.description!!,
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = ThykraColors.MutedSlate
                         )
                     }
                     Spacer(Modifier.height(16.dp))
@@ -123,7 +158,8 @@ fun AlbumDetailScreenContent(
                 item {
                     Text(
                         text = "Photos & Videos (${media.size})",
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleMedium,
+                        color = ThykraColors.DeepNavy
                     )
                     Spacer(Modifier.height(8.dp))
                 }
@@ -141,22 +177,23 @@ fun AlbumDetailScreenContent(
                             Text(
                                 "No photos yet. Tap + to add.",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = ThykraColors.MutedSlate
                             )
                         }
                     }
                 } else {
                     items(rows) { rowItems ->
                         Row(
-                            modifier = Modifier.fillMaxWidth().padding(bottom = 2.dp),
-                            horizontalArrangement = Arrangement.spacedBy(2.dp)
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             rowItems.forEach { item ->
                                 Box(
                                     modifier = Modifier
                                         .weight(1f)
                                         .aspectRatio(1f)
-                                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(ThykraColors.Sandy)
                                         .clickable { onNavigateToViewer(item.id) }
                                 ) {
                                     AsyncImage(
@@ -181,7 +218,8 @@ fun AlbumDetailScreenContent(
                         Spacer(Modifier.height(12.dp))
                         Text(
                             text = "Uploading",
-                            style = MaterialTheme.typography.titleMedium
+                            style = MaterialTheme.typography.titleMedium,
+                            color = ThykraColors.DeepNavy
                         )
                         Spacer(Modifier.height(4.dp))
                     }
@@ -193,15 +231,17 @@ fun AlbumDetailScreenContent(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             if (upload.status == UploadStatus.FAILED) {
-                                Text(
-                                    "\u2717",
-                                    color = MaterialTheme.colorScheme.error,
-                                    style = MaterialTheme.typography.bodyLarge
+                                Icon(
+                                    imageVector = ThykraIcons.Close,
+                                    contentDescription = "Failed",
+                                    modifier = Modifier.size(16.dp),
+                                    tint = ThykraColors.SoftRed
                                 )
                             } else {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(16.dp),
-                                    strokeWidth = 2.dp
+                                    strokeWidth = 2.dp,
+                                    color = ThykraColors.SkyBlue
                                 )
                             }
                             Spacer(Modifier.width(8.dp))
@@ -209,6 +249,7 @@ fun AlbumDetailScreenContent(
                                 Text(
                                     text = upload.filename,
                                     style = MaterialTheme.typography.bodySmall,
+                                    color = ThykraColors.DeepNavy,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )
@@ -222,9 +263,9 @@ fun AlbumDetailScreenContent(
                                     },
                                     style = MaterialTheme.typography.labelSmall,
                                     color = if (upload.status == UploadStatus.FAILED)
-                                        MaterialTheme.colorScheme.error
+                                        ThykraColors.SoftRed
                                     else
-                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                        ThykraColors.MutedSlate
                                 )
                             }
                         }
@@ -236,28 +277,62 @@ fun AlbumDetailScreenContent(
                     Spacer(Modifier.height(16.dp))
                     Text(
                         text = "Members (${members.size})",
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleMedium,
+                        color = ThykraColors.DeepNavy
                     )
                     Spacer(Modifier.height(8.dp))
                 }
 
                 items(members) { member ->
-                    Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = ThykraColors.Sandy),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                    ) {
                         Row(
                             modifier = Modifier.padding(12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            // Person avatar circle
+                            Surface(
+                                shape = CircleShape,
+                                color = ThykraColors.SkyBlue.copy(alpha = 0.15f),
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = ThykraIcons.Person,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(20.dp),
+                                        tint = ThykraColors.SkyBlue
+                                    )
+                                }
+                            }
+                            Spacer(Modifier.width(12.dp))
                             Text(
                                 text = member.displayName,
                                 style = MaterialTheme.typography.bodyLarge,
+                                color = ThykraColors.DeepNavy,
                                 modifier = Modifier.weight(1f)
                             )
                             Spacer(Modifier.width(8.dp))
-                            Text(
-                                text = member.role.name.lowercase().replaceFirstChar { it.uppercase() },
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            // Role badge
+                            val isOwner = member.role == MemberRole.OWNER
+                            Surface(
+                                shape = RoundedCornerShape(12.dp),
+                                color = if (isOwner) ThykraColors.SkyBlue.copy(alpha = 0.15f)
+                                else Color.Transparent,
+                                contentColor = if (isOwner) ThykraColors.SkyBlue
+                                else ThykraColors.MutedSlate
+                            ) {
+                                Text(
+                                    text = member.role.name.lowercase()
+                                        .replaceFirstChar { it.uppercase() },
+                                    style = MaterialTheme.typography.labelMedium,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -265,23 +340,40 @@ fun AlbumDetailScreenContent(
                 // Invite link
                 item {
                     Spacer(Modifier.height(16.dp))
-                    Button(
+                    OutlinedButton(
                         onClick = { viewModel.createInviteLink(albumId) },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = ThykraColors.SkyBlue
+                        )
                     ) {
+                        Icon(
+                            imageVector = ThykraIcons.Link,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(Modifier.width(8.dp))
                         Text("Generate Invite Link")
                     }
                     if (inviteLink != null) {
                         Spacer(Modifier.height(8.dp))
-                        Card(modifier = Modifier.fillMaxWidth()) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(containerColor = ThykraColors.Sandy)
+                        ) {
                             Column(modifier = Modifier.padding(12.dp)) {
                                 Text(
                                     text = "Invite Token:",
-                                    style = MaterialTheme.typography.labelMedium
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = ThykraColors.MutedSlate
                                 )
+                                Spacer(Modifier.height(4.dp))
                                 Text(
                                     text = inviteLink!!.token,
-                                    style = MaterialTheme.typography.bodySmall
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = ThykraColors.DeepNavy
                                 )
                             }
                         }
