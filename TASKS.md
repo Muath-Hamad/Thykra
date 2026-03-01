@@ -65,13 +65,13 @@
 - [x] Shared: Upload queue manager with retry logic
 - [x] Android: Photo/video picker and upload UI
 - [ ] iOS: Photo/video picker and upload UI
-- [ ] Web: Drag-and-drop / file picker upload UI
+- [x] Web: Drag-and-drop / file picker upload UI
 - [x] Android: Album media grid view with lazy loading
 - [ ] iOS: Album media grid view with lazy loading
-- [ ] Web: Album media gallery with lazy loading
+- [x] Web: Album media gallery with lazy loading
 - [x] Android: Full-screen media viewer (swipe, pinch-zoom)
 - [ ] iOS: Full-screen media viewer
-- [ ] Web: Lightbox media viewer
+- [x] Web: Lightbox media viewer
 
 ### 2.3 Offline Upload Queue
 - [ ] Shared: Local queue that persists pending uploads
@@ -205,7 +205,7 @@
 
 ## Known Bugs
 
-- [ ] **Android: Albums not displaying correctly** — Albums screen has a rendering/display bug that prevents albums from showing properly. Needs investigation (data loading, state management, or UI rendering issue).
+- [x] **Android: Albums not displaying correctly** — Fixed: ViewModels were recreated on every recomposition in `AppNavHost.kt` (not wrapped in `remember`), causing loaded state to be discarded. Also added error state to `AlbumListViewModel`.
 
 ---
 
@@ -214,7 +214,7 @@
 | Phase | Description | Status |
 |-------|-------------|--------|
 | 1 | Foundation & Auth | Done |
-| 2 | Shared Albums | In Progress (2.1 Done, 2.2 Server+Shared+Android Done) |
+| 2 | Shared Albums | In Progress (2.1 Done, 2.2 Server+Shared+Android+Web Done, iOS remaining) |
 | 3 | Social & Engagement | Not Started |
 | 4 | Smart Features | Not Started |
 | 5 | Widgets | Not Started |
