@@ -34,7 +34,7 @@ fun Route.mediaRoutes(
     // Local dev upload and file-serve endpoints (no JWT — upload auth via DB record existence)
     if (storageService is LocalStorageService) {
         put("/media/upload/{key...}") {
-            val key = call.parameters["key"]
+            val key = call.parameters.getAll("key")?.joinToString("/")
                 ?: return@put call.respond(
                     HttpStatusCode.BadRequest,
                     ApiResponse<Unit>(success = false, error = "Missing storage key")
@@ -55,7 +55,7 @@ fun Route.mediaRoutes(
         }
 
         get("/media/files/{key...}") {
-            val key = call.parameters["key"]
+            val key = call.parameters.getAll("key")?.joinToString("/")
                 ?: return@get call.respond(HttpStatusCode.BadRequest)
             val file = storageService.getFile(key)
                 ?: return@get call.respond(HttpStatusCode.NotFound)
