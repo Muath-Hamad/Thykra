@@ -18,16 +18,23 @@ class AlbumListViewModel(private val albumApi: AlbumApi) : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error.asStateFlow()
+
     fun loadAlbums() {
         viewModelScope.launch {
             _isLoading.value = true
+            _error.value = null
             try {
                 val response = albumApi.getAlbums()
                 val data = response.data
                 if (response.success && data != null) {
                     _albums.value = data
+                } else {
+                    _error.value = response.error ?: "Failed to load albums"
                 }
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                _error.value = e.message ?: "Network error"
             } finally {
                 _isLoading.value = false
             }

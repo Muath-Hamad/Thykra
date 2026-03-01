@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -49,8 +50,9 @@ fun AppNavHost(
             LandingScreenContent(authViewModel = authViewModel)
         }
         composable<AlbumListScreen> {
+            val viewModel = remember { AlbumListViewModel(albumApi) }
             AlbumListScreenContent(
-                viewModel = AlbumListViewModel(albumApi),
+                viewModel = viewModel,
                 onNavigateToAlbum = { albumId ->
                     navController.navigate(AlbumDetailScreen(albumId))
                 },
@@ -59,9 +61,12 @@ fun AppNavHost(
         }
         composable<AlbumDetailScreen> { backStackEntry ->
             val route = backStackEntry.toRoute<AlbumDetailScreen>()
+            val viewModel = remember(route.albumId) {
+                AlbumDetailViewModel(albumApi, mediaApi, uploadQueueManager)
+            }
             AlbumDetailScreenContent(
                 albumId = route.albumId,
-                viewModel = AlbumDetailViewModel(albumApi, mediaApi, uploadQueueManager),
+                viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToViewer = { mediaId ->
                     navController.navigate(MediaViewerScreen(route.albumId, mediaId))
@@ -70,10 +75,13 @@ fun AppNavHost(
         }
         composable<MediaViewerScreen> { backStackEntry ->
             val route = backStackEntry.toRoute<MediaViewerScreen>()
+            val viewModel = remember(route.albumId, route.initialMediaId) {
+                MediaViewerViewModel(mediaApi)
+            }
             MediaViewerScreenContent(
                 albumId = route.albumId,
                 initialMediaId = route.initialMediaId,
-                viewModel = MediaViewerViewModel(mediaApi),
+                viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
         }

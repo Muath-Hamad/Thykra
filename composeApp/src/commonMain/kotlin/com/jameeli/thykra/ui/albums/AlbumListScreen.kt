@@ -55,6 +55,7 @@ fun AlbumListScreenContent(
 ) {
     val albums by viewModel.albums.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
     var showCreateDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -106,6 +107,31 @@ fun AlbumListScreenContent(
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(color = ThykraColors.SkyBlue)
+            }
+        } else if (error != null && albums.isEmpty()) {
+            // Error state
+            Box(
+                modifier = Modifier.fillMaxSize().padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        error ?: "Something went wrong",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = ThykraColors.SoftRed
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = { viewModel.loadAlbums() },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = ThykraColors.SkyBlue,
+                            contentColor = Color.White
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Retry")
+                    }
+                }
             }
         } else if (albums.isEmpty()) {
             // Empty state
