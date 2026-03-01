@@ -4,22 +4,26 @@ import { useNavigate } from '@tanstack/react-router';
 import { useAuth } from '../auth/AuthContext';
 
 const loginImages = [
-  // Friends looking out at mountain vista together
+  // Friends at mountain vista together
   'https://images.unsplash.com/photo-1539635278303-d4002c07eae3?w=1920&q=85',
   // Group of friends at golden-hour beach
   'https://images.unsplash.com/photo-1527631746610-bca00a040d60?w=1920&q=85',
-  // Friends road-tripping through warm landscape
-  'https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=1920&q=85',
-  // Traveler arms wide at sunlit mountain overlook
-  'https://images.unsplash.com/photo-1504150558240-0b4fd8946624?w=1920&q=85',
-  // Warm sunset over golden road — wanderlust
-  'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1920&q=85',
+  // Group of friends laughing together
+  'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1920&q=85',
+  // Friends at beach sunset
+  'https://images.unsplash.com/photo-1528543606781-2f6e6857f318?w=1920&q=85',
+  // Friends jumping together at beach
+  'https://images.unsplash.com/photo-1517760444937-f6397edcbbcd?w=1920&q=85',
   // Friends silhouetted against sunset sky
   'https://images.unsplash.com/photo-1473625247510-8ceb1760943f?w=1920&q=85',
-  // Warm Tuscan countryside — golden hour
-  'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=1920&q=85',
-  // Group of friends walking together on adventure
+  // Friends hiking together on trail
   'https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=1920&q=85',
+  // Friends exploring together
+  'https://images.unsplash.com/photo-1536940385103-c729049165e6?w=1920&q=85',
+  // Road trip van adventure
+  'https://images.unsplash.com/photo-1454391304352-2bf4678b1a7a?w=1920&q=85',
+  // Friends at sunset pier
+  'https://images.unsplash.com/photo-1609921212029-bb5a28e60960?w=1920&q=85',
 ];
 
 export function LoginPage() {

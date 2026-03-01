@@ -37,8 +37,6 @@ const t = {
     privacy: 'Privacy',
     terms: 'Terms',
     verticalText: 'Shared memories — since 2024',
-    albumView: 'Album view',
-    detail: 'Detail',
   },
   ar: {
     about: 'عن التطبيق',
@@ -72,53 +70,52 @@ const t = {
     privacy: 'الخصوصية',
     terms: 'الشروط',
     verticalText: 'ذكريات مشتركة — منذ ٢٠٢٤',
-    albumView: 'عرض الألبوم',
-    detail: 'التفاصيل',
   },
 };
 
-// ─── Image pools per location (Unsplash) ─────────────────
-interface LocationImage {
-  url: string;
-  label: { en: string; ar: string };
-}
-
-const imagePool: LocationImage[][] = [
-  // Pool A — Mediterranean (warm, iconic, sun-drenched)
+// ─── Image pools (Unsplash) ──────────────────────────────
+const imagePool: string[][] = [
+  // Pool A — Friends & Group Travel
   [
-    { url: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=1600&q=85', label: { en: 'Santorini, Greece', ar: 'سانتوريني، اليونان' } },
-    { url: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?w=1600&q=85', label: { en: 'Santorini Sunset', ar: 'غروب سانتوريني' } },
-    { url: 'https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=1600&q=85', label: { en: 'Positano, Italy', ar: 'بوزيتانو، إيطاليا' } },
+    'https://images.unsplash.com/photo-1539635278303-d4002c07eae3?w=1600&q=85', // Friends at mountain vista
+    'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1600&q=85', // Group of friends laughing
+    'https://images.unsplash.com/photo-1528543606781-2f6e6857f318?w=1600&q=85', // Friends at beach sunset
+    'https://images.unsplash.com/photo-1527631746610-bca00a040d60?w=1600&q=85', // Golden-hour beach group
   ],
-  // Pool B — East Asia (warm-toned, cultural, vibrant)
+  // Pool B — Trips & Adventure
   [
-    { url: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1600&q=85', label: { en: 'Kyoto, Japan', ar: 'كيوتو، اليابان' } },
-    { url: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1600&q=85', label: { en: 'Fushimi Inari, Kyoto', ar: 'فوشيمي إناري، كيوتو' } },
-    { url: 'https://images.unsplash.com/photo-1542332213-31f87348057f?w=1600&q=85', label: { en: 'Osaka Temple', ar: 'معبد أوساكا' } },
+    'https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=1600&q=85', // Friends hiking together
+    'https://images.unsplash.com/photo-1504150558240-0b4fd8946624?w=1600&q=85', // Traveler at mountain overlook
+    'https://images.unsplash.com/photo-1454391304352-2bf4678b1a7a?w=1600&q=85', // Road trip van adventure
+    'https://images.unsplash.com/photo-1536940385103-c729049165e6?w=1600&q=85', // Friends exploring together
   ],
-  // Pool C — Adventure & Nature (travelers, warm landscapes)
+  // Pool C — Mediterranean & Europe
   [
-    { url: 'https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=1600&q=85', label: { en: 'Friends on the Trail', ar: 'أصدقاء في الطبيعة' } },
-    { url: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1600&q=85', label: { en: 'Lake Pehoé, Chile', ar: 'بحيرة بيهوي، تشيلي' } },
-    { url: 'https://images.unsplash.com/photo-1504150558240-0b4fd8946624?w=1600&q=85', label: { en: 'Mountain Adventure', ar: 'مغامرة جبلية' } },
+    'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=1600&q=85', // Santorini
+    'https://images.unsplash.com/photo-1533105079780-92b9be482077?w=1600&q=85', // Santorini sunset
+    'https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=1600&q=85', // Positano
+    'https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?w=1600&q=85', // Amalfi Coast
   ],
-  // Pool D — Middle East / North Africa (warm, colorful)
+  // Pool D — Middle East & Culture
   [
-    { url: 'https://images.unsplash.com/photo-1539768942893-daf53e736b68?w=1600&q=85', label: { en: 'Marrakech, Morocco', ar: 'مراكش، المغرب' } },
-    { url: 'https://images.unsplash.com/photo-1548018560-c7196c4d79c6?w=1600&q=85', label: { en: 'Chefchaouen, Morocco', ar: 'شفشاون، المغرب' } },
-    { url: 'https://images.unsplash.com/photo-1518684079-3c830dcef090?w=1600&q=85', label: { en: 'Dubai Skyline', ar: 'أفق دبي' } },
+    'https://images.unsplash.com/photo-1489749798305-4fea3ae63d43?w=1600&q=85', // Marrakech medina
+    'https://images.unsplash.com/photo-1549060279-7e168fcee0c2?w=1600&q=85', // Morocco vibrant streets
+    'https://images.unsplash.com/photo-1518684079-3c830dcef090?w=1600&q=85', // Dubai skyline
+    'https://images.unsplash.com/photo-1569383746724-6f1b882b8f46?w=1600&q=85', // Moroccan riad courtyard
   ],
-  // Pool E — Europe (golden-hour, romantic, warm)
+  // Pool E — Beach & Vacation
   [
-    { url: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=1600&q=85', label: { en: 'Paris, France', ar: 'باريس، فرنسا' } },
-    { url: 'https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?w=1600&q=85', label: { en: 'Amalfi Coast, Italy', ar: 'ساحل أمالفي، إيطاليا' } },
-    { url: 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=1600&q=85', label: { en: 'Tuscany, Italy', ar: 'توسكانا، إيطاليا' } },
+    'https://images.unsplash.com/photo-1517760444937-f6397edcbbcd?w=1600&q=85', // Friends jumping at beach
+    'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&q=85', // Tropical beach
+    'https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1600&q=85', // Beach aerial view
+    'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1600&q=85', // Overwater villa
   ],
-  // Pool F — Tropical & Beach (vibrant, warm, group-travel vibe)
+  // Pool F — Golden Hour & Wanderlust
   [
-    { url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&q=85', label: { en: 'Tropical Paradise', ar: 'جنة استوائية' } },
-    { url: 'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=1600&q=85', label: { en: 'Island Cove', ar: 'خليج الجزيرة' } },
-    { url: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1600&q=85', label: { en: 'Overwater Villa', ar: 'فيلا فوق الماء' } },
+    'https://images.unsplash.com/photo-1473625247510-8ceb1760943f?w=1600&q=85', // Friends sunset silhouette
+    'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600&q=85', // Sunset golden road
+    'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=1600&q=85', // Tuscany golden hour
+    'https://images.unsplash.com/photo-1609921212029-bb5a28e60960?w=1600&q=85', // Friends at sunset pier
   ],
 ];
 
@@ -131,9 +128,8 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-function pickRandomImages(): { hero: LocationImage[]; showcase: LocationImage[] } {
+function pickRandomImages(): { hero: string[]; showcase: string[] } {
   const shuffled = shuffle(imagePool);
-  // Pick one random image from each of 5 pools
   const hero = [0, 1, 2].map(i => {
     const pool = shuffled[i];
     return pool[Math.floor(Math.random() * pool.length)];
@@ -417,35 +413,9 @@ export function LandingPage1() {
           transform: scale(1.05);
         }
 
-        .l1-hero-img::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(180deg, transparent 60%, rgba(26,26,46,0.25) 100%);
-          pointer-events: none;
-        }
-
         .l1-hero-img:nth-child(1) { grid-row: 1 / 3; }
         .l1-hero-img:nth-child(2) { transform: translateY(2rem); }
         .l1-hero-img:nth-child(3) { transform: translateY(-1rem); }
-
-        .l1-hero-img-label {
-          position: absolute;
-          bottom: 1rem;
-          left: 1rem;
-          font-size: 0.65rem;
-          font-weight: 500;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.85);
-          z-index: 2;
-          text-shadow: 0 1px 4px rgba(0,0,0,0.4);
-        }
-        .l1-page.rtl .l1-hero-img-label {
-          left: auto;
-          right: 1rem;
-          letter-spacing: 0.05em;
-        }
 
         /* SCROLL LINE */
         .l1-scroll-line {
@@ -602,24 +572,6 @@ export function LandingPage1() {
           z-index: 1;
         }
         .l1-page.rtl .l1-showcase-frame:nth-child(2) { right: auto; left: 0; }
-
-        .l1-showcase-frame-label {
-          position: absolute;
-          top: 1.5rem;
-          left: 1.5rem;
-          font-size: 0.65rem;
-          font-weight: 500;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.75);
-          z-index: 3;
-          text-shadow: 0 1px 4px rgba(0,0,0,0.4);
-        }
-        .l1-page.rtl .l1-showcase-frame-label {
-          left: auto;
-          right: 1.5rem;
-          letter-spacing: 0.05em;
-        }
 
         .l1-showcase-accent {
           position: absolute;
@@ -848,10 +800,9 @@ export function LandingPage1() {
 
           <div className="l1-hero-right">
             <div className="l1-hero-img-stack">
-              {images.hero.map((img, i) => (
+              {images.hero.map((url, i) => (
                 <div className="l1-hero-img" key={i}>
-                  <img src={img.url} alt={img.label[lang]} loading={i === 0 ? 'eager' : 'lazy'} />
-                  <div className="l1-hero-img-label">{img.label[lang]}</div>
+                  <img src={url} alt="" loading={i === 0 ? 'eager' : 'lazy'} />
                 </div>
               ))}
             </div>
@@ -886,12 +837,10 @@ export function LandingPage1() {
         <section className="l1-showcase">
           <div className="l1-showcase-visual">
             <div className="l1-showcase-frame">
-              <img src={images.showcase[0].url} alt={images.showcase[0].label[lang]} loading="lazy" />
-              <div className="l1-showcase-frame-label">{images.showcase[0].label[lang]}</div>
+              <img src={images.showcase[0]} alt="" loading="lazy" />
             </div>
             <div className="l1-showcase-frame">
-              <img src={images.showcase[1].url} alt={images.showcase[1].label[lang]} loading="lazy" />
-              <div className="l1-showcase-frame-label">{images.showcase[1].label[lang]}</div>
+              <img src={images.showcase[1]} alt="" loading="lazy" />
             </div>
             <div className="l1-showcase-accent" />
           </div>
