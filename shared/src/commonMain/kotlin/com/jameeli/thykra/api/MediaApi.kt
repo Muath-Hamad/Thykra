@@ -22,7 +22,7 @@ import io.ktor.http.contentType
 class MediaApi(private val client: HttpClient) {
 
     // Uses a separate unauthenticated client for raw file uploads (presigned URLs are self-authorising)
-    private val rawClient = createPlatformHttpClient()
+    private val rawClient = createRawHttpClient()
 
     suspend fun requestUploadUrl(
         albumId: String,

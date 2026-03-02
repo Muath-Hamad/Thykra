@@ -5,6 +5,9 @@ import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
@@ -17,6 +20,14 @@ fun createApiClient(tokenProvider: TokenProvider): HttpClient {
                 ignoreUnknownKeys = true
                 isLenient = true
             })
+        }
+        install(Logging) {
+            logger = object : Logger {
+                override fun log(message: String) {
+                    println("[HTTP] $message")
+                }
+            }
+            level = LogLevel.ALL
         }
         install(Auth) {
             bearer {
@@ -34,6 +45,19 @@ fun createApiClient(tokenProvider: TokenProvider): HttpClient {
                     } else null
                 }
             }
+        }
+    }
+}
+
+fun createRawHttpClient(): HttpClient {
+    return createPlatformHttpClient().config {
+        install(Logging) {
+            logger = object : Logger {
+                override fun log(message: String) {
+                    println("[HTTP-RAW] $message")
+                }
+            }
+            level = LogLevel.ALL
         }
     }
 }
