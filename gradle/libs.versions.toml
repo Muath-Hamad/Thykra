@@ -28,6 +28,7 @@ postgresql = "42.7.5"
 thumbnailator = "0.4.20"
 metadataExtractor = "2.19.0"
 coil = "3.0.4"
+work = "2.10.0"
 
 [libraries]
 # Kotlin
@@ -100,6 +101,7 @@ postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" 
 hikariCp = { module = "com.zaxxer:HikariCP", version.ref = "hikariCp" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
+androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 thumbnailator = { module = "net.coobird:thumbnailator", version.ref = "thumbnailator" }
 metadataExtractor = { module = "com.drewnoakes:metadata-extractor", version.ref = "metadataExtractor" }
 

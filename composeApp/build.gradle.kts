@@ -33,6 +33,7 @@ kotlin {
             implementation(libs.androidx.credentials)
             implementation(libs.androidx.credentials.playServices)
             implementation(libs.googleid)
+            implementation(libs.androidx.work.runtime)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -45,6 +46,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.navigation.compose)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.datetime)
             implementation(projects.shared)
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
