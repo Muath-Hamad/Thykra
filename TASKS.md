@@ -64,13 +64,13 @@
 - [x] Server: Image processing pipeline (thumbnails, compression, EXIF extraction)
 - [x] Shared: Upload queue manager with retry logic
 - [x] Android: Photo/video picker and upload UI
-- [ ] iOS: Photo/video picker and upload UI
+- [x] iOS: Photo/video picker and upload UI
 - [x] Web: Drag-and-drop / file picker upload UI
 - [x] Android: Album media grid view with lazy loading
-- [ ] iOS: Album media grid view with lazy loading
+- [x] iOS: Album media grid view with lazy loading
 - [x] Web: Album media gallery with lazy loading
 - [x] Android: Full-screen media viewer (swipe, pinch-zoom)
-- [ ] iOS: Full-screen media viewer
+- [x] iOS: Full-screen media viewer
 - [x] Web: Lightbox media viewer
 
 ### 2.3 Offline Upload Queue
@@ -214,7 +214,7 @@
 | Phase | Description | Status |
 |-------|-------------|--------|
 | 1 | Foundation & Auth | Done |
-| 2 | Shared Albums | In Progress (2.1 Done, 2.2 Server+Shared+Android+Web Done, iOS remaining) |
+| 2 | Shared Albums | In Progress (2.1 Done, 2.2 Done all platforms, 2.3 remaining) |
 | 3 | Social & Engagement | Not Started |
 | 4 | Smart Features | Not Started |
 | 5 | Widgets | Not Started |
