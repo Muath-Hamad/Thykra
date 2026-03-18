@@ -22,7 +22,7 @@ import kotlinx.serialization.json.Json
 
 expect fun createPlatformHttpClient(): HttpClient
 
-fun createApiClient(tokenProvider: TokenProvider): HttpClient {
+fun createApiClient(tokenProvider: TokenProvider, isDebug: Boolean = false): HttpClient {
     // Separate unauthenticated client used only for token refresh to avoid recursion
     val refreshHttpClient = createPlatformHttpClient().config {
         install(ContentNegotiation) {
@@ -40,13 +40,15 @@ fun createApiClient(tokenProvider: TokenProvider): HttpClient {
                 isLenient = true
             })
         }
-        install(Logging) {
-            logger = object : Logger {
-                override fun log(message: String) {
-                    println("[HTTP] $message")
+        if (isDebug) {
+            install(Logging) {
+                logger = object : Logger {
+                    override fun log(message: String) {
+                        println("[HTTP] $message")
+                    }
                 }
+                level = LogLevel.INFO
             }
-            level = LogLevel.ALL
         }
         install(Auth) {
             bearer {
@@ -79,15 +81,17 @@ fun createApiClient(tokenProvider: TokenProvider): HttpClient {
     }
 }
 
-fun createRawHttpClient(): HttpClient {
+fun createRawHttpClient(isDebug: Boolean = false): HttpClient {
     return createPlatformHttpClient().config {
-        install(Logging) {
-            logger = object : Logger {
-                override fun log(message: String) {
-                    println("[HTTP-RAW] $message")
+        if (isDebug) {
+            install(Logging) {
+                logger = object : Logger {
+                    override fun log(message: String) {
+                        println("[HTTP-RAW] $message")
+                    }
                 }
+                level = LogLevel.INFO
             }
-            level = LogLevel.ALL
         }
     }
 }

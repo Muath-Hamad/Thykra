@@ -19,10 +19,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val tokenProvider = AndroidTokenStorage(applicationContext)
-        val httpClient = createApiClient(tokenProvider)
+        val httpClient = createApiClient(tokenProvider, BuildConfig.DEBUG)
         val authApi = AuthApi(httpClient)
         val albumApi = AlbumApi(httpClient)
-        val mediaApi = MediaApi(httpClient)
+        val mediaApi = MediaApi(httpClient, BuildConfig.DEBUG)
         val uploadQueueManager = UploadQueueManager(mediaApi, lifecycleScope)
         val authViewModel = AuthViewModel(authApi, tokenProvider)
 
