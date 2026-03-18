@@ -79,18 +79,20 @@ class AlbumDetailViewModel(
     }
 
     fun uploadFiles(albumId: String, files: List<PlatformMediaFile>) {
-        files.forEach { file ->
-            uploadQueueManager.enqueue(
-                UploadRequest(
-                    albumId = albumId,
-                    filename = file.name,
-                    contentType = file.contentType,
-                    fileSize = file.size,
-                    readBytes = file.readBytes,
-                    width = file.width,
-                    height = file.height
+        viewModelScope.launch {
+            files.forEach { file ->
+                uploadQueueManager.enqueueWithPersistence(
+                    UploadRequest(
+                        albumId = albumId,
+                        filename = file.name,
+                        contentType = file.contentType,
+                        fileSize = file.size,
+                        readBytes = file.readBytes,
+                        width = file.width,
+                        height = file.height
+                    )
                 )
-            )
+            }
         }
     }
 

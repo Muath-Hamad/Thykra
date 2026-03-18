@@ -56,7 +56,8 @@ fun AppNavHost(
                 onNavigateToAlbum = { albumId ->
                     navController.navigate(AlbumDetailScreen(albumId))
                 },
-                onNavigateToProfile = { navController.navigate(ProfileScreen) }
+                onNavigateToProfile = { navController.navigate(ProfileScreen) },
+                uploadQueueManager = uploadQueueManager
             )
         }
         composable<AlbumDetailScreen> { backStackEntry ->

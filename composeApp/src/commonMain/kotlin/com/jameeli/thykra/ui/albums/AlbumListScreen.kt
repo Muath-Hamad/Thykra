@@ -42,6 +42,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.jameeli.thykra.api.UploadQueueManager
+import com.jameeli.thykra.api.UploadStatus
 import com.jameeli.thykra.model.AlbumDto
 import com.jameeli.thykra.ui.theme.ThykraColors
 import com.jameeli.thykra.ui.theme.ThykraIcons
@@ -51,12 +53,18 @@ import com.jameeli.thykra.ui.theme.ThykraIcons
 fun AlbumListScreenContent(
     viewModel: AlbumListViewModel,
     onNavigateToAlbum: (String) -> Unit,
-    onNavigateToProfile: () -> Unit
+    onNavigateToProfile: () -> Unit,
+    uploadQueueManager: UploadQueueManager? = null
 ) {
     val albums by viewModel.albums.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
     var showCreateDialog by remember { mutableStateOf(false) }
+    val defaultFlow = remember { kotlinx.coroutines.flow.MutableStateFlow(emptyList<com.jameeli.thykra.api.UploadState>()) }
+    val uploadStates by (uploadQueueManager?.uploads ?: defaultFlow).collectAsState()
+    val activeUploadCount = uploadStates.count {
+        it.status == UploadStatus.QUEUED || it.status == UploadStatus.UPLOADING || it.status == UploadStatus.CONFIRMING
+    }
 
     LaunchedEffect(Unit) {
         viewModel.loadAlbums()
@@ -73,6 +81,23 @@ fun AlbumListScreenContent(
                     )
                 },
                 actions = {
+                    if (activeUploadCount > 0) {
+                        Box(
+                            modifier = Modifier.size(40.dp).padding(8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = ThykraColors.SkyBlue,
+                                strokeWidth = 2.dp
+                            )
+                            Text(
+                                text = "$activeUploadCount",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = ThykraColors.SkyBlue
+                            )
+                        }
+                    }
                     IconButton(onClick = onNavigateToProfile) {
                         Icon(
                             imageVector = ThykraIcons.Person,
