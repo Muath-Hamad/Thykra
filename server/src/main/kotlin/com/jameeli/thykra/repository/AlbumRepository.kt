@@ -2,11 +2,17 @@ package com.jameeli.thykra.repository
 
 import com.jameeli.thykra.db.tables.AlbumMembersTable
 import com.jameeli.thykra.db.tables.AlbumsTable
+import com.jameeli.thykra.db.tables.MediaTable
+import com.jameeli.thykra.db.tables.UsersTable
 import com.jameeli.thykra.model.AlbumDto
+import com.jameeli.thykra.model.AlbumMemberSummary
 import com.jameeli.thykra.model.MemberRole
+import com.jameeli.thykra.storage.StorageService
 import kotlinx.datetime.Clock
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
@@ -14,7 +20,7 @@ import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransacti
 import org.jetbrains.exposed.sql.update
 import java.util.UUID
 
-class AlbumRepository {
+class AlbumRepository(private val storageService: StorageService) {
 
     suspend fun create(ownerId: UUID, title: String, description: String?): AlbumDto =
         newSuspendedTransaction {
@@ -41,6 +47,7 @@ class AlbumRepository {
                 title = title,
                 description = description,
                 memberCount = 1,
+                previewMembers = emptyList(),
                 createdAt = now
             )
         }
@@ -79,16 +86,46 @@ class AlbumRepository {
 
     private fun ResultRow.toAlbumDto(): AlbumDto {
         val albumId = this[AlbumsTable.id].value
+
         val memberCount = AlbumMembersTable.selectAll()
             .where { AlbumMembersTable.albumId eq albumId }
             .count().toInt()
+
+        // Latest active media thumbnail (falls back to stored coverUrl if no media)
+        val latestCoverUrl = MediaTable
+            .selectAll()
+            .where { (MediaTable.albumId eq albumId) and (MediaTable.status eq "ACTIVE") }
+            .orderBy(MediaTable.uploadedAt, SortOrder.DESC)
+            .limit(1)
+            .singleOrNull()
+            ?.let { row ->
+                val thumbKey = row[MediaTable.thumbnailKey]
+                val mainKey = row[MediaTable.storageKey]
+                storageService.getPublicUrl(thumbKey ?: mainKey)
+            }
+            ?: this[AlbumsTable.coverUrl]
+
+        // First 4 members with avatar info
+        val previewMembers = (AlbumMembersTable innerJoin UsersTable)
+            .selectAll()
+            .where { AlbumMembersTable.albumId eq albumId }
+            .limit(4)
+            .map {
+                AlbumMemberSummary(
+                    userId = it[AlbumMembersTable.userId].value.toString(),
+                    displayName = it[UsersTable.displayName],
+                    avatarUrl = it[UsersTable.avatarUrl]
+                )
+            }
+
         return AlbumDto(
             id = albumId.toString(),
             ownerId = this[AlbumsTable.ownerId].value.toString(),
             title = this[AlbumsTable.title],
             description = this[AlbumsTable.description],
-            coverUrl = this[AlbumsTable.coverUrl],
+            coverUrl = latestCoverUrl,
             memberCount = memberCount,
+            previewMembers = previewMembers,
             createdAt = this[AlbumsTable.createdAt]
         )
     }

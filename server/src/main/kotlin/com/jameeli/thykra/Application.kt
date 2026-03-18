@@ -39,7 +39,6 @@ fun Application.module() {
     val jwtService = JwtService(environment)
     val userRepository = UserRepository()
     val refreshTokenRepository = RefreshTokenRepository()
-    val albumRepository = AlbumRepository()
     val albumMemberRepository = AlbumMemberRepository()
     val albumInviteRepository = AlbumInviteRepository()
 
@@ -51,6 +50,7 @@ fun Application.module() {
             storagePath = environment.config.property("storage.localPath").getString()
         )
     }
+    val albumRepository = AlbumRepository(storageService)
     val mediaRepository = MediaRepository(storageService)
     val imageProcessingService = ImageProcessingService(storageService)
     val mediaService = MediaService(mediaRepository, storageService, imageProcessingService)
