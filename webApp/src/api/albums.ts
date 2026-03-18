@@ -1,5 +1,11 @@
 import { apiClient } from './client';
 
+export interface AlbumMemberSummary {
+  userId: string;
+  displayName: string;
+  avatarUrl?: string;
+}
+
 export interface AlbumDto {
   id: string;
   ownerId: string;
@@ -7,6 +13,7 @@ export interface AlbumDto {
   description?: string;
   coverUrl?: string;
   memberCount: number;
+  previewMembers: AlbumMemberSummary[];
   createdAt: string;
 }
 
