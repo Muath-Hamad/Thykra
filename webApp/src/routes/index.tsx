@@ -33,6 +33,7 @@ export function HomePage() {
   const [newTitle, setNewTitle] = useState('');
   const [newDesc, setNewDesc] = useState('');
   const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -73,6 +74,7 @@ export function HomePage() {
   const handleCreate = async () => {
     if (!newTitle.trim() || creating) return;
     setCreating(true);
+    setCreateError('');
     try {
       const res = await createAlbum(newTitle.trim(), newDesc.trim() || undefined);
       if (res.success && res.data) {
@@ -81,9 +83,11 @@ export function HomePage() {
         setShowModal(false);
         setNewTitle('');
         setNewDesc('');
+      } else {
+        setCreateError(res.error || 'Failed to create album. Please try again.');
       }
     } catch {
-      // silent
+      setCreateError('Network error. Please try again.');
     } finally {
       setCreating(false);
     }
@@ -240,144 +244,153 @@ export function HomePage() {
         /* ─── ALBUM GRID ─── */
         .home-album-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-          gap: 1.5rem;
+          grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+          gap: 1.1rem;
         }
 
+        /* Photo card */
         .home-album-card {
-          background: var(--color-sandy);
-          border: 1px solid rgba(27,127,204,0.06);
+          position: relative;
+          display: block;
+          text-decoration: none;
           border-radius: var(--radius-lg);
           overflow: hidden;
-          cursor: pointer;
-          transition: box-shadow 0.3s, transform 0.3s;
-          text-decoration: none;
-          color: inherit;
-          display: flex;
-          flex-direction: column;
+          aspect-ratio: 3 / 4;
+          background: linear-gradient(145deg, var(--color-deep-navy) 0%, #1B4F8A 100%);
           box-shadow: var(--shadow-sm);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          cursor: pointer;
         }
         .home-album-card:hover {
-          box-shadow: var(--shadow-md);
-          transform: translateY(-3px);
+          transform: translateY(-4px) scale(1.01);
+          box-shadow: var(--shadow-lg);
         }
 
-        .home-album-cover {
-          width: 100%;
-          aspect-ratio: 16 / 9;
-          overflow: hidden;
-          position: relative;
-          background: var(--color-sandy);
-        }
-
-        .home-album-cover img {
+        .home-album-card-img {
+          position: absolute;
+          inset: 0;
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transition: transform 0.5s;
+          transition: transform 0.5s ease;
         }
-        .home-album-card:hover .home-album-cover img {
-          transform: scale(1.05);
+        .home-album-card:hover .home-album-card-img {
+          transform: scale(1.04);
         }
 
-        .home-album-cover::after {
-          content: '';
+        .home-album-vignette {
           position: absolute;
           inset: 0;
-          background: linear-gradient(180deg, transparent 50%, rgba(26,26,46,0.2) 100%);
+          background: linear-gradient(to top, rgba(26,26,46,0.55) 0%, transparent 45%);
           pointer-events: none;
         }
 
-        .home-album-photo-count {
+        .home-album-overlay {
           position: absolute;
-          top: 0.75rem;
-          right: 0.75rem;
-          background: rgba(26,26,46,0.65);
-          color: #fff;
-          font-size: 0.7rem;
-          font-weight: 600;
-          padding: 0.25rem 0.6rem;
-          border-radius: var(--radius-full);
-          z-index: 2;
-          display: flex;
-          align-items: center;
-          gap: 0.3rem;
+          inset: 0;
+          background: linear-gradient(
+            to top,
+            rgba(26,26,46,0.92) 0%,
+            rgba(26,26,46,0.55) 50%,
+            rgba(26,26,46,0.1) 100%
+          );
+          opacity: 0;
+          transition: opacity 0.35s ease;
+          pointer-events: none;
+        }
+        .home-album-card:hover .home-album-overlay { opacity: 1; }
+
+        .home-album-info {
+          position: absolute;
+          bottom: 0; left: 0; right: 0;
+          padding: 1rem;
+          transform: translateY(6px);
+          opacity: 0;
+          transition: transform 0.35s ease, opacity 0.35s ease;
+        }
+        .home-album-card:hover .home-album-info {
+          transform: translateY(0);
+          opacity: 1;
         }
 
-        .home-album-placeholder {
-          width: 100%;
-          aspect-ratio: 16 / 9;
+        .home-album-title {
+          margin: 0 0 0.5rem;
+          font-family: var(--font-display);
+          font-size: 0.95rem;
+          font-weight: 700;
+          color: #fff;
+          line-height: 1.3;
+          text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .home-album-footer {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .home-album-avatars {
+          display: flex;
+          align-items: center;
+        }
+        .home-album-avatar {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          border: 2px solid rgba(255,255,255,0.85);
+          margin-right: -7px;
+          flex-shrink: 0;
+          object-fit: cover;
+          background: var(--color-sky-blue);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.58rem;
+          font-weight: 700;
+          color: #fff;
+          text-transform: uppercase;
+          overflow: hidden;
+        }
+        .home-album-avatar:last-child { margin-right: 0; }
+        .home-album-avatar-more {
+          background: rgba(255,255,255,0.2);
+          backdrop-filter: blur(4px);
+          font-size: 0.52rem;
+        }
+
+        .home-album-member-count {
+          font-size: 0.68rem;
+          color: rgba(255,255,255,0.7);
+          font-weight: 500;
+        }
+
+        .home-album-placeholder-initial {
+          position: absolute;
+          inset: 0;
           display: flex;
           align-items: center;
           justify-content: center;
           font-family: var(--font-display);
           font-size: 3rem;
           font-weight: 800;
-          color: rgba(27,127,204,0.2);
-          background: linear-gradient(135deg, var(--color-sandy), rgba(245,230,200,0.5));
+          color: rgba(255,255,255,0.15);
+          user-select: none;
         }
 
-        .home-album-body {
-          padding: 1.5rem;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
+        /* No-image cards: always show info */
+        .home-album-card.no-image .home-album-info {
+          opacity: 1;
+          transform: translateY(0);
         }
-
-        .home-album-title {
-          font-family: var(--font-display);
-          font-size: 1.15rem;
-          font-weight: 700;
-          margin: 0 0 0.4rem;
-          color: var(--color-deep-navy);
-        }
-
-        .home-album-desc {
-          font-size: 0.85rem;
-          color: var(--color-muted-slate);
-          font-weight: 400;
-          line-height: 1.6;
-          margin: 0 0 1rem;
-          overflow: hidden;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          flex: 1;
-        }
-
-        .home-album-meta {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          padding-top: 1rem;
-          border-top: 1px solid rgba(27,127,204,0.06);
-        }
-
-        .home-album-badge {
-          font-size: 0.65rem;
-          letter-spacing: 0.06em;
-          text-transform: uppercase;
-          padding: 0.25rem 0.6rem;
-          border-radius: var(--radius-full);
-          font-weight: 600;
-        }
-        .home-badge-owner {
-          background: rgba(27,127,204,0.1);
-          color: var(--color-sky-blue);
-        }
-        .home-badge-member {
-          background: var(--color-sandy);
-          color: var(--color-muted-slate);
-          border: 1px solid rgba(27,127,204,0.1);
-        }
-
-        .home-album-meta-text {
-          font-size: 0.72rem;
-          color: var(--color-muted-slate);
-        }
+        .home-album-card.no-image .home-album-overlay { opacity: 1; }
 
         /* ─── NEW ALBUM CARD ─── */
         .home-new-album-card {
+          aspect-ratio: 3 / 4;
           border: 2px dashed rgba(27,127,204,0.3);
           border-radius: var(--radius-lg);
           display: flex;
@@ -385,8 +398,6 @@ export function HomePage() {
           align-items: center;
           justify-content: center;
           gap: 1rem;
-          padding: 3rem 2rem;
-          min-height: 320px;
           cursor: pointer;
           transition: all 0.3s;
           background: transparent;
@@ -399,8 +410,8 @@ export function HomePage() {
         }
 
         .home-new-album-icon {
-          width: 48px;
-          height: 48px;
+          width: 44px;
+          height: 44px;
           border-radius: var(--radius-full);
           border: 2px solid rgba(27,127,204,0.3);
           display: flex;
@@ -415,7 +426,7 @@ export function HomePage() {
         }
 
         .home-new-album-label {
-          font-size: 0.85rem;
+          font-size: 0.82rem;
           font-weight: 500;
           color: var(--color-muted-slate);
           transition: color 0.3s;
@@ -730,50 +741,46 @@ export function HomePage() {
 
                   <div className="home-album-grid">
                     {albums.map((album, i) => {
-                      const isOwner = album.ownerId === auth.user?.id;
                       const delay = Math.min(0.55 + i * 0.05, 1);
-                      const count = mediaCounts[album.id] ?? 0;
+                      const hasImage = !!album.coverUrl;
+                      const displayMembers = (album.previewMembers ?? []).slice(0, 4);
+                      const extraCount = album.memberCount - displayMembers.length;
                       return (
                         <Link
                           key={album.id}
                           to="/albums/$albumId"
                           params={{ albumId: album.id }}
-                          className="home-album-card"
+                          className={`home-album-card${hasImage ? '' : ' no-image'}`}
                           style={{ animation: `homeFadeUp 0.8s ease ${delay}s both` }}
                         >
-                          {album.coverUrl ? (
-                            <div className="home-album-cover">
-                              <img src={album.coverUrl} alt="" loading="lazy" />
-                              {count > 0 && (
-                                <div className="home-album-photo-count">
-                                  <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                    <rect x="2" y="3" width="12" height="10" rx="1.5" />
-                                    <circle cx="6" cy="7" r="1.5" />
-                                    <path d="M2 11l4-3 2.5 2L12 7l2 2.5" />
-                                  </svg>
-                                  {count}
-                                </div>
-                              )}
-                            </div>
+                          {hasImage ? (
+                            <img className="home-album-card-img" src={album.coverUrl!} alt="" loading="lazy" />
                           ) : (
-                            <div className="home-album-placeholder">
+                            <div className="home-album-placeholder-initial">
                               {album.title.charAt(0).toUpperCase()}
                             </div>
                           )}
-                          <div className="home-album-body">
+                          <div className="home-album-vignette" />
+                          <div className="home-album-overlay" />
+                          <div className="home-album-info">
                             <h3 className="home-album-title">{album.title}</h3>
-                            <p className="home-album-desc">
-                              {album.description || 'No description'}
-                            </p>
-                            <div className="home-album-meta">
-                              <span className={`home-album-badge ${isOwner ? 'home-badge-owner' : 'home-badge-member'}`}>
-                                {isOwner ? 'Owner' : 'Member'}
-                              </span>
-                              <span className="home-album-meta-text">
+                            <div className="home-album-footer">
+                              <div className="home-album-avatars">
+                                {displayMembers.map((m) =>
+                                  m.avatarUrl ? (
+                                    <img key={m.userId} className="home-album-avatar" src={m.avatarUrl} alt={m.displayName} />
+                                  ) : (
+                                    <div key={m.userId} className="home-album-avatar">
+                                      {m.displayName.charAt(0).toUpperCase()}
+                                    </div>
+                                  )
+                                )}
+                                {extraCount > 0 && (
+                                  <div className="home-album-avatar home-album-avatar-more">+{extraCount}</div>
+                                )}
+                              </div>
+                              <span className="home-album-member-count">
                                 {album.memberCount} {album.memberCount === 1 ? 'member' : 'members'}
-                              </span>
-                              <span className="home-album-meta-text">
-                                {formatDate(album.createdAt)}
                               </span>
                             </div>
                           </div>
@@ -827,11 +834,17 @@ export function HomePage() {
                   onChange={(e) => setNewDesc(e.target.value)}
                 />
               </div>
+              {createError && (
+                <p style={{ color: 'var(--color-soft-red)', fontSize: '0.82rem', margin: '0 0 1rem', fontWeight: 500 }}>
+                  {createError}
+                </p>
+              )}
               <div className="home-modal-actions">
                 <button className="home-modal-cancel" onClick={() => {
                   setShowModal(false);
                   setNewTitle('');
                   setNewDesc('');
+                  setCreateError('');
                 }}>Cancel</button>
                 <button
                   className="home-modal-submit"
