@@ -74,11 +74,11 @@
 - [x] Web: Lightbox media viewer
 
 ### 2.3 Offline Upload Queue
-- [ ] Shared: Local queue that persists pending uploads
-- [ ] Shared: Auto-sync when connectivity is restored
-- [ ] Android: Background upload worker (WorkManager)
+- [x] Shared: Local queue that persists pending uploads
+- [x] Shared: Auto-sync when connectivity is restored
+- [x] Android: Background upload worker (WorkManager)
 - [ ] iOS: Background upload task (BGTaskScheduler)
-- [ ] Android/iOS: Upload progress indicator in UI
+- [x] Android/iOS: Upload progress indicator in UI
 
 ---
 
@@ -214,7 +214,7 @@
 | Phase | Description | Status |
 |-------|-------------|--------|
 | 1 | Foundation & Auth | Done |
-| 2 | Shared Albums | In Progress (2.1 Done, 2.2 Done all platforms, 2.3 remaining) |
+| 2 | Shared Albums | In Progress (2.1 Done, 2.2 Done all platforms, 2.3 mostly done — iOS BGTask remaining) |
 | 3 | Social & Engagement | Not Started |
 | 4 | Smart Features | Not Started |
 | 5 | Widgets | Not Started |
