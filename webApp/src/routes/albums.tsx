@@ -12,6 +12,7 @@ export function AlbumsPage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState('');
 
   useEffect(() => {
     loadAlbums();
@@ -31,6 +32,7 @@ export function AlbumsPage() {
 
   async function handleCreate() {
     setCreating(true);
+    setCreateError('');
     try {
       const data = await createAlbum(title, description || undefined);
       if (data.success && data.data) {
@@ -38,8 +40,11 @@ export function AlbumsPage() {
         setShowCreate(false);
         setTitle('');
         setDescription('');
+      } else {
+        setCreateError(data.error || 'Failed to create album. Please try again.');
       }
     } catch (error) {
+      setCreateError('Network error. Please try again.');
       console.error('Failed to create album:', error);
     } finally {
       setCreating(false);
@@ -465,8 +470,13 @@ export function AlbumsPage() {
                   placeholder="A brief description..."
                 />
               </div>
+              {createError && (
+                <p style={{ color: 'var(--color-soft-red)', fontSize: '0.82rem', margin: '0 0 1rem', fontWeight: 500 }}>
+                  {createError}
+                </p>
+              )}
               <div className="albums-modal-actions">
-                <button className="albums-modal-cancel" onClick={() => { setShowCreate(false); setTitle(''); setDescription(''); }}>
+                <button className="albums-modal-cancel" onClick={() => { setShowCreate(false); setTitle(''); setDescription(''); setCreateError(''); }}>
                   Cancel
                 </button>
                 <button className="albums-modal-submit" onClick={handleCreate} disabled={creating || !title.trim()}>
