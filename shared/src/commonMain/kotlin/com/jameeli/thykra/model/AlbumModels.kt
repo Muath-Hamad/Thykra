@@ -7,6 +7,13 @@ import kotlinx.serialization.Serializable
 enum class MemberRole { OWNER, CONTRIBUTOR, VIEWER }
 
 @Serializable
+data class AlbumMemberSummary(
+    val userId: String,
+    val displayName: String,
+    val avatarUrl: String? = null
+)
+
+@Serializable
 data class AlbumDto(
     val id: String,
     val ownerId: String,
@@ -14,6 +21,7 @@ data class AlbumDto(
     val description: String? = null,
     val coverUrl: String? = null,
     val memberCount: Int,
+    val previewMembers: List<AlbumMemberSummary> = emptyList(),
     val createdAt: Instant
 )
 
