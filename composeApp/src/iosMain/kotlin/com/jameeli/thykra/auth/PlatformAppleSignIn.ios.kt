@@ -12,6 +12,8 @@ import platform.AuthenticationServices.ASAuthorizationScopeEmail
 import platform.AuthenticationServices.ASAuthorizationScopeFullName
 import platform.AuthenticationServices.ASAuthorizationControllerDelegateProtocol
 import platform.AuthenticationServices.ASAuthorization
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.readBytes
 import platform.Foundation.NSError
 import platform.darwin.NSObject
 
@@ -34,6 +36,7 @@ actual fun PlatformAppleSignInButton(
     }
 }
 
+@OptIn(ExperimentalForeignApi::class)
 private class AppleSignInDelegate(
     private val onIdToken: (String) -> Unit,
     private val onError: (String) -> Unit
@@ -47,7 +50,9 @@ private class AppleSignInDelegate(
         if (credential is ASAuthorizationAppleIDCredential) {
             val tokenData = credential.identityToken
             if (tokenData != null) {
-                val idToken = tokenData.toString(encoding = 4u) // NSUTF8StringEncoding
+                val idToken = tokenData.bytes
+                    ?.readBytes(tokenData.length.toInt())
+                    ?.decodeToString()
                 if (idToken != null) {
                     onIdToken(idToken)
                     return
