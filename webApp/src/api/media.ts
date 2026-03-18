@@ -54,37 +54,25 @@ export async function deleteMedia(albumId: string, mediaId: string) {
 }
 
 export async function requestUploadUrl(albumId: string, req: RequestUploadUrlRequest) {
-  console.log('[Media API] requestUploadUrl:', { albumId, req });
-  const resp = await apiClient(`/api/albums/${albumId}/media/request-upload`, {
+  return apiClient(`/api/albums/${albumId}/media/request-upload`, {
     method: 'POST',
     body: JSON.stringify(req),
   });
-  console.log('[Media API] requestUploadUrl response:', resp);
-  return resp;
 }
 
 export async function uploadFile(url: string, file: File, contentType: string): Promise<Response> {
-  console.log('[Media API] uploadFile:', { url, fileName: file.name, contentType, size: file.size });
-  try {
-    const resp = await fetch(url, {
-      method: 'PUT',
-      headers: { 'Content-Type': contentType },
-      body: file,
-    });
-    console.log('[Media API] uploadFile response:', { status: resp.status, statusText: resp.statusText });
-    return resp;
-  } catch (err) {
-    console.error('[Media API] uploadFile FAILED:', { url, error: err });
-    throw err;
-  }
+  const resp = await fetch(url, {
+    method: 'PUT',
+    headers: { 'Content-Type': contentType },
+    body: file,
+  });
+  if (import.meta.env.DEV) console.log(`[API] PUT ${url} → ${resp.status}`);
+  return resp;
 }
 
 export async function confirmUpload(albumId: string, mediaId: string, req: ConfirmUploadRequest) {
-  console.log('[Media API] confirmUpload:', { albumId, mediaId, req });
-  const resp = await apiClient(`/api/albums/${albumId}/media/${mediaId}/confirm`, {
+  return apiClient(`/api/albums/${albumId}/media/${mediaId}/confirm`, {
     method: 'POST',
     body: JSON.stringify(req),
   });
-  console.log('[Media API] confirmUpload response:', resp);
-  return resp;
 }

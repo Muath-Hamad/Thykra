@@ -29,17 +29,16 @@ export async function apiClient(path: string, options: RequestInit = {}): Promis
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  console.log(`[API] ${options.method || 'GET'} ${path}`);
+  const method = options.method || 'GET';
   let response = await fetch(path, { ...options, headers });
-  console.log(`[API] ${options.method || 'GET'} ${path} → ${response.status}`);
+  if (import.meta.env.DEV) console.log(`[API] ${method} ${path} → ${response.status}`);
 
   if (response.status === 401 && getRefreshToken()) {
-    console.log('[API] 401 received, attempting token refresh...');
     const refreshed = await tryRefreshToken();
     if (refreshed) {
       headers['Authorization'] = `Bearer ${getAccessToken()}`;
       response = await fetch(path, { ...options, headers });
-      console.log(`[API] Retry after refresh → ${response.status}`);
+      if (import.meta.env.DEV) console.log(`[API] ${method} ${path} → ${response.status} (after refresh)`);
     } else {
       clearTokens();
       window.location.href = '/login';
