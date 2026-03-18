@@ -7,6 +7,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.window.ComposeUIViewController
 import com.jameeli.thykra.api.AlbumApi
 import com.jameeli.thykra.api.AuthApi
+import com.jameeli.thykra.api.IosNetworkMonitor
+import com.jameeli.thykra.api.IosUploadPersistence
 import com.jameeli.thykra.api.MediaApi
 import com.jameeli.thykra.api.UploadQueueManager
 import com.jameeli.thykra.api.createApiClient
@@ -20,7 +22,9 @@ fun MainViewController() = ComposeUIViewController {
     val httpClient = remember { createApiClient(tokenProvider, Platform.isDebugBinary) }
     val albumApi = remember { AlbumApi(httpClient) }
     val mediaApi = remember { MediaApi(httpClient, Platform.isDebugBinary) }
-    val uploadQueueManager = remember(scope) { UploadQueueManager(mediaApi, scope) }
+    val persistence = remember { IosUploadPersistence() }
+    val networkMonitor = remember { IosNetworkMonitor() }
+    val uploadQueueManager = remember(scope) { UploadQueueManager(mediaApi, scope, persistence, networkMonitor) }
     val authApi = remember { AuthApi(httpClient) }
     val authViewModel = remember { AuthViewModel(authApi, tokenProvider) }
 
