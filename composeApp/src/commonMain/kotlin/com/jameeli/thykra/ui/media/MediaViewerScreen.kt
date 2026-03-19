@@ -38,7 +38,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import android.content.res.Configuration
 import coil3.compose.AsyncImage
 import com.jameeli.thykra.API_BASE_URL
 import com.jameeli.thykra.model.MediaType
@@ -114,10 +116,11 @@ fun MediaViewerScreenContent(
         )
 
         // Compact floating overlay.
-        // safeDrawing.only(Top + Horizontal) covers all system-owned touch areas that
-        // vary by orientation: status bar (top), display cutout (top or side in landscape),
-        // and 3-button nav bar (right side in landscape). statusBarsPadding() alone misses
-        // the side insets, leaving buttons in system-owned space where touches are dropped.
+        // safeDrawing.only(Top + Horizontal) covers status bar, display cutout, and
+        // side nav bar (3-button nav moves to the right in landscape).
+        // In landscape the screen is much shorter, so drop the extra vertical padding
+        // so the buttons sit as close to the inset boundary as possible.
+        val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -126,7 +129,7 @@ fun MediaViewerScreenContent(
                         WindowInsetsSides.Top + WindowInsetsSides.Horizontal
                     )
                 )
-                .padding(horizontal = 4.dp, vertical = 4.dp),
+                .padding(horizontal = 4.dp, vertical = if (isLandscape) 0.dp else 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onNavigateBack) {
