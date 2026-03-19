@@ -37,9 +37,13 @@ actual fun VideoPlayer(url: String, isActive: Boolean, modifier: Modifier) {
         if (isActive) player.play() else player.pause()
     }
 
-    // Use rememberUpdatedState so the lifecycle observer always reads the
-    // latest isActive value without being recreated on every recomposition.
     val currentIsActive = rememberUpdatedState(isActive)
+
+    // Single DisposableEffect handles both the lifecycle observer and player release.
+    // Combining them ensures the observer is removed BEFORE the player is stopped/released,
+    // preventing lifecycle callbacks from reaching an already-released player.
+    // player.stop() drains MediaCodec's async pipeline before release() quits the
+    // internal HandlerThread — avoiding "Handler on a dead thread" crashes.
     DisposableEffect(lifecycle) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
@@ -49,12 +53,11 @@ actual fun VideoPlayer(url: String, isActive: Boolean, modifier: Modifier) {
             }
         }
         lifecycle.addObserver(observer)
-        onDispose { lifecycle.removeObserver(observer) }
-    }
-
-    // Release the player when this composable leaves the composition.
-    DisposableEffect(Unit) {
-        onDispose { player.release() }
+        onDispose {
+            lifecycle.removeObserver(observer)
+            player.stop()
+            player.release()
+        }
     }
 
     AndroidView(
