@@ -52,7 +52,10 @@ fun MediaViewerScreenContent(
     val initialPage = remember(media, initialMediaId) {
         media.indexOfFirst { it.id == initialMediaId }.coerceAtLeast(0)
     }
-    val pagerState = rememberPagerState(initialPage = initialPage) { media.size }
+    val pagerState = rememberPagerState(initialPage = 0) { media.size }
+    LaunchedEffect(initialPage) {
+        if (media.isNotEmpty()) pagerState.scrollToPage(initialPage)
+    }
 
     Scaffold(
         containerColor = ThykraColors.DeepNavy,
