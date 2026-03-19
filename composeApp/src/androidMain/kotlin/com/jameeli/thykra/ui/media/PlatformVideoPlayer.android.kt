@@ -19,9 +19,8 @@ actual fun VideoPlayer(url: String, modifier: Modifier) {
         val mc = MediaController(context)
         mc.setAnchorView(videoView)
         videoView.setMediaController(mc)
+        videoView.setOnPreparedListener { it.start() }
         videoView.setVideoURI(Uri.parse(url))
-        videoView.requestFocus()
-        videoView.start()
         onDispose { videoView.stopPlayback() }
     }
 

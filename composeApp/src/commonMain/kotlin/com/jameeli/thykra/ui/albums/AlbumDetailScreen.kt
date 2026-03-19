@@ -200,39 +200,24 @@ fun AlbumDetailScreenContent(
                                 ) {
                                     val thumbUrl = (item.thumbnailUrl ?: item.url)
                                         .replace("http://localhost:8081", API_BASE_URL)
-                                    if (item.type == MediaType.VIDEO && item.thumbnailUrl == null) {
+                                    AsyncImage(
+                                        model = thumbUrl,
+                                        contentDescription = item.filename,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                    if (item.type == MediaType.VIDEO) {
                                         Box(
                                             modifier = Modifier.fillMaxSize()
-                                                .background(ThykraColors.DeepNavy),
+                                                .background(Color.Black.copy(alpha = 0.25f)),
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Icon(
                                                 imageVector = ThykraIcons.PlayArrow,
                                                 contentDescription = null,
-                                                modifier = Modifier.size(32.dp),
-                                                tint = Color.White.copy(alpha = 0.7f)
+                                                modifier = Modifier.size(28.dp),
+                                                tint = Color.White.copy(alpha = 0.85f)
                                             )
-                                        }
-                                    } else {
-                                        AsyncImage(
-                                            model = thumbUrl,
-                                            contentDescription = item.filename,
-                                            contentScale = ContentScale.Crop,
-                                            modifier = Modifier.fillMaxSize()
-                                        )
-                                        if (item.type == MediaType.VIDEO) {
-                                            Box(
-                                                modifier = Modifier.fillMaxSize()
-                                                    .background(Color.Black.copy(alpha = 0.25f)),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Icon(
-                                                    imageVector = ThykraIcons.PlayArrow,
-                                                    contentDescription = null,
-                                                    modifier = Modifier.size(28.dp),
-                                                    tint = Color.White.copy(alpha = 0.85f)
-                                                )
-                                            }
                                         }
                                     }
                                 }
