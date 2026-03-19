@@ -2,19 +2,21 @@ package com.jameeli.thykra.ui.media
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -26,20 +28,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.calculatePan
-import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.jameeli.thykra.API_BASE_URL
 import com.jameeli.thykra.model.MediaType
 import com.jameeli.thykra.ui.theme.ThykraColors
 import com.jameeli.thykra.ui.theme.ThykraIcons
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MediaViewerScreenContent(
     albumId: String,
@@ -61,55 +61,22 @@ fun MediaViewerScreenContent(
         if (media.isNotEmpty()) pagerState.scrollToPage(initialPage)
     }
 
-    Scaffold(
-        containerColor = ThykraColors.DeepNavy,
-        topBar = {
-            TopAppBar(
-                title = {
-                    if (media.isNotEmpty()) {
-                        Text(
-                            text = "${pagerState.currentPage + 1} / ${media.size}",
-                            color = Color.White.copy(alpha = 0.8f),
-                            style = MaterialTheme.typography.titleSmall
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            imageVector = ThykraIcons.Close,
-                            contentDescription = "Close",
-                            tint = Color.White
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = ThykraColors.DeepNavy
-                )
-            )
-        }
-    ) { padding ->
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(ThykraColors.DeepNavy)
+    ) {
         if (media.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(ThykraColors.DeepNavy)
-                    .padding(padding),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    "Loading...",
-                    color = Color.White.copy(alpha = 0.7f),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
+            Text(
+                "Loading...",
+                color = Color.White.copy(alpha = 0.7f),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.align(Alignment.Center)
+            )
         } else {
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(ThykraColors.DeepNavy)
-                    .padding(padding)
+                modifier = Modifier.fillMaxSize()
             ) { page ->
                 val item = media[page]
                 val resolvedUrl = item.url.replace("http://localhost:8081", API_BASE_URL)
@@ -126,6 +93,42 @@ fun MediaViewerScreenContent(
                         modifier = Modifier.fillMaxSize()
                     )
                 }
+            }
+        }
+
+        // Gradient scrim so the close button is readable over any content.
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(80.dp)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(Color.Black.copy(alpha = 0.5f), Color.Transparent)
+                    )
+                )
+        )
+
+        // Compact floating overlay — sized by content (~48 dp), not fixed like TopAppBar.
+        // Stays proportional in landscape instead of dominating the screen height.
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = onNavigateBack) {
+                Icon(
+                    imageVector = ThykraIcons.Close,
+                    contentDescription = "Close",
+                    tint = Color.White
+                )
+            }
+            if (media.isNotEmpty()) {
+                Text(
+                    text = "${pagerState.currentPage + 1} / ${media.size}",
+                    color = Color.White.copy(alpha = 0.8f),
+                    style = MaterialTheme.typography.titleSmall
+                )
             }
         }
     }
