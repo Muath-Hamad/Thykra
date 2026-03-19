@@ -7,11 +7,15 @@ import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Icon
@@ -109,13 +113,19 @@ fun MediaViewerScreenContent(
                 )
         )
 
-        // Compact floating overlay — statusBarsPadding() pushes it below the status bar
-        // (Android 15+ enforces edge-to-edge so content renders behind the status bar;
-        // without this the button sits behind it and touches are intercepted by the system).
+        // Compact floating overlay.
+        // safeDrawing.only(Top + Horizontal) covers all system-owned touch areas that
+        // vary by orientation: status bar (top), display cutout (top or side in landscape),
+        // and 3-button nav bar (right side in landscape). statusBarsPadding() alone misses
+        // the side insets, leaving buttons in system-owned space where touches are dropped.
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .statusBarsPadding()
+                .windowInsetsPadding(
+                    WindowInsets.safeDrawing.only(
+                        WindowInsetsSides.Top + WindowInsetsSides.Horizontal
+                    )
+                )
                 .padding(horizontal = 4.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
