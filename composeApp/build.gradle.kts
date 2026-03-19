@@ -34,6 +34,7 @@ kotlin {
             implementation(libs.androidx.credentials.playServices)
             implementation(libs.googleid)
             implementation(libs.androidx.work.runtime)
+            implementation(libs.coil.video)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)

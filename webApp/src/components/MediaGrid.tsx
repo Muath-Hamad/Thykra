@@ -78,19 +78,14 @@ export function MediaGrid({ media, onSelect }: MediaGridProps) {
           margin-left: 3px;
         }
 
-        .media-grid-no-thumb {
+        .media-grid-video-frame {
           position: absolute;
-          inset: 0;
-          background: var(--color-deep-navy);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .media-grid-no-thumb svg {
-          width: 32px;
-          height: 32px;
-          opacity: 0.6;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          pointer-events: none;
         }
       `}</style>
 
@@ -102,9 +97,12 @@ export function MediaGrid({ media, onSelect }: MediaGridProps) {
             onClick={() => onSelect(index)}
           >
             {item.type === 'VIDEO' && !item.thumbnailUrl ? (
-              <div className="media-grid-no-thumb">
-                <svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
-              </div>
+              <video
+                className="media-grid-video-frame"
+                src={item.url}
+                muted
+                preload="metadata"
+              />
             ) : (
               <img
                 src={item.thumbnailUrl || item.url}

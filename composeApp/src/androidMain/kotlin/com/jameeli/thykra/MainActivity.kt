@@ -10,6 +10,9 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
+import coil3.video.VideoFrameDecoder
 import com.jameeli.thykra.api.AlbumApi
 import com.jameeli.thykra.api.AndroidNetworkMonitor
 import com.jameeli.thykra.api.AndroidUploadPersistence
@@ -25,6 +28,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        SingletonImageLoader.setSafe { context ->
+            ImageLoader.Builder(context)
+                .components { add(VideoFrameDecoder.Factory()) }
+                .build()
+        }
 
         val tokenProvider = AndroidTokenStorage(applicationContext)
         val httpClient = createApiClient(tokenProvider, BuildConfig.DEBUG)
