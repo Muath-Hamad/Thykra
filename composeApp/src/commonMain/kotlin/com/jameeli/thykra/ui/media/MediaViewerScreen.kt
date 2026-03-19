@@ -100,8 +100,12 @@ fun MediaViewerScreenContent(
                 )
             }
         } else {
+            var currentPageScale by remember { mutableFloatStateOf(1f) }
+            LaunchedEffect(pagerState.currentPage) { currentPageScale = 1f }
+
             HorizontalPager(
                 state = pagerState,
+                userScrollEnabled = currentPageScale <= 1f,
                 modifier = Modifier
                     .fillMaxSize()
                     .background(ThykraColors.DeepNavy)
@@ -110,7 +114,8 @@ fun MediaViewerScreenContent(
                 ZoomableAsyncImage(
                     url = media[page].url.replace("http://localhost:8081", API_BASE_URL),
                     contentDescription = media[page].filename,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    onScaleChange = { if (page == pagerState.currentPage) currentPageScale = it }
                 )
             }
         }
@@ -121,13 +126,15 @@ fun MediaViewerScreenContent(
 private fun ZoomableAsyncImage(
     url: String,
     contentDescription: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onScaleChange: (Float) -> Unit = {}
 ) {
     var scale by remember { mutableFloatStateOf(1f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
     val transformableState = rememberTransformableState { zoomChange, offsetChange, _ ->
         scale = (scale * zoomChange).coerceIn(1f, 5f)
         offset = if (scale <= 1f) Offset.Zero else offset + offsetChange
+        onScaleChange(scale)
     }
 
     AsyncImage(
