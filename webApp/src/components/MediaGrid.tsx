@@ -53,18 +53,44 @@ export function MediaGrid({ media, onSelect }: MediaGridProps) {
           object-fit: cover;
         }
 
-        .media-grid-video-badge {
+        .media-grid-video-overlay {
           position: absolute;
-          bottom: 6px;
-          right: 6px;
-          background-color: var(--color-deep-navy);
-          color: #fff;
-          font-size: 0.65rem;
-          font-weight: 600;
-          font-family: var(--font-body);
-          padding: 3px 8px;
-          border-radius: var(--radius-full);
-          letter-spacing: 0.03em;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(0, 0, 0, 0.22);
+        }
+
+        .media-grid-play-icon {
+          width: 36px;
+          height: 36px;
+          background: rgba(255, 255, 255, 0.88);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .media-grid-play-icon svg {
+          width: 18px;
+          height: 18px;
+          margin-left: 3px;
+        }
+
+        .media-grid-no-thumb {
+          position: absolute;
+          inset: 0;
+          background: var(--color-deep-navy);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .media-grid-no-thumb svg {
+          width: 32px;
+          height: 32px;
+          opacity: 0.6;
         }
       `}</style>
 
@@ -75,13 +101,23 @@ export function MediaGrid({ media, onSelect }: MediaGridProps) {
             className="media-grid-item"
             onClick={() => onSelect(index)}
           >
-            <img
-              src={item.thumbnailUrl || item.url}
-              alt={item.filename}
-              loading="lazy"
-            />
+            {item.type === 'VIDEO' && !item.thumbnailUrl ? (
+              <div className="media-grid-no-thumb">
+                <svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            ) : (
+              <img
+                src={item.thumbnailUrl || item.url}
+                alt={item.filename}
+                loading="lazy"
+              />
+            )}
             {item.type === 'VIDEO' && (
-              <div className="media-grid-video-badge">VIDEO</div>
+              <div className="media-grid-video-overlay">
+                <div className="media-grid-play-icon">
+                  <svg viewBox="0 0 24 24" fill="var(--color-deep-navy)"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+              </div>
             )}
           </div>
         ))}

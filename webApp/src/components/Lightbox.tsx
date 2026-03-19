@@ -114,6 +114,13 @@ export function Lightbox({ media, currentIndex, onClose, onNavigate }: LightboxP
           object-fit: contain;
           z-index: 1001;
         }
+
+        .lightbox-video {
+          max-width: 90vw;
+          max-height: 90vh;
+          z-index: 1001;
+          outline: none;
+        }
       `}</style>
 
       <div className="lightbox-overlay" onClick={onClose}>
@@ -132,12 +139,23 @@ export function Lightbox({ media, currentIndex, onClose, onNavigate }: LightboxP
           </button>
         )}
 
-        <img
-          className="lightbox-image"
-          src={item.url}
-          alt={item.filename}
-          onClick={(e) => e.stopPropagation()}
-        />
+        {item.type === 'VIDEO' ? (
+          <video
+            key={item.id}
+            className="lightbox-video"
+            src={item.url}
+            controls
+            autoPlay
+            onClick={(e) => e.stopPropagation()}
+          />
+        ) : (
+          <img
+            className="lightbox-image"
+            src={item.url}
+            alt={item.filename}
+            onClick={(e) => e.stopPropagation()}
+          />
+        )}
 
         {hasNext && (
           <button

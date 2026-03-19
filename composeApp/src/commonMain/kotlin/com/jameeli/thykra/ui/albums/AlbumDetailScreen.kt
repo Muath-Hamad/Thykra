@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.jameeli.thykra.API_BASE_URL
 import com.jameeli.thykra.api.UploadStatus
+import com.jameeli.thykra.model.MediaType
 import com.jameeli.thykra.model.MemberRole
 import com.jameeli.thykra.ui.media.rememberMediaPickerLauncher
 import com.jameeli.thykra.ui.theme.ThykraColors
@@ -197,12 +198,43 @@ fun AlbumDetailScreenContent(
                                         .background(ThykraColors.Sandy)
                                         .clickable { onNavigateToViewer(item.id) }
                                 ) {
-                                    AsyncImage(
-                                        model = (item.thumbnailUrl ?: item.url).replace("http://localhost:8081", API_BASE_URL),
-                                        contentDescription = item.filename,
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier.fillMaxSize()
-                                    )
+                                    val thumbUrl = (item.thumbnailUrl ?: item.url)
+                                        .replace("http://localhost:8081", API_BASE_URL)
+                                    if (item.type == MediaType.VIDEO && item.thumbnailUrl == null) {
+                                        Box(
+                                            modifier = Modifier.fillMaxSize()
+                                                .background(ThykraColors.DeepNavy),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Icon(
+                                                imageVector = ThykraIcons.PlayArrow,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(32.dp),
+                                                tint = Color.White.copy(alpha = 0.7f)
+                                            )
+                                        }
+                                    } else {
+                                        AsyncImage(
+                                            model = thumbUrl,
+                                            contentDescription = item.filename,
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier.fillMaxSize()
+                                        )
+                                        if (item.type == MediaType.VIDEO) {
+                                            Box(
+                                                modifier = Modifier.fillMaxSize()
+                                                    .background(Color.Black.copy(alpha = 0.25f)),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = ThykraIcons.PlayArrow,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(28.dp),
+                                                    tint = Color.White.copy(alpha = 0.85f)
+                                                )
+                                            }
+                                        }
+                                    }
                                 }
                             }
                             // Fill remaining slots in the last row

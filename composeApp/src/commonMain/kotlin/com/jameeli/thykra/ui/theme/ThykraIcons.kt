@@ -342,6 +342,23 @@ object ThykraIcons {
         }.build()
     }
 
+    val PlayArrow: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "PlayArrow",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(8f, 5f)
+                verticalLineTo(19f)
+                lineTo(19f, 12f)
+                close()
+            }
+        }.build()
+    }
+
     val PhotoLibrary: ImageVector by lazy {
         ImageVector.Builder(
             name = "PhotoLibrary",

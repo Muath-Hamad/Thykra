@@ -35,6 +35,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
 import com.jameeli.thykra.API_BASE_URL
+import com.jameeli.thykra.model.MediaType
 import com.jameeli.thykra.ui.theme.ThykraColors
 import com.jameeli.thykra.ui.theme.ThykraIcons
 
@@ -110,11 +111,17 @@ fun MediaViewerScreenContent(
                     .background(ThykraColors.DeepNavy)
                     .padding(padding)
             ) { page ->
-                ZoomableAsyncImage(
-                    url = media[page].url.replace("http://localhost:8081", API_BASE_URL),
-                    contentDescription = media[page].filename,
-                    modifier = Modifier.fillMaxSize()
-                )
+                val item = media[page]
+                val resolvedUrl = item.url.replace("http://localhost:8081", API_BASE_URL)
+                if (item.type == MediaType.VIDEO) {
+                    VideoPlayer(url = resolvedUrl, modifier = Modifier.fillMaxSize())
+                } else {
+                    ZoomableAsyncImage(
+                        url = resolvedUrl,
+                        contentDescription = item.filename,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             }
         }
     }
