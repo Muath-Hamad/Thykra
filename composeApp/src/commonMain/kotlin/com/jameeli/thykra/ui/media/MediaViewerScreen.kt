@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Icon
@@ -96,11 +97,11 @@ fun MediaViewerScreenContent(
             }
         }
 
-        // Gradient scrim so the close button is readable over any content.
+        // Gradient scrim — tall enough to cover the status bar area + the row below it.
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(80.dp)
+                .height(120.dp)
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(Color.Black.copy(alpha = 0.5f), Color.Transparent)
@@ -108,11 +109,13 @@ fun MediaViewerScreenContent(
                 )
         )
 
-        // Compact floating overlay — sized by content (~48 dp), not fixed like TopAppBar.
-        // Stays proportional in landscape instead of dominating the screen height.
+        // Compact floating overlay — statusBarsPadding() pushes it below the status bar
+        // (Android 15+ enforces edge-to-edge so content renders behind the status bar;
+        // without this the button sits behind it and touches are intercepted by the system).
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .statusBarsPadding()
                 .padding(horizontal = 4.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
