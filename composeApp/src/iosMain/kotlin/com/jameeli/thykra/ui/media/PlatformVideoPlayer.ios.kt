@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.Color
 import com.jameeli.thykra.ui.theme.ThykraColors
 
 @Composable
-actual fun VideoPlayer(url: String, modifier: Modifier) {
+actual fun VideoPlayer(url: String, isActive: Boolean, modifier: Modifier) {
     Box(
         modifier = modifier.background(ThykraColors.DeepNavy),
         contentAlignment = Alignment.Center

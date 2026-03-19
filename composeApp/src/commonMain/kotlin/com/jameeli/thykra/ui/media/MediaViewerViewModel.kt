@@ -7,6 +7,7 @@ import com.jameeli.thykra.model.MediaDto
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class MediaViewerViewModel(private val mediaApi: MediaApi) : ViewModel() {
@@ -14,8 +15,11 @@ class MediaViewerViewModel(private val mediaApi: MediaApi) : ViewModel() {
     private val _media = MutableStateFlow<List<MediaDto>>(emptyList())
     val media: StateFlow<List<MediaDto>> = _media.asStateFlow()
 
+    private var loadJob: Job? = null
+
     fun loadMedia(albumId: String) {
-        viewModelScope.launch {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             try {
                 val response = mediaApi.getAlbumMedia(albumId)
                 val data = response.data

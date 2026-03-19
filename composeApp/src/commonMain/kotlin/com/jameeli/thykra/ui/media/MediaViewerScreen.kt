@@ -114,7 +114,11 @@ fun MediaViewerScreenContent(
                 val item = media[page]
                 val resolvedUrl = item.url.replace("http://localhost:8081", API_BASE_URL)
                 if (item.type == MediaType.VIDEO) {
-                    VideoPlayer(url = resolvedUrl, modifier = Modifier.fillMaxSize())
+                    VideoPlayer(
+                        url = resolvedUrl,
+                        isActive = page == pagerState.currentPage,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 } else {
                     ZoomableAsyncImage(
                         url = resolvedUrl,
