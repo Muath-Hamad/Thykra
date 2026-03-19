@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
+import com.jameeli.thykra.API_BASE_URL
 import com.jameeli.thykra.ui.theme.ThykraColors
 import com.jameeli.thykra.ui.theme.ThykraIcons
 
@@ -104,7 +105,7 @@ fun MediaViewerScreenContent(
                     .padding(padding)
             ) { page ->
                 ZoomableAsyncImage(
-                    url = media[page].url,
+                    url = media[page].url.replace("http://localhost:8081", API_BASE_URL),
                     contentDescription = media[page].filename,
                     modifier = Modifier.fillMaxSize()
                 )

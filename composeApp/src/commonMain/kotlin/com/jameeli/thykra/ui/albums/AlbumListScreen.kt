@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.jameeli.thykra.API_BASE_URL
 import com.jameeli.thykra.api.UploadQueueManager
 import com.jameeli.thykra.api.UploadStatus
 import com.jameeli.thykra.model.AlbumDto
@@ -259,9 +260,10 @@ private fun AlbumCard(album: AlbumDto, onClick: () -> Unit) {
             .clip(RoundedCornerShape(12.dp))
             .clickable(onClick = onClick)
     ) {
-        if (album.coverUrl != null) {
+        val imageUrl = album.coverUrl?.replace("http://localhost:8081", API_BASE_URL)
+        if (imageUrl != null) {
             AsyncImage(
-                model = album.coverUrl,
+                model = imageUrl,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()

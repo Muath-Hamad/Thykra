@@ -49,6 +49,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.jameeli.thykra.API_BASE_URL
 import com.jameeli.thykra.api.UploadStatus
 import com.jameeli.thykra.model.MemberRole
 import com.jameeli.thykra.ui.media.rememberMediaPickerLauncher
@@ -197,7 +198,7 @@ fun AlbumDetailScreenContent(
                                         .clickable { onNavigateToViewer(item.id) }
                                 ) {
                                     AsyncImage(
-                                        model = item.thumbnailUrl ?: item.url,
+                                        model = (item.thumbnailUrl ?: item.url).replace("http://localhost:8081", API_BASE_URL),
                                         contentDescription = item.filename,
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier.fillMaxSize()
