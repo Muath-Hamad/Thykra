@@ -1,0 +1,46 @@
+# Thykra Docker dev environment (no VS Code required)
+#
+#   docker compose -f docker-compose.dev.yml up -d
+#   docker compose -f docker-compose.dev.yml exec dev bash
+#   # inside the container:
+#   cc                       # launches Claude Code with --dangerously-skip-permissions
+#   ./gradlew :server:run    # http://localhost:8081
+#   (cd webApp && npm run start)   # http://localhost:8080
+#
+# Persistent volumes keep Gradle/npm/Claude caches warm across rebuilds.
+
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    image: thykra-dev:latest
+    container_name: thykra-dev
+    hostname: thykra-dev
+    init: true
+    tty: true
+    stdin_open: true
+    working_dir: /workspace
+    user: dev
+    environment:
+      IS_SANDBOX: "1"
+      CLAUDE_CONFIG_DIR: /home/dev/.claude
+      # Pass your API key in via host env or a .env file next to this compose file.
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    ports:
+      - "8080:8080"   # Vite
+      - "8081:8081"   # Ktor
+      - "5005:5005"   # JVM debug
+    volumes:
+      - .:/workspace:cached
+      - gradle-cache:/home/dev/.gradle
+      - android-cache:/home/dev/.android
+      - claude-config:/home/dev/.claude
+      - web-node-modules:/workspace/webApp/node_modules
+    command: ["sleep", "infinity"]
+
+volumes:
+  gradle-cache:
+  android-cache:
+  claude-config:
+  web-node-modules:

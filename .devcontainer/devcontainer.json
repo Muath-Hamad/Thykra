@@ -1,0 +1,49 @@
+{
+  "name": "Thykra (KMP + Ktor + React)",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+
+  "remoteUser": "dev",
+  "containerUser": "dev",
+
+  "mounts": [
+    "source=thykra-gradle-cache,target=/home/dev/.gradle,type=volume",
+    "source=thykra-android-cache,target=/home/dev/.android,type=volume",
+    "source=thykra-node-modules-web,target=/workspace/webApp/node_modules,type=volume",
+    "source=thykra-claude-config,target=/home/dev/.claude,type=volume"
+  ],
+
+  "forwardPorts": [8080, 8081, 5005],
+  "portsAttributes": {
+    "8080": { "label": "Vite (web)" },
+    "8081": { "label": "Ktor server" },
+    "5005": { "label": "JVM debug" }
+  },
+
+  "containerEnv": {
+    "IS_SANDBOX": "1",
+    "CLAUDE_CONFIG_DIR": "/home/dev/.claude"
+  },
+
+  "postCreateCommand": "git config --global --add safe.directory /workspace && (cd webApp && npm install) || true",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "anthropic.claude-code",
+        "vscjava.vscode-gradle",
+        "fwcd.kotlin",
+        "redhat.java",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  }
+}
