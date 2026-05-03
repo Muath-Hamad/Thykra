@@ -10,6 +10,7 @@ A self-contained Linux dev box for the Kotlin Multiplatform + Ktor + React proje
 - **Claude Code** CLI (`claude`) plus a `cc` shortcut that always passes `--dangerously-skip-permissions`
 - Non-root `dev` user with passwordless sudo
 - Persistent volumes for Gradle, Android SDK caches, npm modules, and Claude config
+- Host Claude config (skills, plugins, settings, agents, commands, hooks, project memory) one-way exported into the container at create time
 
 > iOS targets cannot run inside this container — Apple toolchains require macOS. Server, web, shared (JVM/JS), and Android builds all work.
 
@@ -31,10 +32,21 @@ cc                                       # Claude Code (skip-permissions)
 ./gradlew :composeApp:assembleDebug      # Android APK
 ```
 
-## Authenticating Claude Code
-Either:
-- Export `ANTHROPIC_API_KEY=sk-ant-...` on the host before `docker compose up`, or
-- Run `claude` once interactively and complete the OAuth flow — credentials are persisted in the `claude-config` named volume.
+## Claude config sharing
+Your container's `~/.claude` is a named volume (`thykra-claude-config`), seeded at create time from your host config via `.devcontainer/sync-claude-config.sh`. Two read-only binds source the export:
+- `~/.claude` → `/host-claude` (settings, plugins, agents, commands, hooks, project memory)
+- `~/.agents` → `/host-agents` (actual skill files — host `~/.claude/skills/*` are symlinks into `~/.agents/skills/*` and would be dead inside Linux)
+
+Container-side state (sessions, history, telemetry, OAuth tokens) stays isolated in the volume — host config is never mutated.
+
+To re-pull changes from the host without rebuilding:
+```bash
+bash .devcontainer/sync-claude-config.sh
+```
+
+**Auth**: a one-time `claude` login is required after each volume reset. On Windows, host OAuth tokens live in Credential Manager (DPAPI) and can't be read from Linux, so they don't transfer. Alternatively, export `ANTHROPIC_API_KEY=sk-ant-...` on the host before `docker compose up` to use API-key auth.
+
+> Project IDs are derived from the working directory path (`G--Projects-Thykra` on host vs `-workspace` in container), so chat histories don't collide. The export script remaps the project memory dir between the two slugs.
 
 ## About `--dangerously-skip-permissions`
 The `cc` wrapper bypasses every Claude Code permission prompt. This is **only safe inside a disposable, isolated container** like this one — never run it on your host machine. The container has no access to anything outside `/workspace` and the named volumes.
@@ -48,5 +60,5 @@ The `cc` wrapper bypasses every Claude Code permission prompt. This is **only sa
 
 ## Resetting caches
 ```bash
-docker compose -f docker-compose.dev.yml down -v   # nukes Gradle/Android/npm/Claude volumes
+docker compose -f docker-compose.dev.yml down -v   # nukes Gradle/Android/npm volumes (host ~/.claude is untouched)
 ```
