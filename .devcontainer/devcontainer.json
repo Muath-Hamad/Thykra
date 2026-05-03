@@ -14,7 +14,9 @@
     "source=thykra-gradle-cache,target=/home/dev/.gradle,type=volume",
     "source=thykra-android-cache,target=/home/dev/.android,type=volume",
     "source=thykra-node-modules-web,target=/workspace/webApp/node_modules,type=volume",
-    "source=thykra-claude-config,target=/home/dev/.claude,type=volume"
+    "source=thykra-claude-config,target=/home/dev/.claude,type=volume",
+    "source=${localEnv:USERPROFILE}/.claude,target=/host-claude,type=bind,readonly,consistency=cached",
+    "source=${localEnv:USERPROFILE}/.agents,target=/host-agents,type=bind,readonly,consistency=cached"
   ],
 
   "forwardPorts": [8080, 8081, 5005],
@@ -29,7 +31,7 @@
     "CLAUDE_CONFIG_DIR": "/home/dev/.claude"
   },
 
-  "postCreateCommand": "git config --global --add safe.directory /workspace && (cd webApp && npm install) || true",
+  "postCreateCommand": "bash .devcontainer/sync-claude-config.sh && git config --global --add safe.directory /workspace && (cd webApp && npm install) || true",
 
   "customizations": {
     "vscode": {
