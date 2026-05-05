@@ -715,13 +715,8 @@ private fun VisibilitySection(
     }
 }
 
-/**
- * Public album URL the share sheet sends. Hardcoded to the dev port for now;
- * production builds should swap this for the canonical web origin via build
- * config (TODO).
- */
 private fun publicAlbumUrl(albumId: String): String =
-    "http://localhost:8080/public/$albumId"
+    "${com.jameeli.thykra.WEB_BASE_URL}/public/$albumId"
 
 /** Configurable expiry options offered to the user when generating an invite link. */
 private val INVITE_EXPIRY_OPTIONS = listOf(1, 7, 30, 90)
