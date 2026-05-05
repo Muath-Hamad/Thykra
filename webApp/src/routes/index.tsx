@@ -16,14 +16,6 @@ function getFirstName(displayName: string): string {
   return displayName.split(' ')[0];
 }
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-}
-
 export function HomePage() {
   const auth = useAuth();
   const [albums, setAlbums] = useState<AlbumDto[]>([]);
