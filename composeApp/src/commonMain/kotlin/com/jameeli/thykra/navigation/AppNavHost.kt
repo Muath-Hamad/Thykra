@@ -10,7 +10,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.jameeli.thykra.api.AlbumApi
+import com.jameeli.thykra.api.CommentApi
 import com.jameeli.thykra.api.MediaApi
+import com.jameeli.thykra.api.ProfileApi
+import com.jameeli.thykra.api.ReactionApi
 import com.jameeli.thykra.api.UploadQueueManager
 import com.jameeli.thykra.auth.AuthState
 import com.jameeli.thykra.auth.AuthViewModel
@@ -22,12 +25,17 @@ import com.jameeli.thykra.ui.landing.LandingScreenContent
 import com.jameeli.thykra.ui.media.MediaViewerScreenContent
 import com.jameeli.thykra.ui.media.MediaViewerViewModel
 import com.jameeli.thykra.ui.profile.ProfileScreenContent
+import com.jameeli.thykra.ui.social.MediaCommentsViewModel
+import com.jameeli.thykra.ui.social.MediaReactionsViewModel
 
 @Composable
 fun AppNavHost(
     authViewModel: AuthViewModel,
     albumApi: AlbumApi,
     mediaApi: MediaApi,
+    reactionApi: ReactionApi,
+    commentApi: CommentApi,
+    profileApi: ProfileApi,
     uploadQueueManager: UploadQueueManager
 ) {
     val authState by authViewModel.authState.collectAsState()
@@ -77,12 +85,14 @@ fun AppNavHost(
         composable<MediaViewerScreen> { backStackEntry ->
             val route = backStackEntry.toRoute<MediaViewerScreen>()
             val viewModel = remember(route.albumId, route.initialMediaId) {
-                MediaViewerViewModel(mediaApi)
+                MediaViewerViewModel(mediaApi, albumApi, profileApi)
             }
             MediaViewerScreenContent(
                 albumId = route.albumId,
                 initialMediaId = route.initialMediaId,
                 viewModel = viewModel,
+                reactionsViewModelFactory = { MediaReactionsViewModel(reactionApi) },
+                commentsViewModelFactory = { MediaCommentsViewModel(commentApi) },
                 onNavigateBack = { navController.popBackStack() }
             )
         }

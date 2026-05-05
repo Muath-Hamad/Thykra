@@ -17,7 +17,10 @@ import com.jameeli.thykra.api.AlbumApi
 import com.jameeli.thykra.api.AndroidNetworkMonitor
 import com.jameeli.thykra.api.AndroidUploadPersistence
 import com.jameeli.thykra.api.AuthApi
+import com.jameeli.thykra.api.CommentApi
 import com.jameeli.thykra.api.MediaApi
+import com.jameeli.thykra.api.ProfileApi
+import com.jameeli.thykra.api.ReactionApi
 import com.jameeli.thykra.api.UploadQueueManager
 import com.jameeli.thykra.api.UploadWorker
 import com.jameeli.thykra.api.createApiClient
@@ -39,6 +42,9 @@ class MainActivity : ComponentActivity() {
         val authApi = AuthApi(httpClient)
         val albumApi = AlbumApi(httpClient)
         val mediaApi = MediaApi(httpClient, BuildConfig.DEBUG)
+        val reactionApi = ReactionApi(httpClient)
+        val commentApi = CommentApi(httpClient)
+        val profileApi = ProfileApi(httpClient)
         val persistence = AndroidUploadPersistence(applicationContext)
         val networkMonitor = AndroidNetworkMonitor(applicationContext)
         val uploadQueueManager = UploadQueueManager(mediaApi, lifecycleScope, persistence, networkMonitor)
@@ -58,6 +64,9 @@ class MainActivity : ComponentActivity() {
                 authViewModel = authViewModel,
                 albumApi = albumApi,
                 mediaApi = mediaApi,
+                reactionApi = reactionApi,
+                commentApi = commentApi,
+                profileApi = profileApi,
                 uploadQueueManager = uploadQueueManager
             )
         }
