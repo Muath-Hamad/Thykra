@@ -1,20 +1,38 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { MediaDto } from '../api/media';
+import {
+  MediaReactionsDto,
+  ReactionType,
+  getReactions,
+  toggleReaction,
+} from '../api/reactions';
+import { ReactionBar } from './ReactionBar';
 
 interface LightboxProps {
   media: MediaDto[];
   currentIndex: number;
+  albumId: string;
   onClose: () => void;
   onNavigate: (index: number) => void;
 }
 
-export function Lightbox({ media, currentIndex, onClose, onNavigate }: LightboxProps) {
+export function Lightbox({ media, currentIndex, albumId, onClose, onNavigate }: LightboxProps) {
   const item = media[currentIndex];
   const hasPrev = currentIndex > 0;
   const hasNext = currentIndex < media.length - 1;
 
+  const [reactions, setReactions] = useState<MediaReactionsDto | null>(null);
+  const [reactionsLoading, setReactionsLoading] = useState(false);
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      const isFormField =
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable);
+      if (isFormField) return;
       if (e.key === 'Escape') onClose();
       else if (e.key === 'ArrowLeft' && hasPrev) onNavigate(currentIndex - 1);
       else if (e.key === 'ArrowRight' && hasNext) onNavigate(currentIndex + 1);
@@ -30,6 +48,42 @@ export function Lightbox({ media, currentIndex, onClose, onNavigate }: LightboxP
       document.body.style.overflow = '';
     };
   }, [handleKeyDown]);
+
+  useEffect(() => {
+    if (!item) return;
+    let cancelled = false;
+    setReactions(null);
+    setReactionsLoading(true);
+    getReactions(albumId, item.id)
+      .then((resp) => {
+        if (cancelled) return;
+        if (resp?.success && resp.data) {
+          setReactions(resp.data as MediaReactionsDto);
+        }
+      })
+      .catch((err) => console.error('Failed to load reactions:', err))
+      .finally(() => {
+        if (!cancelled) setReactionsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [albumId, item?.id]);
+
+  async function handleToggleReaction(type: ReactionType) {
+    if (!item || reactionsLoading) return;
+    setReactionsLoading(true);
+    try {
+      const resp = await toggleReaction(albumId, item.id, type);
+      if (resp?.success && resp.data) {
+        setReactions(resp.data as MediaReactionsDto);
+      }
+    } catch (err) {
+      console.error('Failed to toggle reaction:', err);
+    } finally {
+      setReactionsLoading(false);
+    }
+  }
 
   if (!item) return null;
 
@@ -47,6 +101,8 @@ export function Lightbox({ media, currentIndex, onClose, onNavigate }: LightboxP
           display: flex;
           align-items: center;
           justify-content: center;
+          flex-direction: column;
+          padding: 4.5rem 1rem 1rem;
         }
 
         .lightbox-close {
@@ -108,18 +164,33 @@ export function Lightbox({ media, currentIndex, onClose, onNavigate }: LightboxP
         .lightbox-arrow-left { left: 1rem; }
         .lightbox-arrow-right { right: 1rem; }
 
+        .lightbox-stage {
+          flex: 1;
+          min-height: 0;
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
         .lightbox-image {
           max-width: 90vw;
-          max-height: 90vh;
+          max-height: 100%;
           object-fit: contain;
           z-index: 1001;
         }
 
         .lightbox-video {
           max-width: 90vw;
-          max-height: 90vh;
+          max-height: 100%;
           z-index: 1001;
           outline: none;
+        }
+
+        .lightbox-footer {
+          width: min(900px, 92vw);
+          padding: 0.9rem 0 0.4rem;
+          z-index: 1002;
         }
       `}</style>
 
@@ -139,23 +210,23 @@ export function Lightbox({ media, currentIndex, onClose, onNavigate }: LightboxP
           </button>
         )}
 
-        {item.type === 'VIDEO' ? (
-          <video
-            key={item.id}
-            className="lightbox-video"
-            src={item.url}
-            controls
-            autoPlay
-            onClick={(e) => e.stopPropagation()}
-          />
-        ) : (
-          <img
-            className="lightbox-image"
-            src={item.url}
-            alt={item.filename}
-            onClick={(e) => e.stopPropagation()}
-          />
-        )}
+        <div className="lightbox-stage" onClick={(e) => e.stopPropagation()}>
+          {item.type === 'VIDEO' ? (
+            <video
+              key={item.id}
+              className="lightbox-video"
+              src={item.url}
+              controls
+              autoPlay
+            />
+          ) : (
+            <img
+              className="lightbox-image"
+              src={item.url}
+              alt={item.filename}
+            />
+          )}
+        </div>
 
         {hasNext && (
           <button
@@ -165,6 +236,14 @@ export function Lightbox({ media, currentIndex, onClose, onNavigate }: LightboxP
             &#8250;
           </button>
         )}
+
+        <div className="lightbox-footer" onClick={(e) => e.stopPropagation()}>
+          <ReactionBar
+            data={reactions}
+            loading={reactionsLoading}
+            onToggle={handleToggleReaction}
+          />
+        </div>
       </div>
     </>
   );

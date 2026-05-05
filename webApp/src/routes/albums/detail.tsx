@@ -350,6 +350,7 @@ export function AlbumDetailPage() {
                 <Lightbox
                   media={media}
                   currentIndex={lightboxIndex}
+                  albumId={albumId}
                   onClose={() => setLightboxIndex(null)}
                   onNavigate={setLightboxIndex}
                 />
