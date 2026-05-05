@@ -12,6 +12,7 @@ import com.jameeli.thykra.routes.authRoutes
 import com.jameeli.thykra.routes.commentRoutes
 import com.jameeli.thykra.routes.mediaRoutes
 import com.jameeli.thykra.routes.profileRoutes
+import com.jameeli.thykra.routes.publicAlbumRoutes
 import com.jameeli.thykra.routes.reactionRoutes
 import com.jameeli.thykra.service.AuthService
 import com.jameeli.thykra.service.MediaService
@@ -48,6 +49,7 @@ fun Application.configureRouting(
             mediaRoutes(mediaService, mediaRepository, albumMemberRepository, storageService)
             reactionRoutes(reactionRepository, mediaRepository, albumMemberRepository)
             commentRoutes(commentRepository, mediaRepository, albumMemberRepository)
+            publicAlbumRoutes(albumRepository)
         }
     }
 }

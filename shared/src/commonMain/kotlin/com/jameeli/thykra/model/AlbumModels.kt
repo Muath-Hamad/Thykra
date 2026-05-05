@@ -64,3 +64,33 @@ data class AddMemberRequest(
     val userId: String,
     val role: MemberRole
 )
+
+@Serializable
+data class PublicAlbumDto(
+    val id: String,
+    val title: String,
+    val description: String? = null,
+    val coverUrl: String? = null,
+    val ownerDisplayName: String,
+    val ownerAvatarUrl: String? = null,
+    val mediaCount: Int,
+    val createdAt: Instant
+)
+
+@Serializable
+data class PublicMediaDto(
+    val id: String,
+    val type: MediaType,
+    val url: String,
+    val thumbnailUrl: String? = null,
+    val width: Int? = null,
+    val height: Int? = null,
+    val takenAt: Instant? = null,
+    val uploadedAt: Instant
+)
+
+@Serializable
+data class PublicAlbumViewDto(
+    val album: PublicAlbumDto,
+    val media: List<PublicMediaDto>
+)

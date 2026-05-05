@@ -7,7 +7,12 @@ import com.jameeli.thykra.db.tables.UsersTable
 import com.jameeli.thykra.model.AlbumDto
 import com.jameeli.thykra.model.AlbumMemberSummary
 import com.jameeli.thykra.model.AlbumVisibility
+import com.jameeli.thykra.model.MediaStatus
+import com.jameeli.thykra.model.MediaType
 import com.jameeli.thykra.model.MemberRole
+import com.jameeli.thykra.model.PublicAlbumDto
+import com.jameeli.thykra.model.PublicAlbumViewDto
+import com.jameeli.thykra.model.PublicMediaDto
 import com.jameeli.thykra.storage.StorageService
 import kotlinx.datetime.Clock
 import org.jetbrains.exposed.sql.ResultRow
@@ -91,6 +96,52 @@ class AlbumRepository(private val storageService: StorageService) {
         newSuspendedTransaction {
             AlbumsTable.deleteWhere { AlbumsTable.id eq id }
         }
+    }
+
+    suspend fun findPublicView(id: UUID): PublicAlbumViewDto? = newSuspendedTransaction {
+        val albumRow = (AlbumsTable innerJoin UsersTable)
+            .selectAll()
+            .where { AlbumsTable.id eq id }
+            .singleOrNull()
+            ?: return@newSuspendedTransaction null
+
+        if (albumRow[AlbumsTable.visibility] != AlbumVisibility.LINK_SHARED.name) {
+            return@newSuspendedTransaction null
+        }
+
+        val mediaRows = MediaTable
+            .selectAll()
+            .where { (MediaTable.albumId eq id) and (MediaTable.status eq MediaStatus.ACTIVE.name) }
+            .orderBy(MediaTable.uploadedAt, SortOrder.DESC)
+            .toList()
+
+        val coverUrl = albumRow[AlbumsTable.coverUrl]
+            ?: mediaRows.firstOrNull()?.let { storageService.getPublicUrl(it[MediaTable.thumbnailKey] ?: it[MediaTable.storageKey]) }
+
+        PublicAlbumViewDto(
+            album = PublicAlbumDto(
+                id = id.toString(),
+                title = albumRow[AlbumsTable.title],
+                description = albumRow[AlbumsTable.description],
+                coverUrl = coverUrl,
+                ownerDisplayName = albumRow[UsersTable.displayName],
+                ownerAvatarUrl = albumRow[UsersTable.avatarUrl],
+                mediaCount = mediaRows.size,
+                createdAt = albumRow[AlbumsTable.createdAt]
+            ),
+            media = mediaRows.map { row ->
+                PublicMediaDto(
+                    id = row[MediaTable.id].value.toString(),
+                    type = MediaType.valueOf(row[MediaTable.type]),
+                    url = storageService.getPublicUrl(row[MediaTable.storageKey]),
+                    thumbnailUrl = row[MediaTable.thumbnailKey]?.let { storageService.getPublicUrl(it) },
+                    width = row[MediaTable.width],
+                    height = row[MediaTable.height],
+                    takenAt = row[MediaTable.takenAt],
+                    uploadedAt = row[MediaTable.uploadedAt]
+                )
+            }
+        )
     }
 
     private fun ResultRow.toAlbumDto(): AlbumDto {
