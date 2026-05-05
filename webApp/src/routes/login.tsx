@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useNavigate } from '@tanstack/react-router';
 import { useAuth } from '../auth/AuthContext';
+import { PENDING_INVITE_KEY } from './invite';
 
 const loginImages = [
   // Friends at mountain vista together
@@ -52,7 +53,22 @@ export function LoginPage() {
       const data = await response.json();
       if (data.success && data.data) {
         auth.login(data.data.accessToken, data.data.refreshToken, data.data.user);
-        navigate({ to: '/' });
+        // If the user arrived via an invite link, resume that flow now.
+        let pendingInvite: string | null = null;
+        try {
+          pendingInvite = localStorage.getItem(PENDING_INVITE_KEY);
+        } catch {
+          /* ignore */
+        }
+        if (pendingInvite) {
+          navigate({
+            to: '/invite/$token',
+            params: { token: pendingInvite },
+            replace: true,
+          });
+        } else {
+          navigate({ to: '/' });
+        }
       } else {
         setError('Authentication failed. Please try again.');
         setLoading(false);
