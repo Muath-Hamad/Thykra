@@ -7,16 +7,27 @@ import {
   toggleReaction,
 } from '../api/reactions';
 import { ReactionBar } from './ReactionBar';
+import { CommentThread } from './CommentThread';
 
 interface LightboxProps {
   media: MediaDto[];
   currentIndex: number;
   albumId: string;
+  currentUserId: string | null;
+  albumOwnerId: string | null;
   onClose: () => void;
   onNavigate: (index: number) => void;
 }
 
-export function Lightbox({ media, currentIndex, albumId, onClose, onNavigate }: LightboxProps) {
+export function Lightbox({
+  media,
+  currentIndex,
+  albumId,
+  currentUserId,
+  albumOwnerId,
+  onClose,
+  onNavigate,
+}: LightboxProps) {
   const item = media[currentIndex];
   const hasPrev = currentIndex > 0;
   const hasNext = currentIndex < media.length - 1;
@@ -92,17 +103,12 @@ export function Lightbox({ media, currentIndex, albumId, onClose, onNavigate }: 
       <style>{`
         .lightbox-overlay {
           position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
+          inset: 0;
           background-color: rgba(26, 26, 46, 0.95);
           z-index: 1000;
           display: flex;
-          align-items: center;
+          align-items: stretch;
           justify-content: center;
-          flex-direction: column;
-          padding: 4.5rem 1rem 1rem;
         }
 
         .lightbox-close {
@@ -117,7 +123,7 @@ export function Lightbox({ media, currentIndex, albumId, onClose, onNavigate }: 
           color: var(--color-warm-white);
           font-size: 1.3rem;
           cursor: pointer;
-          z-index: 1002;
+          z-index: 1003;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -136,7 +142,7 @@ export function Lightbox({ media, currentIndex, albumId, onClose, onNavigate }: 
           font-family: var(--font-body);
           font-size: 0.85rem;
           font-weight: 500;
-          z-index: 1002;
+          z-index: 1003;
           opacity: 0.8;
         }
 
@@ -152,7 +158,7 @@ export function Lightbox({ media, currentIndex, albumId, onClose, onNavigate }: 
           font-size: 1.5rem;
           cursor: pointer;
           border-radius: 50%;
-          z-index: 1002;
+          z-index: 1003;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -162,7 +168,20 @@ export function Lightbox({ media, currentIndex, albumId, onClose, onNavigate }: 
           background: rgba(253, 248, 239, 0.22);
         }
         .lightbox-arrow-left { left: 1rem; }
-        .lightbox-arrow-right { right: 1rem; }
+        .lightbox-arrow-right {
+          right: calc(420px + 1rem);
+        }
+
+        .lightbox-main {
+          flex: 1;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 4.5rem 1rem 1rem;
+          gap: 0.9rem;
+        }
 
         .lightbox-stage {
           flex: 1;
@@ -174,28 +193,54 @@ export function Lightbox({ media, currentIndex, albumId, onClose, onNavigate }: 
         }
 
         .lightbox-image {
-          max-width: 90vw;
+          max-width: 100%;
           max-height: 100%;
           object-fit: contain;
-          z-index: 1001;
         }
 
         .lightbox-video {
-          max-width: 90vw;
+          max-width: 100%;
           max-height: 100%;
-          z-index: 1001;
           outline: none;
         }
 
-        .lightbox-footer {
-          width: min(900px, 92vw);
-          padding: 0.9rem 0 0.4rem;
-          z-index: 1002;
+        .lightbox-reaction-row {
+          width: min(900px, 100%);
+        }
+
+        .lightbox-sidebar {
+          width: 380px;
+          flex-shrink: 0;
+          background: rgba(26, 26, 46, 0.6);
+          border-left: 1px solid rgba(253, 248, 239, 0.08);
+          padding: 4.5rem 1rem 1rem;
+          overflow-y: auto;
+        }
+
+        @media (max-width: 900px) {
+          .lightbox-overlay {
+            flex-direction: column;
+          }
+          .lightbox-arrow-right {
+            right: 1rem;
+          }
+          .lightbox-sidebar {
+            width: 100%;
+            border-left: none;
+            border-top: 1px solid rgba(253, 248, 239, 0.08);
+            padding: 0.9rem 1rem 1rem;
+            max-height: 45vh;
+          }
+          .lightbox-main {
+            padding: 4.5rem 1rem 0.5rem;
+          }
         }
       `}</style>
 
       <div className="lightbox-overlay" onClick={onClose}>
-        <button className="lightbox-close" onClick={onClose}>&#x2715;</button>
+        <button className="lightbox-close" onClick={(e) => { e.stopPropagation(); onClose(); }}>
+          &#x2715;
+        </button>
 
         <div className="lightbox-counter">
           {currentIndex + 1} / {media.length}
@@ -210,22 +255,32 @@ export function Lightbox({ media, currentIndex, albumId, onClose, onNavigate }: 
           </button>
         )}
 
-        <div className="lightbox-stage" onClick={(e) => e.stopPropagation()}>
-          {item.type === 'VIDEO' ? (
-            <video
-              key={item.id}
-              className="lightbox-video"
-              src={item.url}
-              controls
-              autoPlay
+        <div className="lightbox-main" onClick={(e) => e.stopPropagation()}>
+          <div className="lightbox-stage">
+            {item.type === 'VIDEO' ? (
+              <video
+                key={item.id}
+                className="lightbox-video"
+                src={item.url}
+                controls
+                autoPlay
+              />
+            ) : (
+              <img
+                className="lightbox-image"
+                src={item.url}
+                alt={item.filename}
+              />
+            )}
+          </div>
+
+          <div className="lightbox-reaction-row">
+            <ReactionBar
+              data={reactions}
+              loading={reactionsLoading}
+              onToggle={handleToggleReaction}
             />
-          ) : (
-            <img
-              className="lightbox-image"
-              src={item.url}
-              alt={item.filename}
-            />
-          )}
+          </div>
         </div>
 
         {hasNext && (
@@ -237,13 +292,14 @@ export function Lightbox({ media, currentIndex, albumId, onClose, onNavigate }: 
           </button>
         )}
 
-        <div className="lightbox-footer" onClick={(e) => e.stopPropagation()}>
-          <ReactionBar
-            data={reactions}
-            loading={reactionsLoading}
-            onToggle={handleToggleReaction}
+        <aside className="lightbox-sidebar" onClick={(e) => e.stopPropagation()}>
+          <CommentThread
+            albumId={albumId}
+            mediaId={item.id}
+            currentUserId={currentUserId}
+            albumOwnerId={albumOwnerId}
           />
-        </div>
+        </aside>
       </div>
     </>
   );

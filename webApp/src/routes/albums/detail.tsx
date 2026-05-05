@@ -8,9 +8,11 @@ import { UploadProgress } from '../../components/UploadProgress';
 import { MediaGrid } from '../../components/MediaGrid';
 import { Lightbox } from '../../components/Lightbox';
 import { AppNav } from '../../components/AppNav';
+import { useAuth } from '../../auth/AuthContext';
 
 export function AlbumDetailPage() {
   const { albumId } = useParams({ from: '/albums/$albumId' });
+  const { user } = useAuth();
   const [album, setAlbum] = useState<AlbumDto | null>(null);
   const [members, setMembers] = useState<AlbumMemberDto[]>([]);
   const [media, setMedia] = useState<MediaDto[]>([]);
@@ -351,6 +353,8 @@ export function AlbumDetailPage() {
                   media={media}
                   currentIndex={lightboxIndex}
                   albumId={albumId}
+                  currentUserId={user?.id ?? null}
+                  albumOwnerId={album?.ownerId ?? null}
                   onClose={() => setLightboxIndex(null)}
                   onNavigate={setLightboxIndex}
                 />
