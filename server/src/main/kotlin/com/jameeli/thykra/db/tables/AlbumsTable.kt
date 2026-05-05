@@ -9,6 +9,7 @@ object AlbumsTable : UUIDTable("albums") {
     val title = varchar("title", 255)
     val description = varchar("description", 1024).nullable()
     val coverUrl = varchar("cover_url", 1024).nullable()
+    val visibility = varchar("visibility", 32).default("PRIVATE")
     val createdAt = timestamp("created_at")
     val updatedAt = timestamp("updated_at")
 }

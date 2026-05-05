@@ -81,7 +81,9 @@ fun Route.albumRoutes(
                     return@put
                 }
                 val request = call.receive<UpdateAlbumRequest>()
-                val album = albumRepository.update(albumId, request.title, request.description, request.coverUrl)
+                val album = albumRepository.update(
+                    albumId, request.title, request.description, request.coverUrl, request.visibility
+                )
                 if (album != null) {
                     call.respond(ApiResponse(success = true, data = album))
                 } else {

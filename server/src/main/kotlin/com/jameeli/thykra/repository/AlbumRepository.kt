@@ -6,6 +6,7 @@ import com.jameeli.thykra.db.tables.MediaTable
 import com.jameeli.thykra.db.tables.UsersTable
 import com.jameeli.thykra.model.AlbumDto
 import com.jameeli.thykra.model.AlbumMemberSummary
+import com.jameeli.thykra.model.AlbumVisibility
 import com.jameeli.thykra.model.MemberRole
 import com.jameeli.thykra.storage.StorageService
 import kotlinx.datetime.Clock
@@ -46,6 +47,7 @@ class AlbumRepository(private val storageService: StorageService) {
                 ownerId = ownerId.toString(),
                 title = title,
                 description = description,
+                visibility = AlbumVisibility.PRIVATE,
                 memberCount = 1,
                 previewMembers = emptyList(),
                 createdAt = now
@@ -65,13 +67,20 @@ class AlbumRepository(private val storageService: StorageService) {
                 .map { it.toAlbumDto() }
         }
 
-    suspend fun update(id: UUID, title: String?, description: String?, coverUrl: String?): AlbumDto? =
+    suspend fun update(
+        id: UUID,
+        title: String?,
+        description: String?,
+        coverUrl: String?,
+        visibility: AlbumVisibility?
+    ): AlbumDto? =
         newSuspendedTransaction {
             val now = Clock.System.now()
             AlbumsTable.update({ AlbumsTable.id eq id }) {
                 if (title != null) it[AlbumsTable.title] = title
                 if (description != null) it[AlbumsTable.description] = description
                 if (coverUrl != null) it[AlbumsTable.coverUrl] = coverUrl
+                if (visibility != null) it[AlbumsTable.visibility] = visibility.name
                 it[AlbumsTable.updatedAt] = now
             }
             AlbumsTable.selectAll().where { AlbumsTable.id eq id }
@@ -124,6 +133,7 @@ class AlbumRepository(private val storageService: StorageService) {
             title = this[AlbumsTable.title],
             description = this[AlbumsTable.description],
             coverUrl = latestCoverUrl,
+            visibility = AlbumVisibility.valueOf(this[AlbumsTable.visibility]),
             memberCount = memberCount,
             previewMembers = previewMembers,
             createdAt = this[AlbumsTable.createdAt]

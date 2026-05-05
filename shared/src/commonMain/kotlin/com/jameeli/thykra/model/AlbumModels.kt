@@ -7,6 +7,9 @@ import kotlinx.serialization.Serializable
 enum class MemberRole { OWNER, CONTRIBUTOR, VIEWER }
 
 @Serializable
+enum class AlbumVisibility { PRIVATE, LINK_SHARED }
+
+@Serializable
 data class AlbumMemberSummary(
     val userId: String,
     val displayName: String,
@@ -20,6 +23,7 @@ data class AlbumDto(
     val title: String,
     val description: String? = null,
     val coverUrl: String? = null,
+    val visibility: AlbumVisibility = AlbumVisibility.PRIVATE,
     val memberCount: Int,
     val previewMembers: List<AlbumMemberSummary> = emptyList(),
     val createdAt: Instant
@@ -35,7 +39,8 @@ data class CreateAlbumRequest(
 data class UpdateAlbumRequest(
     val title: String? = null,
     val description: String? = null,
-    val coverUrl: String? = null
+    val coverUrl: String? = null,
+    val visibility: AlbumVisibility? = null
 )
 
 @Serializable
