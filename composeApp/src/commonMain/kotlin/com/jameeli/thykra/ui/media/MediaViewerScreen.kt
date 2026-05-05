@@ -47,9 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
-import android.content.res.Configuration
 import coil3.compose.AsyncImage
 import com.jameeli.thykra.API_BASE_URL
 import com.jameeli.thykra.model.MediaType
@@ -161,7 +159,7 @@ fun MediaViewerScreenContent(
         )
 
         // Compact floating top overlay.
-        val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+        val isLandscape = rememberIsLandscape()
         Row(
             modifier = Modifier
                 .fillMaxWidth()
