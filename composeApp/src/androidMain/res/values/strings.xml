@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">Thykra</string>
+    <string name="widget_latest_photo_description">Show the latest photo from one of your Thykra albums.</string>
+    <string name="widget_recent_activity_description">Show recent reactions and comments from a Thykra album.</string>
+    <string name="widget_config_title">Pick an album</string>
+    <string name="widget_config_save">Save</string>
+    <string name="widget_config_cancel">Cancel</string>
+    <string name="widget_config_loading">Loading albums…</string>
+    <string name="widget_config_no_albums">No albums yet — create one in the Thykra app first.</string>
+    <string name="widget_config_signed_out">Sign in to Thykra first, then add the widget.</string>
+    <string name="widget_config_refresh_label">Refresh interval</string>
+    <string name="widget_config_refresh_30m">Every 30 minutes</string>
+    <string name="widget_config_refresh_1h">Every hour</string>
+    <string name="widget_config_refresh_6h">Every 6 hours</string>
+    <string name="widget_loading">Loading…</string>
+    <string name="widget_no_photo">No photos yet</string>
+    <string name="widget_no_activity">No recent activity</string>
+    <string name="widget_signed_out">Sign in to view</string>
+    <string name="widget_album_not_set">Tap to configure</string>
 </resources>

@@ -37,6 +37,8 @@ kotlin {
             implementation(libs.coil.video)
             implementation(libs.androidx.media3.exoplayer)
             implementation(libs.androidx.media3.ui)
+            implementation(libs.androidx.glance.appwidget)
+            implementation(libs.androidx.glance.material3)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
