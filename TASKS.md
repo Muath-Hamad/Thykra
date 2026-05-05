@@ -91,12 +91,12 @@
 - [x] Server: Comment endpoints (CRUD on media items)
 - [x] Server: Travel-themed emoji/reaction set definition
 - [x] Shared: Reaction and comment data models
-- [ ] Android: Reaction picker overlay on media
-- [ ] iOS: Reaction picker overlay on media
-- [ ] Web: Reaction picker on media
-- [ ] Android: Comment thread UI per media item
-- [ ] iOS: Comment thread UI per media item
-- [ ] Web: Comment thread UI per media item
+- [x] Android: Reaction picker overlay on media
+- [x] iOS: Reaction picker overlay on media
+- [x] Web: Reaction picker on media
+- [x] Android: Comment thread UI per media item
+- [x] iOS: Comment thread UI per media item
+- [x] Web: Comment thread UI per media item
 
 ### 3.2 Notifications
 - [ ] Server: Push notification service (FCM for Android, APNs for iOS)
@@ -215,7 +215,7 @@
 |-------|-------------|--------|
 | 1 | Foundation & Auth | Done |
 | 2 | Shared Albums | In Progress (2.1 Done, 2.2 Done all platforms, 2.3 mostly done — iOS BGTask remaining) |
-| 3 | Social & Engagement | In Progress (3.1 server + shared models done — UIs pending) |
+| 3 | Social & Engagement | In Progress (3.1 Done — 3.2 Notifications pending) |
 | 4 | Smart Features | Not Started |
 | 5 | Widgets | Not Started |
 | 6 | Privacy & Sharing | Not Started |
