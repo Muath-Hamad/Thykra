@@ -60,6 +60,11 @@ data class InviteLinkDto(
 )
 
 @Serializable
+data class CreateInviteRequest(
+    val expiresInDays: Int? = null
+)
+
+@Serializable
 data class AddMemberRequest(
     val userId: String,
     val role: MemberRole

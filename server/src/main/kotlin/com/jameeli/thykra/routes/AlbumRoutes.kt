@@ -3,6 +3,7 @@ package com.jameeli.thykra.routes
 import com.jameeli.thykra.model.AddMemberRequest
 import com.jameeli.thykra.model.ApiResponse
 import com.jameeli.thykra.model.CreateAlbumRequest
+import com.jameeli.thykra.model.CreateInviteRequest
 import com.jameeli.thykra.model.MemberRole
 import com.jameeli.thykra.model.UpdateAlbumRequest
 import com.jameeli.thykra.repository.AlbumInviteRepository
@@ -168,8 +169,10 @@ fun Route.albumRoutes(
                     )
                     return@post
                 }
+                val request = runCatching { call.receive<CreateInviteRequest>() }.getOrDefault(CreateInviteRequest())
+                val days = (request.expiresInDays ?: 7).coerceIn(1, 90)
                 val token = UUID.randomUUID().toString()
-                val expiresAt = Clock.System.now() + 7.days
+                val expiresAt = Clock.System.now() + days.days
                 val invite = albumInviteRepository.createInvite(
                     albumId, UUID.fromString(userId), token, expiresAt
                 )

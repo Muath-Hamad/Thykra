@@ -6,6 +6,7 @@ import com.jameeli.thykra.model.AlbumDto
 import com.jameeli.thykra.model.AlbumMemberDto
 import com.jameeli.thykra.model.ApiResponse
 import com.jameeli.thykra.model.CreateAlbumRequest
+import com.jameeli.thykra.model.CreateInviteRequest
 import com.jameeli.thykra.model.InviteLinkDto
 import com.jameeli.thykra.model.UpdateAlbumRequest
 import io.ktor.client.HttpClient
@@ -61,8 +62,11 @@ class AlbumApi(private val client: HttpClient) {
         return client.delete("$API_BASE_URL/api/albums/$albumId/members/$userId").body()
     }
 
-    suspend fun createInviteLink(albumId: String): ApiResponse<InviteLinkDto> {
-        return client.post("$API_BASE_URL/api/albums/$albumId/invite").body()
+    suspend fun createInviteLink(albumId: String, expiresInDays: Int? = null): ApiResponse<InviteLinkDto> {
+        return client.post("$API_BASE_URL/api/albums/$albumId/invite") {
+            contentType(ContentType.Application.Json)
+            setBody(CreateInviteRequest(expiresInDays))
+        }.body()
     }
 
     suspend fun joinByInvite(token: String): ApiResponse<AlbumDto> {
