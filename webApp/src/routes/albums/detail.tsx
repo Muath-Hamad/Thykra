@@ -28,10 +28,13 @@ export function AlbumDetailPage() {
   const [inviteLink, setInviteLink] = useState<InviteLinkDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [copied, setCopied] = useState(false);
 
   const [visibilitySaving, setVisibilitySaving] = useState(false);
   const [visibilityError, setVisibilityError] = useState('');
+  const [inviteExpiryDays, setInviteExpiryDays] = useState<number>(7);
+  const [inviteCopied, setInviteCopied] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
+  const [shareTooltipOpen, setShareTooltipOpen] = useState(false);
 
   const { uploads, enqueue, clearCompleted } = useUploadManager();
   const prevDoneCountRef = useRef(0);
@@ -103,7 +106,7 @@ export function AlbumDetailPage() {
 
   async function handleCreateInvite() {
     try {
-      const data = await createInviteLink(albumId);
+      const data = await createInviteLink(albumId, inviteExpiryDays);
       if (data.success && data.data) {
         setInviteLink(data.data);
       }
@@ -116,11 +119,28 @@ export function AlbumDetailPage() {
     enqueue(files, albumId);
   }
 
-  function handleCopyToken() {
+  function inviteUrl(token: string): string {
+    return `${window.location.origin}/invite/${token}`;
+  }
+
+  function handleCopyInvite() {
     if (!inviteLink) return;
-    navigator.clipboard.writeText(inviteLink.token);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    navigator.clipboard.writeText(inviteUrl(inviteLink.token));
+    setInviteCopied(true);
+    setTimeout(() => setInviteCopied(false), 2000);
+  }
+
+  function handleShare() {
+    if (!album) return;
+    if (album.visibility !== 'LINK_SHARED') {
+      setShareTooltipOpen(true);
+      setTimeout(() => setShareTooltipOpen(false), 2400);
+      return;
+    }
+    const url = `${window.location.origin}/public/${album.id}`;
+    navigator.clipboard.writeText(url);
+    setShareCopied(true);
+    setTimeout(() => setShareCopied(false), 2000);
   }
 
   // Check if current user can upload (owner or contributor)
@@ -358,6 +378,108 @@ export function AlbumDetailPage() {
           .detail-visibility-options { grid-template-columns: 1fr; }
         }
 
+        /* Invite expiry chips */
+        .detail-expiry-row {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 0.5rem;
+          margin-bottom: 0.85rem;
+        }
+        .detail-expiry-label {
+          font-size: 0.78rem;
+          font-weight: 600;
+          color: var(--color-muted-slate);
+          margin-right: 0.25rem;
+        }
+        .detail-expiry-chip {
+          background: transparent;
+          border: 1px solid rgba(27,127,204,0.18);
+          color: var(--color-muted-slate);
+          padding: 0.32rem 0.85rem;
+          font-size: 0.78rem;
+          font-weight: 600;
+          cursor: pointer;
+          font-family: var(--font-body);
+          border-radius: var(--radius-full);
+          transition: all 0.18s;
+        }
+        .detail-expiry-chip:hover {
+          border-color: var(--color-sky-blue);
+          color: var(--color-sky-blue);
+        }
+        .detail-expiry-chip.active {
+          background: var(--color-sky-blue);
+          border-color: var(--color-sky-blue);
+          color: #fff;
+        }
+        .detail-invite-expiry {
+          font-size: 0.72rem;
+          color: var(--color-muted-slate);
+          margin-bottom: 0.5rem;
+        }
+
+        /* Share button + tooltip */
+        .detail-title-row {
+          display: flex;
+          align-items: flex-start;
+          gap: 0.75rem;
+          flex-wrap: wrap;
+        }
+        .detail-title-row .detail-title { flex: 1; min-width: 0; }
+
+        .detail-share-wrapper {
+          position: relative;
+          margin-top: 0.4rem;
+        }
+        .detail-share-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.45rem;
+          background: var(--color-sky-blue);
+          border: none;
+          color: #fff;
+          padding: 0.5rem 1rem;
+          font-size: 0.78rem;
+          font-weight: 600;
+          cursor: pointer;
+          font-family: var(--font-body);
+          border-radius: var(--radius-sm);
+          transition: background 0.2s, opacity 0.2s;
+        }
+        .detail-share-btn:hover { background: var(--color-ocean-blue); }
+        .detail-share-btn.disabled {
+          background: var(--color-sandy);
+          color: var(--color-muted-slate);
+          border: 1px solid rgba(27,127,204,0.15);
+        }
+        .detail-share-btn.disabled:hover { background: var(--color-sandy); }
+
+        .detail-share-tooltip {
+          position: absolute;
+          top: calc(100% + 8px);
+          right: 0;
+          background: var(--color-deep-navy);
+          color: #fff;
+          font-size: 0.74rem;
+          padding: 0.55rem 0.8rem;
+          border-radius: var(--radius-sm);
+          box-shadow: var(--shadow-md);
+          width: max-content;
+          max-width: 240px;
+          z-index: 10;
+          line-height: 1.4;
+        }
+        .detail-share-tooltip::before {
+          content: '';
+          position: absolute;
+          top: -5px;
+          right: 18px;
+          border: 5px solid transparent;
+          border-top: 0;
+          border-bottom-color: var(--color-deep-navy);
+        }
+
         /* Loading / Error */
         .detail-loading {
           display: flex;
@@ -424,7 +546,32 @@ export function AlbumDetailPage() {
               </Link>
 
               <div className="detail-header">
-                <h1 className="detail-title">{album.title}</h1>
+                <div className="detail-title-row">
+                  <h1 className="detail-title">{album.title}</h1>
+                  {isOwner && (
+                    <div className="detail-share-wrapper">
+                      <button
+                        type="button"
+                        className={`detail-share-btn${album.visibility !== 'LINK_SHARED' ? ' disabled' : ''}`}
+                        onClick={handleShare}
+                        title={album.visibility === 'LINK_SHARED' ? 'Copy public share link' : 'Album is private'}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="3" r="2" />
+                          <circle cx="4" cy="8" r="2" />
+                          <circle cx="12" cy="13" r="2" />
+                          <path d="M5.7 7l4.6-2.7M5.7 9l4.6 2.7" />
+                        </svg>
+                        {shareCopied ? 'Link copied!' : 'Share'}
+                      </button>
+                      {shareTooltipOpen && (
+                        <div className="detail-share-tooltip" role="status">
+                          This album is private. Switch to <strong>Anyone with link</strong> in Privacy to share publicly.
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
                 {album.description && (
                   <p className="detail-desc">{album.description}</p>
                 )}
@@ -527,6 +674,21 @@ export function AlbumDetailPage() {
                 })}
               </div>
 
+              <h2 className="detail-section-title">Invite link</h2>
+              <div className="detail-expiry-row">
+                <span className="detail-expiry-label">Expires in:</span>
+                {[1, 7, 30, 90].map((days) => (
+                  <button
+                    key={days}
+                    type="button"
+                    className={`detail-expiry-chip${inviteExpiryDays === days ? ' active' : ''}`}
+                    onClick={() => setInviteExpiryDays(days)}
+                  >
+                    {days === 1 ? '1 day' : `${days} days`}
+                  </button>
+                ))}
+              </div>
+
               <button className="detail-invite-btn" onClick={handleCreateInvite}>
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M6 3H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1v-3" />
@@ -538,10 +700,13 @@ export function AlbumDetailPage() {
 
               {inviteLink && (
                 <div className="detail-invite-card">
-                  <div className="detail-invite-label">Invite Token</div>
-                  <div className="detail-invite-token">{inviteLink.token}</div>
-                  <button className="detail-copy-btn" onClick={handleCopyToken}>
-                    {copied ? 'Copied!' : 'Copy Token'}
+                  <div className="detail-invite-label">Invite link</div>
+                  <div className="detail-invite-token">{inviteUrl(inviteLink.token)}</div>
+                  <div className="detail-invite-expiry">
+                    Expires {new Date(inviteLink.expiresAt).toLocaleString()}
+                  </div>
+                  <button className="detail-copy-btn" onClick={handleCopyInvite}>
+                    {inviteCopied ? 'Copied!' : 'Copy link'}
                   </button>
                 </div>
               )}
