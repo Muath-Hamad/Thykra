@@ -11,6 +11,7 @@ import { ProfilePage } from './routes/profile';
 import { AlbumsPage } from './routes/albums';
 import { AlbumDetailPage } from './routes/albums/detail';
 import { LandingPage1 } from './routes/landing1';
+import { PublicAlbumPage } from './routes/publicAlbum';
 import { getAccessToken } from './api/client';
 
 const rootRoute = createRootRoute({
@@ -63,6 +64,13 @@ const landing1Route = createRoute({
   component: LandingPage1,
 });
 
+// Unauthenticated public album view — accessible without a JWT.
+const publicAlbumRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/public/$albumId',
+  component: PublicAlbumPage,
+});
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   indexRoute,
@@ -70,6 +78,7 @@ const routeTree = rootRoute.addChildren([
   albumsRoute,
   albumDetailRoute,
   landing1Route,
+  publicAlbumRoute,
 ]);
 
 export const router = createRouter({ routeTree });
