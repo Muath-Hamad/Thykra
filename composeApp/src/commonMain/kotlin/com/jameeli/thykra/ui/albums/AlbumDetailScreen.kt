@@ -77,6 +77,7 @@ fun AlbumDetailScreenContent(
 ) {
     val album by viewModel.album.collectAsState()
     val members by viewModel.members.collectAsState()
+    val blockedMembers by viewModel.blockedMembers.collectAsState()
     val inviteLink by viewModel.inviteLink.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val media by viewModel.media.collectAsState()
@@ -410,6 +411,71 @@ fun AlbumDetailScreenContent(
                                         contentDescription = "Block ${member.displayName}",
                                         tint = ThykraColors.SoftRed,
                                         modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Blocked members (owner only). Hidden when nothing is blocked
+                // so the section doesn't add visual weight to typical albums.
+                if (
+                    AlbumPermissions.canBlockMembers(ownerRole) &&
+                    blockedMembers.isNotEmpty()
+                ) {
+                    item {
+                        Spacer(Modifier.height(16.dp))
+                        Text(
+                            text = "Blocked (${blockedMembers.size})",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = ThykraColors.DeepNavy
+                        )
+                        Spacer(Modifier.height(8.dp))
+                    }
+                    items(blockedMembers) { blocked ->
+                        Card(
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(containerColor = ThykraColors.Sandy),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Surface(
+                                    shape = CircleShape,
+                                    color = ThykraColors.SoftRed.copy(alpha = 0.15f),
+                                    modifier = Modifier.size(36.dp)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(
+                                            imageVector = ThykraIcons.Block,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(20.dp),
+                                            tint = ThykraColors.SoftRed
+                                        )
+                                    }
+                                }
+                                Spacer(Modifier.width(12.dp))
+                                Text(
+                                    text = blocked.displayName,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = ThykraColors.DeepNavy,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                TextButton(
+                                    onClick = {
+                                        viewModel.unblockMember(albumId, blocked.userId)
+                                    },
+                                    colors = ButtonDefaults.textButtonColors(
+                                        contentColor = ThykraColors.SkyBlue
+                                    )
+                                ) {
+                                    Text(
+                                        text = "Unblock",
+                                        style = MaterialTheme.typography.labelLarge
                                     )
                                 }
                             }
