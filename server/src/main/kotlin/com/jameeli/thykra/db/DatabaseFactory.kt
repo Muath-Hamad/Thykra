@@ -3,6 +3,7 @@ package com.jameeli.thykra.db
 import com.jameeli.thykra.db.tables.AlbumInvitesTable
 import com.jameeli.thykra.db.tables.AlbumMembersTable
 import com.jameeli.thykra.db.tables.AlbumsTable
+import com.jameeli.thykra.db.tables.CommentsTable
 import com.jameeli.thykra.db.tables.MediaTable
 import com.jameeli.thykra.db.tables.ReactionsTable
 import com.jameeli.thykra.db.tables.RefreshTokensTable
@@ -37,7 +38,7 @@ object DatabaseFactory {
         transaction {
             SchemaUtils.create(
                 UsersTable, RefreshTokensTable, AlbumsTable, AlbumMembersTable, AlbumInvitesTable,
-                MediaTable, ReactionsTable
+                MediaTable, ReactionsTable, CommentsTable
             )
         }
     }
