@@ -1,0 +1,236 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Cancel superseded runs on the same ref so PR pushes don't pile up.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  server:
+    name: Server (Ktor JVM)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            .gradle
+          key: gradle-server-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'gradle/libs.versions.toml') }}
+          restore-keys: |
+            gradle-server-${{ runner.os }}-
+            gradle-${{ runner.os }}-
+
+      - name: Build & test server
+        run: ./gradlew :server:build :server:test --no-daemon --stacktrace
+
+      - name: Upload server reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-reports
+          path: |
+            server/build/reports
+            server/build/test-results
+          if-no-files-found: ignore
+
+  shared:
+    name: Shared (KMP)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            .gradle
+          key: gradle-shared-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'gradle/libs.versions.toml') }}
+          restore-keys: |
+            gradle-shared-${{ runner.os }}-
+            gradle-${{ runner.os }}-
+
+      # `:shared:assemble` covers JVM + JS + Android library compilation (iOS targets
+      # require a macOS runner to actually link, but Kotlin compilation still runs).
+      # `:shared:allTests` runs JVM + JS tests (and is a no-op for targets without tests).
+      - name: Assemble & test shared
+        run: ./gradlew :shared:assemble :shared:allTests --no-daemon --stacktrace
+
+      - name: Upload shared reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shared-reports
+          path: |
+            shared/build/reports
+            shared/build/test-results
+          if-no-files-found: ignore
+
+  android:
+    name: Android (composeApp assembleDebug)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            .gradle
+          key: gradle-android-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'gradle/libs.versions.toml') }}
+          restore-keys: |
+            gradle-android-${{ runner.os }}-
+            gradle-${{ runner.os }}-
+
+      # local.properties is gitignored. composeApp/build.gradle.kts reads
+      # GOOGLE_CLIENT_ID from it and bakes it into BuildConfig at build time.
+      # CI doesn't need a real OAuth client id to *compile* the app, so we stub
+      # one out. sdk.dir tells AGP where the Android SDK lives.
+      - name: Generate stub local.properties
+        run: |
+          cat > local.properties <<EOF
+          sdk.dir=$ANDROID_HOME
+          GOOGLE_CLIENT_ID=ci-stub
+          EOF
+
+      - name: Assemble debug APK
+        run: ./gradlew :composeApp:assembleDebug --no-daemon --stacktrace
+
+      - name: Upload composeApp reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-reports
+          path: |
+            composeApp/build/reports
+            composeApp/build/outputs/logs
+          if-no-files-found: ignore
+
+  ios-kotlin:
+    name: iOS Kotlin compile (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            .gradle
+          key: gradle-ios-kotlin-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'gradle/libs.versions.toml') }}
+          restore-keys: |
+            gradle-ios-kotlin-${{ runner.os }}-
+            gradle-${{ runner.os }}-
+
+      # Linking the iOS framework requires Xcode (macOS), but Kotlin/Native
+      # *compilation* of the iOS source sets works fine on Linux and catches
+      # the vast majority of breakage in iosMain code.
+      - name: Compile iOS Kotlin sources
+        run: ./gradlew :composeApp:compileKotlinIosArm64 :composeApp:compileKotlinIosSimulatorArm64 --no-daemon --stacktrace
+
+      - name: Upload composeApp reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-kotlin-reports
+          path: composeApp/build/reports
+          if-no-files-found: ignore
+
+  web:
+    name: Web (React + Vite)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            .gradle
+          key: gradle-web-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'gradle/libs.versions.toml') }}
+          restore-keys: |
+            gradle-web-${{ runner.os }}-
+            gradle-${{ runner.os }}-
+
+      # The webApp consumes the shared module's Kotlin/JS development library
+      # bundle (referenced as an npm workspace at shared/build/dist/js/developmentLibrary).
+      # Without this task that path doesn't exist and `npm ci` from the repo root
+      # will fail to resolve the workspace.
+      - name: Build shared Kotlin/JS distribution
+        run: ./gradlew :shared:jsBrowserDevelopmentLibraryDistribution --no-daemon --stacktrace
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          # The npm workspace lockfile lives at the repo root, not in webApp/.
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build webApp
+        run: npm run build --workspace=webApp
+
+      - name: Upload webApp build on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build-logs
+          path: webApp/dist
+          if-no-files-found: ignore
