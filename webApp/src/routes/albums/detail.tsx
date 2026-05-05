@@ -1,6 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useParams } from '@tanstack/react-router';
-import { getAlbum, getMembers, createInviteLink, AlbumDto, AlbumMemberDto, InviteLinkDto } from '../../api/albums';
+import {
+  getAlbum,
+  getMembers,
+  createInviteLink,
+  updateAlbum,
+  AlbumDto,
+  AlbumMemberDto,
+  AlbumVisibility,
+  InviteLinkDto,
+} from '../../api/albums';
 import { getAlbumMedia, MediaDto } from '../../api/media';
 import { useUploadManager } from '../../hooks/useUploadManager';
 import { UploadZone } from '../../components/UploadZone';
@@ -21,8 +30,13 @@ export function AlbumDetailPage() {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
 
+  const [visibilitySaving, setVisibilitySaving] = useState(false);
+  const [visibilityError, setVisibilityError] = useState('');
+
   const { uploads, enqueue, clearCompleted } = useUploadManager();
   const prevDoneCountRef = useRef(0);
+
+  const isOwner = album != null && user != null && album.ownerId === user.id;
 
   useEffect(() => {
     loadAlbum();
@@ -65,6 +79,25 @@ export function AlbumDetailPage() {
       }
     } catch (error) {
       console.error('Failed to load media:', error);
+    }
+  }
+
+  async function handleSetVisibility(next: AlbumVisibility) {
+    if (!album || album.visibility === next) return;
+    setVisibilitySaving(true);
+    setVisibilityError('');
+    try {
+      const resp = await updateAlbum(albumId, { visibility: next });
+      if (resp.success && resp.data) {
+        setAlbum(resp.data);
+      } else {
+        setVisibilityError(resp.error || 'Failed to update visibility');
+      }
+    } catch (err) {
+      console.error('Failed to update visibility:', err);
+      setVisibilityError('Network error. Please try again.');
+    } finally {
+      setVisibilitySaving(false);
     }
   }
 
@@ -263,6 +296,68 @@ export function AlbumDetailPage() {
         }
         .detail-copy-btn:hover { background: var(--color-ocean-blue); }
 
+        /* Privacy / visibility */
+        .detail-visibility-options {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.75rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .detail-visibility-option {
+          background: var(--color-sandy);
+          border: 1.5px solid rgba(27,127,204,0.08);
+          border-radius: var(--radius-sm);
+          padding: 1rem 1.1rem;
+          text-align: left;
+          cursor: pointer;
+          font-family: var(--font-body);
+          color: var(--color-deep-navy);
+          transition: all 0.18s;
+          display: flex;
+          flex-direction: column;
+          gap: 0.35rem;
+        }
+        .detail-visibility-option:hover:not(:disabled) {
+          border-color: rgba(27,127,204,0.3);
+          background: rgba(27,127,204,0.04);
+        }
+        .detail-visibility-option:disabled {
+          cursor: not-allowed;
+          opacity: 0.6;
+        }
+        .detail-visibility-option.active {
+          background: rgba(27,127,204,0.08);
+          border-color: var(--color-sky-blue);
+          box-shadow: var(--shadow-sm);
+        }
+        .detail-visibility-title {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.9rem;
+          font-weight: 700;
+          color: var(--color-deep-navy);
+        }
+        .detail-visibility-desc {
+          font-size: 0.78rem;
+          color: var(--color-muted-slate);
+          line-height: 1.45;
+        }
+        .detail-visibility-check {
+          margin-left: auto;
+          color: var(--color-sky-blue);
+        }
+        .detail-visibility-error {
+          font-size: 0.78rem;
+          color: var(--color-soft-red);
+          margin-top: 0.4rem;
+        }
+
+        @media (max-width: 600px) {
+          .detail-visibility-options { grid-template-columns: 1fr; }
+        }
+
         /* Loading / Error */
         .detail-loading {
           display: flex;
@@ -358,6 +453,62 @@ export function AlbumDetailPage() {
                   onClose={() => setLightboxIndex(null)}
                   onNavigate={setLightboxIndex}
                 />
+              )}
+
+              {/* Privacy section (owner only) */}
+              {isOwner && (
+                <>
+                  <h2 className="detail-section-title">Privacy</h2>
+                  <div className="detail-visibility-options">
+                    <button
+                      type="button"
+                      className={`detail-visibility-option${album.visibility === 'PRIVATE' ? ' active' : ''}`}
+                      onClick={() => handleSetVisibility('PRIVATE')}
+                      disabled={visibilitySaving}
+                    >
+                      <span className="detail-visibility-title">
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6">
+                          <rect x="3" y="7" width="10" height="7" rx="1.2" />
+                          <path d="M5 7V5a3 3 0 016 0v2" />
+                        </svg>
+                        Private
+                        {album.visibility === 'PRIVATE' && (
+                          <svg className="detail-visibility-check" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M3 8l3.5 3.5L13 5" />
+                          </svg>
+                        )}
+                      </span>
+                      <span className="detail-visibility-desc">
+                        Only members can view. Invite link is required to join.
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      className={`detail-visibility-option${album.visibility === 'LINK_SHARED' ? ' active' : ''}`}
+                      onClick={() => handleSetVisibility('LINK_SHARED')}
+                      disabled={visibilitySaving}
+                    >
+                      <span className="detail-visibility-title">
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6">
+                          <path d="M7 9.5a2.5 2.5 0 003.5 0l2-2a2.5 2.5 0 00-3.5-3.5l-1 1" />
+                          <path d="M9 6.5a2.5 2.5 0 00-3.5 0l-2 2a2.5 2.5 0 003.5 3.5l1-1" />
+                        </svg>
+                        Anyone with link
+                        {album.visibility === 'LINK_SHARED' && (
+                          <svg className="detail-visibility-check" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M3 8l3.5 3.5L13 5" />
+                          </svg>
+                        )}
+                      </span>
+                      <span className="detail-visibility-desc">
+                        Anyone with the share link can view this album, no sign-in needed.
+                      </span>
+                    </button>
+                  </div>
+                  {visibilityError && (
+                    <div className="detail-visibility-error">{visibilityError}</div>
+                  )}
+                </>
               )}
 
               {/* Members section */}
