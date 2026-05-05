@@ -53,6 +53,28 @@ fun AppNavHost(
         }
     }
 
+    // Listen for incoming deep links (e.g. from the iOS WidgetKit extension's
+    // `widgetURL(thykra://...)` taps, or future Android intents). We only act
+    // on them once the user is authenticated; pre-auth deep links are dropped
+    // because the destinations require a session.
+    LaunchedEffect(authState) {
+        if (authState !is AuthState.Authenticated) return@LaunchedEffect
+        DeepLinkBus.events.collect { target ->
+            when (target) {
+                is DeepLinkTarget.AlbumList ->
+                    navController.navigate(AlbumListScreen)
+                is DeepLinkTarget.Album ->
+                    navController.navigate(AlbumDetailScreen(target.albumId))
+                is DeepLinkTarget.Media -> {
+                    navController.navigate(AlbumDetailScreen(target.albumId))
+                    navController.navigate(
+                        MediaViewerScreen(target.albumId, target.mediaId)
+                    )
+                }
+            }
+        }
+    }
+
     NavHost(navController = navController, startDestination = LoginScreen) {
         composable<LoginScreen> {
             LandingScreenContent(authViewModel = authViewModel)
