@@ -51,8 +51,10 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.jameeli.thykra.API_BASE_URL
 import com.jameeli.thykra.api.UploadStatus
+import com.jameeli.thykra.model.AlbumVisibility
 import com.jameeli.thykra.model.MediaType
 import com.jameeli.thykra.model.MemberRole
+import com.jameeli.thykra.permissions.AlbumPermissions
 import com.jameeli.thykra.ui.media.rememberMediaPickerLauncher
 import com.jameeli.thykra.ui.theme.ThykraColors
 import com.jameeli.thykra.ui.theme.ThykraIcons
@@ -71,6 +73,13 @@ fun AlbumDetailScreenContent(
     val isLoading by viewModel.isLoading.collectAsState()
     val media by viewModel.media.collectAsState()
     val uploads by viewModel.uploads.collectAsState()
+    val currentUserId by viewModel.currentUserId.collectAsState()
+
+    val isOwner = remember(album, currentUserId) {
+        val ownerId = album?.ownerId
+        ownerId != null && currentUserId != null && ownerId == currentUserId
+    }
+    val ownerRole = if (isOwner) MemberRole.OWNER else null
 
     val albumUploads = remember(uploads, albumId) {
         uploads.filter { it.albumId == albumId && it.status != UploadStatus.DONE }
@@ -355,6 +364,25 @@ fun AlbumDetailScreenContent(
                     }
                 }
 
+                // Privacy / visibility (owner only)
+                if (AlbumPermissions.canChangeVisibility(ownerRole)) {
+                    item {
+                        Spacer(Modifier.height(16.dp))
+                        Text(
+                            text = "Privacy",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = ThykraColors.DeepNavy
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        VisibilitySection(
+                            currentVisibility = album!!.visibility,
+                            onChangeVisibility = { newVisibility ->
+                                viewModel.setVisibility(albumId, newVisibility)
+                            }
+                        )
+                    }
+                }
+
                 // Invite link
                 item {
                     Spacer(Modifier.height(16.dp))
@@ -398,6 +426,82 @@ fun AlbumDetailScreenContent(
                     }
                     Spacer(Modifier.height(80.dp)) // FAB clearance
                 }
+            }
+        }
+    }
+}
+
+/**
+ * Owner-only privacy card: shows the album's current visibility (private or
+ * link-shared) and lets the owner flip between the two via a single button.
+ * Mirrors the web app's privacy panel.
+ */
+@Composable
+private fun VisibilitySection(
+    currentVisibility: AlbumVisibility,
+    onChangeVisibility: (AlbumVisibility) -> Unit
+) {
+    val isPrivate = currentVisibility == AlbumVisibility.PRIVATE
+    val icon = if (isPrivate) ThykraIcons.Lock else ThykraIcons.Public
+    val title = if (isPrivate) "Private" else "Anyone with the link"
+    val description = if (isPrivate) {
+        "Only added members can view this album."
+    } else {
+        "Anyone with the album link can view it."
+    }
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = ThykraColors.Sandy),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Surface(
+                    shape = CircleShape,
+                    color = ThykraColors.SkyBlue.copy(alpha = 0.15f),
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp),
+                            tint = ThykraColors.SkyBlue
+                        )
+                    }
+                }
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = ThykraColors.DeepNavy
+                    )
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = ThykraColors.MutedSlate,
+                    )
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = {
+                    onChangeVisibility(
+                        if (isPrivate) AlbumVisibility.LINK_SHARED else AlbumVisibility.PRIVATE
+                    )
+                },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = ThykraColors.SkyBlue
+                )
+            ) {
+                Text(
+                    text = if (isPrivate) "Make link-shared" else "Make private",
+                    style = MaterialTheme.typography.labelLarge
+                )
             }
         }
     }

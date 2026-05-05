@@ -342,6 +342,153 @@ object ThykraIcons {
         }.build()
     }
 
+    val Public: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "Public",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(12f, 2f)
+                curveTo(6.48f, 2f, 2f, 6.48f, 2f, 12f)
+                curveTo(2f, 17.52f, 6.48f, 22f, 12f, 22f)
+                curveTo(17.52f, 22f, 22f, 17.52f, 22f, 12f)
+                curveTo(22f, 6.48f, 17.52f, 2f, 12f, 2f)
+                close()
+                moveTo(11f, 19.93f)
+                curveTo(7.05f, 19.44f, 4f, 16.08f, 4f, 12f)
+                curveTo(4f, 11.38f, 4.08f, 10.79f, 4.21f, 10.21f)
+                lineTo(9f, 15f)
+                verticalLineTo(16f)
+                curveTo(9f, 17.1f, 9.9f, 18f, 11f, 18f)
+                verticalLineTo(19.93f)
+                close()
+                moveTo(17.9f, 17.39f)
+                curveTo(17.64f, 16.58f, 16.9f, 16f, 16f, 16f)
+                horizontalLineTo(15f)
+                verticalLineTo(13f)
+                curveTo(15f, 12.45f, 14.55f, 12f, 14f, 12f)
+                horizontalLineTo(8f)
+                verticalLineTo(10f)
+                horizontalLineTo(10f)
+                curveTo(10.55f, 10f, 11f, 9.55f, 11f, 9f)
+                verticalLineTo(7f)
+                horizontalLineTo(13f)
+                curveTo(14.1f, 7f, 15f, 6.1f, 15f, 5f)
+                verticalLineTo(4.59f)
+                curveTo(17.93f, 5.78f, 20f, 8.65f, 20f, 12f)
+                curveTo(20f, 14.08f, 19.2f, 15.97f, 17.9f, 17.39f)
+                close()
+            }
+        }.build()
+    }
+
+    val Share: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "Share",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(18f, 16.08f)
+                curveTo(17.24f, 16.08f, 16.56f, 16.38f, 16.04f, 16.85f)
+                lineTo(8.91f, 12.7f)
+                curveTo(8.96f, 12.47f, 9f, 12.24f, 9f, 12f)
+                curveTo(9f, 11.76f, 8.96f, 11.53f, 8.91f, 11.3f)
+                lineTo(15.96f, 7.19f)
+                curveTo(16.5f, 7.69f, 17.21f, 8f, 18f, 8f)
+                curveTo(19.66f, 8f, 21f, 6.66f, 21f, 5f)
+                curveTo(21f, 3.34f, 19.66f, 2f, 18f, 2f)
+                curveTo(16.34f, 2f, 15f, 3.34f, 15f, 5f)
+                curveTo(15f, 5.24f, 15.04f, 5.47f, 15.09f, 5.7f)
+                lineTo(8.04f, 9.81f)
+                curveTo(7.5f, 9.31f, 6.79f, 9f, 6f, 9f)
+                curveTo(4.34f, 9f, 3f, 10.34f, 3f, 12f)
+                curveTo(3f, 13.66f, 4.34f, 15f, 6f, 15f)
+                curveTo(6.79f, 15f, 7.5f, 14.69f, 8.04f, 14.19f)
+                lineTo(15.16f, 18.34f)
+                curveTo(15.11f, 18.55f, 15.08f, 18.77f, 15.08f, 19f)
+                curveTo(15.08f, 20.61f, 16.39f, 21.91f, 18f, 21.91f)
+                curveTo(19.61f, 21.91f, 20.92f, 20.61f, 20.92f, 19f)
+                curveTo(20.92f, 17.39f, 19.61f, 16.08f, 18f, 16.08f)
+                close()
+            }
+        }.build()
+    }
+
+    val Block: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "Block",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(12f, 2f)
+                curveTo(6.48f, 2f, 2f, 6.48f, 2f, 12f)
+                curveTo(2f, 17.52f, 6.48f, 22f, 12f, 22f)
+                curveTo(17.52f, 22f, 22f, 17.52f, 22f, 12f)
+                curveTo(22f, 6.48f, 17.52f, 2f, 12f, 2f)
+                close()
+                moveTo(4f, 12f)
+                curveTo(4f, 7.58f, 7.58f, 4f, 12f, 4f)
+                curveTo(13.85f, 4f, 15.55f, 4.63f, 16.9f, 5.69f)
+                lineTo(5.69f, 16.9f)
+                curveTo(4.63f, 15.55f, 4f, 13.85f, 4f, 12f)
+                close()
+                moveTo(12f, 20f)
+                curveTo(10.15f, 20f, 8.45f, 19.37f, 7.1f, 18.31f)
+                lineTo(18.31f, 7.1f)
+                curveTo(19.37f, 8.45f, 20f, 10.15f, 20f, 12f)
+                curveTo(20f, 16.42f, 16.42f, 20f, 12f, 20f)
+                close()
+            }
+        }.build()
+    }
+
+    val ContentCopy: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "ContentCopy",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(16f, 1f)
+                horizontalLineTo(4f)
+                curveTo(2.9f, 1f, 2f, 1.9f, 2f, 3f)
+                verticalLineTo(17f)
+                horizontalLineTo(4f)
+                verticalLineTo(3f)
+                horizontalLineTo(16f)
+                verticalLineTo(1f)
+                close()
+                moveTo(19f, 5f)
+                horizontalLineTo(8f)
+                curveTo(6.9f, 5f, 6f, 5.9f, 6f, 7f)
+                verticalLineTo(21f)
+                curveTo(6f, 22.1f, 6.9f, 23f, 8f, 23f)
+                horizontalLineTo(19f)
+                curveTo(20.1f, 23f, 21f, 22.1f, 21f, 21f)
+                verticalLineTo(7f)
+                curveTo(21f, 5.9f, 20.1f, 5f, 19f, 5f)
+                close()
+                moveTo(19f, 21f)
+                horizontalLineTo(8f)
+                verticalLineTo(7f)
+                horizontalLineTo(19f)
+                verticalLineTo(21f)
+                close()
+            }
+        }.build()
+    }
+
     val Pause: ImageVector by lazy {
         ImageVector.Builder(
             name = "Pause",
