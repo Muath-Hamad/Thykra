@@ -24,6 +24,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,6 +41,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -46,6 +49,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -56,6 +61,7 @@ import com.jameeli.thykra.model.MediaType
 import com.jameeli.thykra.model.MemberRole
 import com.jameeli.thykra.permissions.AlbumPermissions
 import com.jameeli.thykra.ui.media.rememberMediaPickerLauncher
+import com.jameeli.thykra.ui.share.shareText
 import com.jameeli.thykra.ui.theme.ThykraColors
 import com.jameeli.thykra.ui.theme.ThykraIcons
 
@@ -383,11 +389,34 @@ fun AlbumDetailScreenContent(
                     }
                 }
 
-                // Invite link
+                // Invite link with configurable expiry
+                if (AlbumPermissions.canCreateInviteLink(ownerRole)) {
+                    item {
+                        Spacer(Modifier.height(16.dp))
+                        Text(
+                            text = "Invite link",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = ThykraColors.DeepNavy
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        InviteLinkSection(
+                            inviteLink = inviteLink,
+                            onGenerate = { days ->
+                                viewModel.createInviteLink(albumId, days)
+                            }
+                        )
+                    }
+                }
+
+                // Share to external (link-shared albums only)
                 item {
                     Spacer(Modifier.height(16.dp))
+                    val shareEnabled = album!!.visibility == AlbumVisibility.LINK_SHARED
                     OutlinedButton(
-                        onClick = { viewModel.createInviteLink(albumId) },
+                        onClick = {
+                            shareText(publicAlbumUrl(albumId))
+                        },
+                        enabled = shareEnabled,
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
@@ -395,34 +424,20 @@ fun AlbumDetailScreenContent(
                         )
                     ) {
                         Icon(
-                            imageVector = ThykraIcons.Link,
+                            imageVector = ThykraIcons.Share,
                             contentDescription = null,
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(Modifier.width(8.dp))
-                        Text("Generate Invite Link")
+                        Text("Share album link")
                     }
-                    if (inviteLink != null) {
-                        Spacer(Modifier.height(8.dp))
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = ThykraColors.Sandy)
-                        ) {
-                            Column(modifier = Modifier.padding(12.dp)) {
-                                Text(
-                                    text = "Invite Token:",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = ThykraColors.MutedSlate
-                                )
-                                Spacer(Modifier.height(4.dp))
-                                Text(
-                                    text = inviteLink!!.token,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = ThykraColors.DeepNavy
-                                )
-                            }
-                        }
+                    if (!shareEnabled) {
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = "Make the album link-shared to share it externally.",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = ThykraColors.MutedSlate
+                        )
                     }
                     Spacer(Modifier.height(80.dp)) // FAB clearance
                 }
@@ -502,6 +517,124 @@ private fun VisibilitySection(
                     text = if (isPrivate) "Make link-shared" else "Make private",
                     style = MaterialTheme.typography.labelLarge
                 )
+            }
+        }
+    }
+}
+
+/**
+ * Public album URL the share sheet sends. Hardcoded to the dev port for now;
+ * production builds should swap this for the canonical web origin via build
+ * config (TODO).
+ */
+private fun publicAlbumUrl(albumId: String): String =
+    "http://localhost:8080/public/$albumId"
+
+/** Configurable expiry options offered to the user when generating an invite link. */
+private val INVITE_EXPIRY_OPTIONS = listOf(1, 7, 30, 90)
+
+/**
+ * Invite-link UI: lets the owner pick an expiry (1d / 7d / 30d / 90d) and tap
+ * Generate to mint a new token. Once generated, shows the token and a copyable
+ * deep-link URL.
+ */
+@Composable
+private fun InviteLinkSection(
+    inviteLink: com.jameeli.thykra.model.InviteLinkDto?,
+    onGenerate: (Int) -> Unit
+) {
+    var selectedDays by remember { mutableStateOf(7) }
+    val clipboard = LocalClipboardManager.current
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = ThykraColors.Sandy),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(
+                text = "Expires in",
+                style = MaterialTheme.typography.labelMedium,
+                color = ThykraColors.MutedSlate
+            )
+            Spacer(Modifier.height(6.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                INVITE_EXPIRY_OPTIONS.forEach { days ->
+                    FilterChip(
+                        selected = selectedDays == days,
+                        onClick = { selectedDays = days },
+                        label = {
+                            Text(
+                                text = if (days == 1) "1 day" else "$days days",
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        },
+                        colors = FilterChipDefaults.filterChipColors(
+                            containerColor = ThykraColors.WarmWhite,
+                            labelColor = ThykraColors.DeepNavy,
+                            selectedContainerColor = ThykraColors.SkyBlue,
+                            selectedLabelColor = Color.White,
+                        )
+                    )
+                }
+            }
+            Spacer(Modifier.height(10.dp))
+            Button(
+                onClick = { onGenerate(selectedDays) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = ThykraColors.SkyBlue,
+                    contentColor = Color.White
+                )
+            ) {
+                Icon(
+                    imageVector = ThykraIcons.Link,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text("Generate invite link")
+            }
+            if (inviteLink != null) {
+                Spacer(Modifier.height(10.dp))
+                val url = "$API_BASE_URL/api/albums/join/${inviteLink.token}"
+                Text(
+                    text = "Invite link",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = ThykraColors.MutedSlate
+                )
+                Spacer(Modifier.height(4.dp))
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = ThykraColors.WarmWhite,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = url,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = ThykraColors.DeepNavy,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f)
+                        )
+                        IconButton(
+                            onClick = { clipboard.setText(AnnotatedString(url)) }
+                        ) {
+                            Icon(
+                                imageVector = ThykraIcons.ContentCopy,
+                                contentDescription = "Copy invite link",
+                                tint = ThykraColors.SkyBlue,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
+                }
             }
         }
     }
