@@ -1,5 +1,7 @@
 import { apiClient } from './client';
 
+export type AlbumVisibility = 'PRIVATE' | 'LINK_SHARED';
+
 export interface AlbumMemberSummary {
   userId: string;
   displayName: string;
@@ -12,6 +14,7 @@ export interface AlbumDto {
   title: string;
   description?: string;
   coverUrl?: string;
+  visibility: AlbumVisibility;
   memberCount: number;
   previewMembers: AlbumMemberSummary[];
   createdAt: string;
@@ -31,6 +34,20 @@ export interface InviteLinkDto {
   expiresAt: string;
 }
 
+export interface BlockedMemberDto {
+  userId: string;
+  displayName: string;
+  avatarUrl?: string;
+  blockedAt: string;
+}
+
+export interface UpdateAlbumRequest {
+  title?: string;
+  description?: string;
+  coverUrl?: string;
+  visibility?: AlbumVisibility;
+}
+
 export async function getAlbums() {
   return apiClient('/api/albums');
 }
@@ -46,7 +63,7 @@ export async function createAlbum(title: string, description?: string) {
   });
 }
 
-export async function updateAlbum(id: string, data: { title?: string; description?: string; coverUrl?: string }) {
+export async function updateAlbum(id: string, data: UpdateAlbumRequest) {
   return apiClient(`/api/albums/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
@@ -72,10 +89,25 @@ export async function removeMember(albumId: string, userId: string) {
   return apiClient(`/api/albums/${albumId}/members/${userId}`, { method: 'DELETE' });
 }
 
-export async function createInviteLink(albumId: string) {
-  return apiClient(`/api/albums/${albumId}/invite`, { method: 'POST' });
+export async function createInviteLink(albumId: string, expiresInDays?: number) {
+  return apiClient(`/api/albums/${albumId}/invite`, {
+    method: 'POST',
+    body: JSON.stringify({ expiresInDays }),
+  });
 }
 
 export async function joinByInvite(token: string) {
   return apiClient(`/api/albums/join/${token}`, { method: 'POST' });
+}
+
+export async function getBlockedMembers(albumId: string) {
+  return apiClient(`/api/albums/${albumId}/blocks`);
+}
+
+export async function blockMember(albumId: string, userId: string) {
+  return apiClient(`/api/albums/${albumId}/blocks/${userId}`, { method: 'POST' });
+}
+
+export async function unblockMember(albumId: string, userId: string) {
+  return apiClient(`/api/albums/${albumId}/blocks/${userId}`, { method: 'DELETE' });
 }
