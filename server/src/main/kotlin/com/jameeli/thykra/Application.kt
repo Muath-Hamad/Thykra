@@ -10,6 +10,7 @@ import com.jameeli.thykra.plugins.configureRouting
 import com.jameeli.thykra.plugins.configureSecurity
 import com.jameeli.thykra.plugins.configureSerialization
 import com.jameeli.thykra.plugins.configureStatusPages
+import com.jameeli.thykra.repository.ActivityRepository
 import com.jameeli.thykra.repository.AlbumInviteRepository
 import com.jameeli.thykra.repository.AlbumMemberRepository
 import com.jameeli.thykra.repository.AlbumRepository
@@ -58,6 +59,7 @@ fun Application.module() {
     val mediaRepository = MediaRepository(storageService)
     val reactionRepository = ReactionRepository()
     val commentRepository = CommentRepository()
+    val activityRepository = ActivityRepository(storageService)
     val imageProcessingService = ImageProcessingService(storageService)
     val mediaService = MediaService(mediaRepository, storageService, imageProcessingService)
 
@@ -76,6 +78,6 @@ fun Application.module() {
     configureRouting(
         authService, userRepository, albumRepository, albumMemberRepository, albumInviteRepository,
         blockedMemberRepository, mediaService, mediaRepository, reactionRepository, commentRepository,
-        storageService
+        activityRepository, storageService
     )
 }
