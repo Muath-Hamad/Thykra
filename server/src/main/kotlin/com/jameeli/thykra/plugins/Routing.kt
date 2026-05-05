@@ -4,11 +4,13 @@ import com.jameeli.thykra.repository.AlbumInviteRepository
 import com.jameeli.thykra.repository.AlbumMemberRepository
 import com.jameeli.thykra.repository.AlbumRepository
 import com.jameeli.thykra.repository.MediaRepository
+import com.jameeli.thykra.repository.ReactionRepository
 import com.jameeli.thykra.repository.UserRepository
 import com.jameeli.thykra.routes.albumRoutes
 import com.jameeli.thykra.routes.authRoutes
 import com.jameeli.thykra.routes.mediaRoutes
 import com.jameeli.thykra.routes.profileRoutes
+import com.jameeli.thykra.routes.reactionRoutes
 import com.jameeli.thykra.service.AuthService
 import com.jameeli.thykra.service.MediaService
 import com.jameeli.thykra.storage.StorageService
@@ -26,6 +28,7 @@ fun Application.configureRouting(
     albumInviteRepository: AlbumInviteRepository,
     mediaService: MediaService,
     mediaRepository: MediaRepository,
+    reactionRepository: ReactionRepository,
     storageService: StorageService
 ) {
     routing {
@@ -40,6 +43,7 @@ fun Application.configureRouting(
             profileRoutes(userRepository)
             albumRoutes(albumRepository, albumMemberRepository, albumInviteRepository)
             mediaRoutes(mediaService, mediaRepository, albumMemberRepository, storageService)
+            reactionRoutes(reactionRepository, mediaRepository, albumMemberRepository)
         }
     }
 }

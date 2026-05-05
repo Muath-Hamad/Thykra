@@ -14,6 +14,7 @@ import com.jameeli.thykra.repository.AlbumInviteRepository
 import com.jameeli.thykra.repository.AlbumMemberRepository
 import com.jameeli.thykra.repository.AlbumRepository
 import com.jameeli.thykra.repository.MediaRepository
+import com.jameeli.thykra.repository.ReactionRepository
 import com.jameeli.thykra.repository.RefreshTokenRepository
 import com.jameeli.thykra.repository.UserRepository
 import com.jameeli.thykra.service.AuthService
@@ -52,6 +53,7 @@ fun Application.module() {
     }
     val albumRepository = AlbumRepository(storageService)
     val mediaRepository = MediaRepository(storageService)
+    val reactionRepository = ReactionRepository()
     val imageProcessingService = ImageProcessingService(storageService)
     val mediaService = MediaService(mediaRepository, storageService, imageProcessingService)
 
@@ -69,6 +71,6 @@ fun Application.module() {
     configureSecurity(jwtService)
     configureRouting(
         authService, userRepository, albumRepository, albumMemberRepository, albumInviteRepository,
-        mediaService, mediaRepository, storageService
+        mediaService, mediaRepository, reactionRepository, storageService
     )
 }
