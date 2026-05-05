@@ -87,10 +87,10 @@
 > Reactions, comments, and interactive features that make albums feel alive.
 
 ### 3.1 Reactions & Comments
-- [ ] Server: Reaction endpoints (add/remove reaction to media)
-- [ ] Server: Comment endpoints (CRUD on media items)
-- [ ] Server: Travel-themed emoji/reaction set definition
-- [ ] Shared: Reaction and comment data models
+- [x] Server: Reaction endpoints (add/remove reaction to media)
+- [x] Server: Comment endpoints (CRUD on media items)
+- [x] Server: Travel-themed emoji/reaction set definition
+- [x] Shared: Reaction and comment data models
 - [ ] Android: Reaction picker overlay on media
 - [ ] iOS: Reaction picker overlay on media
 - [ ] Web: Reaction picker on media
@@ -215,7 +215,7 @@
 |-------|-------------|--------|
 | 1 | Foundation & Auth | Done |
 | 2 | Shared Albums | In Progress (2.1 Done, 2.2 Done all platforms, 2.3 mostly done — iOS BGTask remaining) |
-| 3 | Social & Engagement | Not Started |
+| 3 | Social & Engagement | In Progress (3.1 server + shared models done — UIs pending) |
 | 4 | Smart Features | Not Started |
 | 5 | Widgets | Not Started |
 | 6 | Privacy & Sharing | Not Started |
