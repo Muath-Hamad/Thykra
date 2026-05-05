@@ -5,6 +5,8 @@ import {
   getMembers,
   createInviteLink,
   updateAlbum,
+  removeMember,
+  blockMember,
   AlbumDto,
   AlbumMemberDto,
   AlbumVisibility,
@@ -31,6 +33,8 @@ export function AlbumDetailPage() {
 
   const [visibilitySaving, setVisibilitySaving] = useState(false);
   const [visibilityError, setVisibilityError] = useState('');
+  const [memberActioningId, setMemberActioningId] = useState<string | null>(null);
+  const [memberActionError, setMemberActionError] = useState('');
   const [inviteExpiryDays, setInviteExpiryDays] = useState<number>(7);
   const [inviteCopied, setInviteCopied] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
@@ -101,6 +105,50 @@ export function AlbumDetailPage() {
       setVisibilityError('Network error. Please try again.');
     } finally {
       setVisibilitySaving(false);
+    }
+  }
+
+  async function handleRemoveMember(member: AlbumMemberDto) {
+    if (!window.confirm(`Remove ${member.displayName} from this album? They can rejoin via a fresh invite.`)) {
+      return;
+    }
+    setMemberActioningId(member.userId);
+    setMemberActionError('');
+    try {
+      const resp = await removeMember(albumId, member.userId);
+      if (resp.success) {
+        setMembers((prev) => prev.filter((m) => m.userId !== member.userId));
+      } else {
+        setMemberActionError(resp.error || 'Failed to remove member');
+      }
+    } catch (err) {
+      console.error('Failed to remove member:', err);
+      setMemberActionError('Network error. Please try again.');
+    } finally {
+      setMemberActioningId(null);
+    }
+  }
+
+  async function handleBlockMember(member: AlbumMemberDto) {
+    if (!window.confirm(`Block ${member.displayName}? They will be removed and cannot rejoin via any invite link.`)) {
+      return;
+    }
+    setMemberActioningId(member.userId);
+    setMemberActionError('');
+    try {
+      const resp = await blockMember(albumId, member.userId);
+      if (resp.success) {
+        setMembers((prev) => prev.filter((m) => m.userId !== member.userId));
+        // Refresh blocked list will be handled by the blocked-members section once added.
+        window.dispatchEvent(new CustomEvent('thykra:blocked-changed', { detail: { albumId } }));
+      } else {
+        setMemberActionError(resp.error || 'Failed to block member');
+      }
+    } catch (err) {
+      console.error('Failed to block member:', err);
+      setMemberActionError('Network error. Please try again.');
+    } finally {
+      setMemberActioningId(null);
     }
   }
 
@@ -250,6 +298,41 @@ export function AlbumDetailPage() {
           background: var(--color-sandy);
           color: var(--color-muted-slate);
           border: 1px solid rgba(27,127,204,0.1);
+        }
+
+        .detail-member-actions {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+        .detail-member-action {
+          background: transparent;
+          border: 1px solid rgba(27,127,204,0.2);
+          color: var(--color-muted-slate);
+          padding: 0.32rem 0.7rem;
+          font-size: 0.72rem;
+          font-weight: 600;
+          cursor: pointer;
+          font-family: var(--font-body);
+          border-radius: var(--radius-sm);
+          transition: all 0.18s;
+        }
+        .detail-member-action:hover:not(:disabled) {
+          color: var(--color-sky-blue);
+          border-color: var(--color-sky-blue);
+        }
+        .detail-member-action.danger:hover:not(:disabled) {
+          color: var(--color-soft-red);
+          border-color: var(--color-soft-red);
+        }
+        .detail-member-action:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+        .detail-member-error {
+          font-size: 0.78rem;
+          color: var(--color-soft-red);
+          margin: -0.5rem 0 1rem;
         }
 
         /* Invite */
@@ -663,16 +746,44 @@ export function AlbumDetailPage() {
               <div className="detail-member-list">
                 {members.map((member) => {
                   const roleKey = member.role.toLowerCase();
+                  const isMemberOwner = member.role === 'OWNER';
+                  const showActions = isOwner && !isMemberOwner;
+                  const actioning = memberActioningId === member.userId;
                   return (
                     <div key={member.userId} className="detail-member-card">
                       <span className="detail-member-name">{member.displayName}</span>
-                      <span className={`detail-member-role ${roleKey === 'owner' ? 'detail-role-owner' : 'detail-role-member'}`}>
-                        {member.role.charAt(0) + member.role.slice(1).toLowerCase()}
-                      </span>
+                      <div className="detail-member-actions">
+                        <span className={`detail-member-role ${roleKey === 'owner' ? 'detail-role-owner' : 'detail-role-member'}`}>
+                          {member.role.charAt(0) + member.role.slice(1).toLowerCase()}
+                        </span>
+                        {showActions && (
+                          <>
+                            <button
+                              type="button"
+                              className="detail-member-action"
+                              onClick={() => handleRemoveMember(member)}
+                              disabled={actioning}
+                            >
+                              Remove
+                            </button>
+                            <button
+                              type="button"
+                              className="detail-member-action danger"
+                              onClick={() => handleBlockMember(member)}
+                              disabled={actioning}
+                            >
+                              Block
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
               </div>
+              {memberActionError && (
+                <div className="detail-member-error">{memberActionError}</div>
+              )}
 
               <h2 className="detail-section-title">Invite link</h2>
               <div className="detail-expiry-row">
