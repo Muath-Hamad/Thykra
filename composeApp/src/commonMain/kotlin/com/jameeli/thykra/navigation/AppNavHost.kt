@@ -93,7 +93,7 @@ fun AppNavHost(
         composable<AlbumDetailScreen> { backStackEntry ->
             val route = backStackEntry.toRoute<AlbumDetailScreen>()
             val viewModel = remember(route.albumId) {
-                AlbumDetailViewModel(albumApi, mediaApi, uploadQueueManager)
+                AlbumDetailViewModel(albumApi, mediaApi, uploadQueueManager, profileApi)
             }
             AlbumDetailScreenContent(
                 albumId = route.albumId,
