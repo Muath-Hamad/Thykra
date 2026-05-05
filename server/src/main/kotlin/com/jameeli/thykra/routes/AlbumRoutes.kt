@@ -9,6 +9,7 @@ import com.jameeli.thykra.model.UpdateAlbumRequest
 import com.jameeli.thykra.repository.AlbumInviteRepository
 import com.jameeli.thykra.repository.AlbumMemberRepository
 import com.jameeli.thykra.repository.AlbumRepository
+import com.jameeli.thykra.repository.BlockedMemberRepository
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
@@ -28,7 +29,8 @@ import kotlin.time.Duration.Companion.days
 fun Route.albumRoutes(
     albumRepository: AlbumRepository,
     albumMemberRepository: AlbumMemberRepository,
-    albumInviteRepository: AlbumInviteRepository
+    albumInviteRepository: AlbumInviteRepository,
+    blockedMemberRepository: BlockedMemberRepository
 ) {
     authenticate("auth-jwt") {
         route("/albums") {
@@ -158,6 +160,61 @@ fun Route.albumRoutes(
                 call.respond(ApiResponse(success = true, data = "Member removed"))
             }
 
+            get("/{id}/blocks") {
+                val currentUserId = call.principal<JWTPrincipal>()!!.subject!!
+                val albumId = UUID.fromString(call.parameters["id"])
+                val role = albumMemberRepository.getMemberRole(albumId, UUID.fromString(currentUserId))
+                if (role != MemberRole.OWNER) {
+                    call.respond(
+                        HttpStatusCode.Forbidden,
+                        ApiResponse<Unit>(success = false, error = "Only the owner can view blocked members")
+                    )
+                    return@get
+                }
+                val blocked = blockedMemberRepository.list(albumId)
+                call.respond(ApiResponse(success = true, data = blocked))
+            }
+
+            post("/{id}/blocks/{userId}") {
+                val currentUserId = call.principal<JWTPrincipal>()!!.subject!!
+                val albumId = UUID.fromString(call.parameters["id"])
+                val targetUserId = UUID.fromString(call.parameters["userId"])
+                val role = albumMemberRepository.getMemberRole(albumId, UUID.fromString(currentUserId))
+                if (role != MemberRole.OWNER) {
+                    call.respond(
+                        HttpStatusCode.Forbidden,
+                        ApiResponse<Unit>(success = false, error = "Only the owner can block members")
+                    )
+                    return@post
+                }
+                if (targetUserId.toString() == currentUserId) {
+                    call.respond(
+                        HttpStatusCode.BadRequest,
+                        ApiResponse<Unit>(success = false, error = "Cannot block yourself")
+                    )
+                    return@post
+                }
+                albumMemberRepository.removeMember(albumId, targetUserId)
+                blockedMemberRepository.block(albumId, targetUserId, UUID.fromString(currentUserId))
+                call.respond(ApiResponse(success = true, data = "Member blocked"))
+            }
+
+            delete("/{id}/blocks/{userId}") {
+                val currentUserId = call.principal<JWTPrincipal>()!!.subject!!
+                val albumId = UUID.fromString(call.parameters["id"])
+                val targetUserId = UUID.fromString(call.parameters["userId"])
+                val role = albumMemberRepository.getMemberRole(albumId, UUID.fromString(currentUserId))
+                if (role != MemberRole.OWNER) {
+                    call.respond(
+                        HttpStatusCode.Forbidden,
+                        ApiResponse<Unit>(success = false, error = "Only the owner can unblock members")
+                    )
+                    return@delete
+                }
+                blockedMemberRepository.unblock(albumId, targetUserId)
+                call.respond(ApiResponse(success = true, data = "Member unblocked"))
+            }
+
             post("/{id}/invite") {
                 val userId = call.principal<JWTPrincipal>()!!.subject!!
                 val albumId = UUID.fromString(call.parameters["id"])
@@ -191,6 +248,13 @@ fun Route.albumRoutes(
                     return@post
                 }
                 val userUuid = UUID.fromString(userId)
+                if (blockedMemberRepository.isBlocked(invite.albumId, userUuid)) {
+                    call.respond(
+                        HttpStatusCode.Forbidden,
+                        ApiResponse<Unit>(success = false, error = "You have been blocked from this album")
+                    )
+                    return@post
+                }
                 if (albumMemberRepository.isMember(invite.albumId, userUuid)) {
                     call.respond(
                         HttpStatusCode.Conflict,

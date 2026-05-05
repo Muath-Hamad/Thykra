@@ -13,6 +13,7 @@ import com.jameeli.thykra.plugins.configureStatusPages
 import com.jameeli.thykra.repository.AlbumInviteRepository
 import com.jameeli.thykra.repository.AlbumMemberRepository
 import com.jameeli.thykra.repository.AlbumRepository
+import com.jameeli.thykra.repository.BlockedMemberRepository
 import com.jameeli.thykra.repository.CommentRepository
 import com.jameeli.thykra.repository.MediaRepository
 import com.jameeli.thykra.repository.ReactionRepository
@@ -43,6 +44,7 @@ fun Application.module() {
     val refreshTokenRepository = RefreshTokenRepository()
     val albumMemberRepository = AlbumMemberRepository()
     val albumInviteRepository = AlbumInviteRepository()
+    val blockedMemberRepository = BlockedMemberRepository()
 
     val storageType = environment.config.propertyOrNull("storage.type")?.getString() ?: "local"
     val storageService: StorageService = when (storageType) {
@@ -73,6 +75,7 @@ fun Application.module() {
     configureSecurity(jwtService)
     configureRouting(
         authService, userRepository, albumRepository, albumMemberRepository, albumInviteRepository,
-        mediaService, mediaRepository, reactionRepository, commentRepository, storageService
+        blockedMemberRepository, mediaService, mediaRepository, reactionRepository, commentRepository,
+        storageService
     )
 }

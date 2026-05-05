@@ -65,6 +65,14 @@ data class CreateInviteRequest(
 )
 
 @Serializable
+data class BlockedMemberDto(
+    val userId: String,
+    val displayName: String,
+    val avatarUrl: String? = null,
+    val blockedAt: Instant
+)
+
+@Serializable
 data class AddMemberRequest(
     val userId: String,
     val role: MemberRole

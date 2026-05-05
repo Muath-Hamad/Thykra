@@ -5,6 +5,7 @@ import com.jameeli.thykra.model.AddMemberRequest
 import com.jameeli.thykra.model.AlbumDto
 import com.jameeli.thykra.model.AlbumMemberDto
 import com.jameeli.thykra.model.ApiResponse
+import com.jameeli.thykra.model.BlockedMemberDto
 import com.jameeli.thykra.model.CreateAlbumRequest
 import com.jameeli.thykra.model.CreateInviteRequest
 import com.jameeli.thykra.model.InviteLinkDto
@@ -60,6 +61,18 @@ class AlbumApi(private val client: HttpClient) {
 
     suspend fun removeMember(albumId: String, userId: String): ApiResponse<Unit> {
         return client.delete("$API_BASE_URL/api/albums/$albumId/members/$userId").body()
+    }
+
+    suspend fun listBlocked(albumId: String): ApiResponse<List<BlockedMemberDto>> {
+        return client.get("$API_BASE_URL/api/albums/$albumId/blocks").body()
+    }
+
+    suspend fun blockMember(albumId: String, userId: String): ApiResponse<Unit> {
+        return client.post("$API_BASE_URL/api/albums/$albumId/blocks/$userId").body()
+    }
+
+    suspend fun unblockMember(albumId: String, userId: String): ApiResponse<Unit> {
+        return client.delete("$API_BASE_URL/api/albums/$albumId/blocks/$userId").body()
     }
 
     suspend fun createInviteLink(albumId: String, expiresInDays: Int? = null): ApiResponse<InviteLinkDto> {
