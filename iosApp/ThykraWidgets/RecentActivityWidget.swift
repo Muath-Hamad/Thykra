@@ -4,11 +4,9 @@
 //
 //  Small feed of recent reactions + comments across the user's albums.
 //
-//  TODO: there is no aggregated /api/activity endpoint yet, so we manually
-//  iterate over the most recent albums and their first few media items, then
-//  fetch reactions/comments per item. This burns extra requests; replace once
-//  the server exposes a single feed endpoint. Mirrors the same workaround the
-//  Android widget uses.
+//  Backed by the aggregated `GET /api/activity/recent` server endpoint —
+//  one network call per refresh, regardless of how many albums or media
+//  items the user has.
 //
 
 import SwiftUI
@@ -29,10 +27,9 @@ struct RecentActivityProvider: AppIntentTimelineProvider {
     typealias Entry = RecentActivityEntry
     typealias Intent = AlbumSelectionIntent
 
-    /// Caps to keep widget memory + request count bounded.
-    private let maxAlbums = 3
-    private let maxMediaPerAlbum = 5
-    private let maxItemsShown = 6
+    /// Server clamps to 50; we ask for enough to fill the largest family.
+    private let fetchLimit = 25
+    private let maxItemsShown = 8
 
     func placeholder(in context: Context) -> RecentActivityEntry {
         RecentActivityEntry(
@@ -56,76 +53,46 @@ struct RecentActivityProvider: AppIntentTimelineProvider {
     private func fetch(configuration: AlbumSelectionIntent) async -> RecentActivityEntry {
         let api = WidgetApiClient()
         do {
-            let albums = try await api.listAlbums()
-            // If user picked an album in widget config, scope to that album;
-            // otherwise span the most recent few.
-            let targetAlbums: [WidgetAlbum]
-            if let configured = configuration.album,
-               let pinned = albums.first(where: { $0.id == configured.id }) {
-                targetAlbums = [pinned]
+            let feed = try await api.recentActivity(limit: fetchLimit)
+
+            // If the user pinned an album in widget config, scope to that album;
+            // otherwise show activity across every album they belong to.
+            let scoped: [WidgetActivityItemDto]
+            if let configuredId = configuration.album?.id {
+                scoped = feed.items.filter { $0.albumId == configuredId }
             } else {
-                targetAlbums = Array(albums.prefix(maxAlbums))
+                scoped = feed.items
             }
 
-            if targetAlbums.isEmpty {
-                return RecentActivityEntry(
-                    date: Date(),
-                    configuration: configuration,
-                    items: [],
-                    errorMessage: "No albums yet"
+            let mapped = scoped.compactMap { dto -> WidgetActivityItem? in
+                guard let when = WidgetDateParser.parse(dto.createdAt) else { return nil }
+                let kind: WidgetActivityKind = (dto.type == .REACTION) ? .reaction : .comment
+                let summary: String = {
+                    switch dto.type {
+                    case .REACTION:
+                        return humanReaction(dto.reactionType ?? "")
+                    case .COMMENT:
+                        return dto.commentBody ?? ""
+                    }
+                }()
+                return WidgetActivityItem(
+                    id: "\(kind == .reaction ? "r" : "c")-\(dto.albumId)-\(dto.mediaId)-\(dto.actorId)-\(dto.createdAt)",
+                    kind: kind,
+                    actorName: dto.actorDisplayName,
+                    summary: summary,
+                    albumId: dto.albumId,
+                    mediaId: dto.mediaId,
+                    createdAt: when
                 )
             }
 
-            var collected: [WidgetActivityItem] = []
-            for album in targetAlbums {
-                let mediaList = (try? await api.listMedia(albumId: album.id)) ?? []
-                for m in mediaList.prefix(maxMediaPerAlbum) {
-                    if let r = try? await api.reactions(albumId: album.id, mediaId: m.id) {
-                        for reaction in r.reactions {
-                            if let when = WidgetDateParser.parse(reaction.createdAt) {
-                                collected.append(
-                                    WidgetActivityItem(
-                                        id: "r-\(reaction.id)",
-                                        kind: .reaction,
-                                        actorName: reaction.userDisplayName,
-                                        summary: humanReaction(reaction.type),
-                                        albumId: album.id,
-                                        mediaId: m.id,
-                                        createdAt: when
-                                    )
-                                )
-                            }
-                        }
-                    }
-                    if let comments = try? await api.comments(albumId: album.id, mediaId: m.id) {
-                        for c in comments {
-                            if let when = WidgetDateParser.parse(c.createdAt) {
-                                collected.append(
-                                    WidgetActivityItem(
-                                        id: "c-\(c.id)",
-                                        kind: .comment,
-                                        actorName: c.authorDisplayName,
-                                        summary: c.body,
-                                        albumId: album.id,
-                                        mediaId: m.id,
-                                        createdAt: when
-                                    )
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            let sorted = collected
-                .sorted(by: { $0.createdAt > $1.createdAt })
-                .prefix(maxItemsShown)
+            let trimmed = Array(mapped.prefix(maxItemsShown))
 
             return RecentActivityEntry(
                 date: Date(),
                 configuration: configuration,
-                items: Array(sorted),
-                errorMessage: sorted.isEmpty ? "No activity yet" : nil
+                items: trimmed,
+                errorMessage: trimmed.isEmpty ? "No activity yet" : nil
             )
         } catch WidgetApiError.notAuthenticated {
             return RecentActivityEntry(

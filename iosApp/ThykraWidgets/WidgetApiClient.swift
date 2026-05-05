@@ -84,8 +84,36 @@ struct WidgetComment: Decodable, Hashable, Identifiable {
     let updatedAt: String
 }
 
-// MARK: - Activity feed item (computed locally from reactions + comments)
+// MARK: - Activity feed (mirrors shared/.../model/ActivityModels.kt)
 
+/// Mirrors `ActivityType` in shared model. Server emits the enum name.
+enum WidgetActivityType: String, Decodable {
+    case REACTION
+    case COMMENT
+}
+
+/// Mirrors `ActivityItemDto`. Either `reactionType` or `commentBody` is filled
+/// depending on `type`. `commentBody` is already truncated server-side.
+struct WidgetActivityItemDto: Decodable, Hashable {
+    let type: WidgetActivityType
+    let createdAt: String
+    let albumId: String
+    let albumTitle: String
+    let mediaId: String
+    let mediaThumbnailUrl: String?
+    let actorId: String
+    let actorDisplayName: String
+    let actorAvatarUrl: String?
+    let reactionType: String?
+    let commentBody: String?
+}
+
+struct WidgetRecentActivity: Decodable {
+    let items: [WidgetActivityItemDto]
+}
+
+/// View-model used by the widget timeline; carries a parsed `Date` and a
+/// pre-computed display summary so the SwiftUI body stays trivial.
 enum WidgetActivityKind: String {
     case reaction
     case comment
@@ -175,6 +203,12 @@ struct WidgetApiClient {
 
     func comments(albumId: String, mediaId: String) async throws -> [WidgetComment] {
         try await get("/api/albums/\(albumId)/media/\(mediaId)/comments")
+    }
+
+    /// Aggregated reactions + comments across all albums the caller is a
+    /// member of, newest first. Server clamps `limit` to 1..50 (default 25).
+    func recentActivity(limit: Int) async throws -> WidgetRecentActivity {
+        try await get("/api/activity/recent?limit=\(limit)")
     }
 
     // MARK: - Image fetch (for the latest-photo widget)
