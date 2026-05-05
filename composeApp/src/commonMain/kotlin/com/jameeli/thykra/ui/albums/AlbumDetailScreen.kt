@@ -51,8 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
+import com.jameeli.thykra.ui.share.copyToClipboard
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -732,7 +731,6 @@ private fun InviteLinkSection(
     onGenerate: (Int) -> Unit
 ) {
     var selectedDays by remember { mutableStateOf(7) }
-    val clipboard = LocalClipboardManager.current
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -812,7 +810,7 @@ private fun InviteLinkSection(
                             modifier = Modifier.weight(1f)
                         )
                         IconButton(
-                            onClick = { clipboard.setText(AnnotatedString(url)) }
+                            onClick = { copyToClipboard(url) }
                         ) {
                             Icon(
                                 imageVector = ThykraIcons.ContentCopy,
