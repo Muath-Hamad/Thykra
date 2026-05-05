@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git curl ca-certificates gnupg unzip zip xz-utils \
         build-essential python3 python3-pip \
         sudo less vim nano openssh-client \
+        zsh fzf bat \
     && rm -rf /var/lib/apt/lists/*
 
 # --- Node 20 + npm ----------------------------------------------------------
@@ -63,11 +64,19 @@ ARG USERNAME=dev
 ARG USER_UID=1000
 ARG USER_GID=1000
 RUN groupadd --gid ${USER_GID} ${USERNAME} \
-    && useradd --uid ${USER_UID} --gid ${USER_GID} -m -s /bin/bash ${USERNAME} \
+    && useradd --uid ${USER_UID} --gid ${USER_GID} -m -s /usr/bin/zsh ${USERNAME} \
     && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/${USERNAME} \
     && chmod 0440 /etc/sudoers.d/${USERNAME} \
     && mkdir -p /home/${USERNAME}/.gradle /home/${USERNAME}/.claude /home/${USERNAME}/.android \
     && chown -R ${USER_UID}:${USER_GID} /home/${USERNAME} ${ANDROID_HOME}
+
+# --- Zsh setup: zsh-autosuggestions + zsh-syntax-highlighting + minimal prompt
+RUN git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions /home/${USERNAME}/.zsh/zsh-autosuggestions \
+    && git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting /home/${USERNAME}/.zsh/zsh-syntax-highlighting \
+    && git clone --depth=1 https://github.com/zsh-users/zsh-completions /home/${USERNAME}/.zsh/zsh-completions \
+    && chown -R ${USER_UID}:${USER_GID} /home/${USERNAME}/.zsh
+
+COPY --chown=${USER_UID}:${USER_GID} zshrc /home/${USERNAME}/.zshrc
 
 USER ${USERNAME}
 WORKDIR /workspace
@@ -80,4 +89,4 @@ RUN printf '#!/usr/bin/env bash\nexec /usr/bin/claude --dangerously-skip-permiss
 
 EXPOSE 8080 8081 5005
 
-CMD ["bash"]
+CMD ["zsh"]
