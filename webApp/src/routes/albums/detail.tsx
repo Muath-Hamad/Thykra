@@ -7,9 +7,12 @@ import {
   updateAlbum,
   removeMember,
   blockMember,
+  unblockMember,
+  getBlockedMembers,
   AlbumDto,
   AlbumMemberDto,
   AlbumVisibility,
+  BlockedMemberDto,
   InviteLinkDto,
 } from '../../api/albums';
 import { getAlbumMedia, MediaDto } from '../../api/media';
@@ -35,6 +38,9 @@ export function AlbumDetailPage() {
   const [visibilityError, setVisibilityError] = useState('');
   const [memberActioningId, setMemberActioningId] = useState<string | null>(null);
   const [memberActionError, setMemberActionError] = useState('');
+  const [blockedMembers, setBlockedMembers] = useState<BlockedMemberDto[]>([]);
+  const [unblockingId, setUnblockingId] = useState<string | null>(null);
+  const [blockedError, setBlockedError] = useState('');
   const [inviteExpiryDays, setInviteExpiryDays] = useState<number>(7);
   const [inviteCopied, setInviteCopied] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
@@ -49,6 +55,13 @@ export function AlbumDetailPage() {
     loadAlbum();
     loadMedia();
   }, [albumId]);
+
+  // Load blocked list once we know the user is the owner
+  useEffect(() => {
+    if (!isOwner) return;
+    loadBlocked();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOwner, albumId]);
 
   // Auto-refresh media when uploads complete
   useEffect(() => {
@@ -86,6 +99,35 @@ export function AlbumDetailPage() {
       }
     } catch (error) {
       console.error('Failed to load media:', error);
+    }
+  }
+
+  async function loadBlocked() {
+    try {
+      const resp = await getBlockedMembers(albumId);
+      if (resp.success && resp.data) {
+        setBlockedMembers(resp.data);
+      }
+    } catch (error) {
+      console.error('Failed to load blocked members:', error);
+    }
+  }
+
+  async function handleUnblockMember(blocked: BlockedMemberDto) {
+    setUnblockingId(blocked.userId);
+    setBlockedError('');
+    try {
+      const resp = await unblockMember(albumId, blocked.userId);
+      if (resp.success) {
+        setBlockedMembers((prev) => prev.filter((b) => b.userId !== blocked.userId));
+      } else {
+        setBlockedError(resp.error || 'Failed to unblock member');
+      }
+    } catch (err) {
+      console.error('Failed to unblock member:', err);
+      setBlockedError('Network error. Please try again.');
+    } finally {
+      setUnblockingId(null);
     }
   }
 
@@ -139,8 +181,17 @@ export function AlbumDetailPage() {
       const resp = await blockMember(albumId, member.userId);
       if (resp.success) {
         setMembers((prev) => prev.filter((m) => m.userId !== member.userId));
-        // Refresh blocked list will be handled by the blocked-members section once added.
-        window.dispatchEvent(new CustomEvent('thykra:blocked-changed', { detail: { albumId } }));
+        // Optimistically add to blocked list, then refresh from server for canonical timestamp
+        setBlockedMembers((prev) => [
+          ...prev.filter((b) => b.userId !== member.userId),
+          {
+            userId: member.userId,
+            displayName: member.displayName,
+            avatarUrl: member.avatarUrl,
+            blockedAt: new Date().toISOString(),
+          },
+        ]);
+        loadBlocked();
       } else {
         setMemberActionError(resp.error || 'Failed to block member');
       }
@@ -334,6 +385,58 @@ export function AlbumDetailPage() {
           color: var(--color-soft-red);
           margin: -0.5rem 0 1rem;
         }
+
+        /* Blocked members */
+        .detail-blocked-empty {
+          font-size: 0.82rem;
+          color: var(--color-muted-slate);
+          padding: 0.85rem 1rem;
+          background: var(--color-sandy);
+          border: 1px dashed rgba(27,127,204,0.18);
+          border-radius: var(--radius-sm);
+          margin-bottom: 1rem;
+        }
+        .detail-blocked-card {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: rgba(224,82,82,0.06);
+          border: 1px solid rgba(224,82,82,0.18);
+          padding: 0.7rem 1rem;
+          border-radius: var(--radius-sm);
+          margin-bottom: 0.5rem;
+        }
+        .detail-blocked-info {
+          display: flex;
+          flex-direction: column;
+          gap: 0.15rem;
+        }
+        .detail-blocked-name {
+          font-weight: 500;
+          font-size: 0.9rem;
+          color: var(--color-deep-navy);
+        }
+        .detail-blocked-meta {
+          font-size: 0.72rem;
+          color: var(--color-muted-slate);
+        }
+        .detail-unblock-btn {
+          background: transparent;
+          border: 1px solid rgba(224,82,82,0.4);
+          color: var(--color-soft-red);
+          padding: 0.32rem 0.85rem;
+          font-size: 0.74rem;
+          font-weight: 600;
+          cursor: pointer;
+          font-family: var(--font-body);
+          border-radius: var(--radius-sm);
+          transition: all 0.18s;
+        }
+        .detail-unblock-btn:hover:not(:disabled) {
+          background: var(--color-soft-red);
+          color: #fff;
+        }
+        .detail-unblock-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* Invite */
         .detail-invite-btn {
@@ -783,6 +886,42 @@ export function AlbumDetailPage() {
               </div>
               {memberActionError && (
                 <div className="detail-member-error">{memberActionError}</div>
+              )}
+
+              {/* Blocked members (owner only) */}
+              {isOwner && (
+                <>
+                  <h2 className="detail-section-title">Blocked ({blockedMembers.length})</h2>
+                  {blockedMembers.length === 0 ? (
+                    <div className="detail-blocked-empty">
+                      No one is blocked. Blocking a member removes them and prevents rejoining via any invite link.
+                    </div>
+                  ) : (
+                    <div>
+                      {blockedMembers.map((blocked) => (
+                        <div key={blocked.userId} className="detail-blocked-card">
+                          <div className="detail-blocked-info">
+                            <span className="detail-blocked-name">{blocked.displayName}</span>
+                            <span className="detail-blocked-meta">
+                              Blocked {new Date(blocked.blockedAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            className="detail-unblock-btn"
+                            onClick={() => handleUnblockMember(blocked)}
+                            disabled={unblockingId === blocked.userId}
+                          >
+                            {unblockingId === blocked.userId ? 'Unblocking...' : 'Unblock'}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {blockedError && (
+                    <div className="detail-member-error">{blockedError}</div>
+                  )}
+                </>
               )}
 
               <h2 className="detail-section-title">Invite link</h2>
