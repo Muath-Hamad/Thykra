@@ -142,16 +142,16 @@
 > Home-screen widgets that keep trip memories alive without opening the app.
 
 ### 5.1 Android Widgets
-- [ ] Android: Glance widget — latest photo from recent album
-- [ ] Android: Glance widget — recent reactions/comments feed
-- [ ] Android: Widget configuration (select album, refresh interval)
-- [ ] Android: Widget deep link into album on tap
+- [x] Android: Glance widget — latest photo from recent album
+- [x] Android: Glance widget — recent reactions/comments feed
+- [x] Android: Widget configuration (select album, refresh interval)
+- [x] Android: Widget deep link into album on tap
 
 ### 5.2 iOS Widgets
-- [ ] iOS: WidgetKit — latest photo from recent album
-- [ ] iOS: WidgetKit — recent reactions/comments feed
-- [ ] iOS: Widget configuration (select album)
-- [ ] iOS: Widget deep link into album on tap
+- [x] iOS: WidgetKit — latest photo from recent album
+- [x] iOS: WidgetKit — recent reactions/comments feed
+- [x] iOS: Widget configuration (select album)
+- [x] iOS: Widget deep link into album on tap
 
 ---
 
@@ -160,19 +160,19 @@
 > Controls that let users decide who sees what.
 
 ### 6.1 Privacy Controls
-- [ ] Server: Album visibility settings (private, link-shared)
-- [ ] Server: Shareable invite link generation with expiry
-- [ ] Server: Member removal and block functionality
-- [ ] Shared: Permission checking logic
-- [ ] Android: Album privacy settings UI
-- [ ] iOS: Album privacy settings UI
-- [ ] Web: Album privacy settings UI
+- [x] Server: Album visibility settings (private, link-shared)
+- [x] Server: Shareable invite link generation with expiry
+- [x] Server: Member removal and block functionality
+- [x] Shared: Permission checking logic
+- [x] Android: Album privacy settings UI
+- [x] iOS: Album privacy settings UI
+- [x] Web: Album privacy settings UI
 
 ### 6.2 Share to External
-- [ ] Server: Public album read-only view endpoint
-- [ ] Web: Public shared album page (no login required)
-- [ ] Android: Share album link via system share sheet
-- [ ] iOS: Share album link via system share sheet
+- [x] Server: Public album read-only view endpoint
+- [x] Web: Public shared album page (no login required)
+- [x] Android: Share album link via system share sheet
+- [x] iOS: Share album link via system share sheet
 
 ---
 
@@ -217,6 +217,6 @@
 | 2 | Shared Albums | In Progress (2.1 Done, 2.2 Done all platforms, 2.3 mostly done — iOS BGTask remaining) |
 | 3 | Social & Engagement | In Progress (3.1 Done — 3.2 Notifications pending) |
 | 4 | Smart Features | Not Started |
-| 5 | Widgets | Not Started |
-| 6 | Privacy & Sharing | Not Started |
+| 5 | Widgets | Done (compile-verified; on-device runtime + Xcode target wiring pending) |
+| 6 | Privacy & Sharing | Done |
 | 7 | Polish & Launch | Not Started |
