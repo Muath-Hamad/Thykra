@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -34,6 +35,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -86,6 +88,10 @@ fun AlbumDetailScreenContent(
         ownerId != null && currentUserId != null && ownerId == currentUserId
     }
     val ownerRole = if (isOwner) MemberRole.OWNER else null
+
+    // Pending owner action against a single member (Remove or Block) — gated
+    // through a confirmation dialog so an accidental tap doesn't kick someone.
+    var pendingMemberAction by remember { mutableStateOf<PendingMemberAction?>(null) }
 
     val albumUploads = remember(uploads, albumId) {
         uploads.filter { it.albumId == albumId && it.status != UploadStatus.DONE }
@@ -351,12 +357,12 @@ fun AlbumDetailScreenContent(
                             )
                             Spacer(Modifier.width(8.dp))
                             // Role badge
-                            val isOwner = member.role == MemberRole.OWNER
+                            val memberIsOwner = member.role == MemberRole.OWNER
                             Surface(
                                 shape = RoundedCornerShape(12.dp),
-                                color = if (isOwner) ThykraColors.SkyBlue.copy(alpha = 0.15f)
+                                color = if (memberIsOwner) ThykraColors.SkyBlue.copy(alpha = 0.15f)
                                 else Color.Transparent,
-                                contentColor = if (isOwner) ThykraColors.SkyBlue
+                                contentColor = if (memberIsOwner) ThykraColors.SkyBlue
                                 else ThykraColors.MutedSlate
                             ) {
                                 Text(
@@ -365,6 +371,47 @@ fun AlbumDetailScreenContent(
                                     style = MaterialTheme.typography.labelMedium,
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                                 )
+                            }
+                            // Owner-only actions: Remove + Block. Owner cannot
+                            // act on themselves and can never block another OWNER
+                            // (server enforces this too).
+                            if (
+                                AlbumPermissions.canManageMembers(ownerRole) &&
+                                !memberIsOwner &&
+                                member.userId != currentUserId
+                            ) {
+                                IconButton(
+                                    onClick = {
+                                        pendingMemberAction = PendingMemberAction(
+                                            userId = member.userId,
+                                            displayName = member.displayName,
+                                            kind = MemberActionKind.REMOVE
+                                        )
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = ThykraIcons.Close,
+                                        contentDescription = "Remove ${member.displayName}",
+                                        tint = ThykraColors.MutedSlate,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                                IconButton(
+                                    onClick = {
+                                        pendingMemberAction = PendingMemberAction(
+                                            userId = member.userId,
+                                            displayName = member.displayName,
+                                            kind = MemberActionKind.BLOCK
+                                        )
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = ThykraIcons.Block,
+                                        contentDescription = "Block ${member.displayName}",
+                                        tint = ThykraColors.SoftRed,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
                             }
                         }
                     }
@@ -444,6 +491,86 @@ fun AlbumDetailScreenContent(
             }
         }
     }
+
+    pendingMemberAction?.let { action ->
+        MemberActionConfirmDialog(
+            action = action,
+            onConfirm = {
+                when (action.kind) {
+                    MemberActionKind.REMOVE -> viewModel.removeMember(albumId, action.userId)
+                    MemberActionKind.BLOCK -> viewModel.blockMember(albumId, action.userId)
+                }
+                pendingMemberAction = null
+            },
+            onDismiss = { pendingMemberAction = null }
+        )
+    }
+}
+
+private enum class MemberActionKind { REMOVE, BLOCK }
+
+private data class PendingMemberAction(
+    val userId: String,
+    val displayName: String,
+    val kind: MemberActionKind
+)
+
+/**
+ * Confirmation dialog shown when an owner taps Remove or Block on a member
+ * card. Both actions hit the server immediately on confirm — there is no
+ * undo, but Block can be reversed from the Blocked-members section.
+ */
+@Composable
+private fun MemberActionConfirmDialog(
+    action: PendingMemberAction,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    val (title, body, confirmLabel) = when (action.kind) {
+        MemberActionKind.REMOVE -> Triple(
+            "Remove member",
+            "Remove ${action.displayName} from this album? They can rejoin if you share an invite link again.",
+            "Remove"
+        )
+        MemberActionKind.BLOCK -> Triple(
+            "Block member",
+            "Block ${action.displayName}? They will be removed and can no longer rejoin via any invite link.",
+            "Block"
+        )
+    }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = ThykraColors.WarmWhite,
+        title = {
+            Text(text = title, color = ThykraColors.DeepNavy)
+        },
+        text = {
+            Text(text = body, color = ThykraColors.MutedSlate)
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onConfirm,
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = if (action.kind == MemberActionKind.BLOCK)
+                        ThykraColors.SoftRed
+                    else
+                        ThykraColors.SkyBlue
+                )
+            ) {
+                Text(confirmLabel)
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismiss,
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = ThykraColors.MutedSlate
+                )
+            ) {
+                Text("Cancel")
+            }
+        }
+    )
 }
 
 /**
