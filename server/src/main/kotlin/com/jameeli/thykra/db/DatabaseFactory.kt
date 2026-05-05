@@ -37,7 +37,7 @@ object DatabaseFactory {
         Database.connect(HikariDataSource(hikariConfig))
 
         transaction {
-            SchemaUtils.create(
+            SchemaUtils.createMissingTablesAndColumns(
                 UsersTable, RefreshTokensTable, AlbumsTable, AlbumMembersTable, AlbumInvitesTable,
                 MediaTable, ReactionsTable, CommentsTable, BlockedMembersTable
             )
