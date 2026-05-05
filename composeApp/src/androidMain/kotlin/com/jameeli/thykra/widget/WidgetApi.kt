@@ -1,6 +1,7 @@
 package com.jameeli.thykra.widget
 
 import android.content.Context
+import com.jameeli.thykra.api.ActivityApi
 import com.jameeli.thykra.api.AlbumApi
 import com.jameeli.thykra.api.CommentApi
 import com.jameeli.thykra.api.MediaApi
@@ -21,6 +22,7 @@ class WidgetApi(context: Context) {
     val media = MediaApi(httpClient)
     val reactions = ReactionApi(httpClient)
     val comments = CommentApi(httpClient)
+    val activity = ActivityApi(httpClient)
 
     /** Underlying HTTP client, exposed for widget code that needs to download raw thumbnails. */
     val client: HttpClient get() = httpClient

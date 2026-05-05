@@ -33,21 +33,16 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.jameeli.thykra.MainActivity
-import com.jameeli.thykra.model.MediaDto
-import com.jameeli.thykra.model.MediaStatus
+import com.jameeli.thykra.model.ActivityItemDto
+import com.jameeli.thykra.model.ActivityType
 import com.jameeli.thykra.model.ReactionType
 import com.jameeli.thykra.ui.theme.ThykraColors
-import kotlinx.datetime.Instant
 
 /**
- * Glance widget that shows recent reactions and comments for the user's configured album.
+ * Glance widget that shows recent reactions and comments across the user's albums.
  *
- * NOTE: There is no aggregated `/api/activity/recent` endpoint yet, so this widget walks the
- * 5 most recent media items in the bound album and fetches reactions + comments for each.
- * That's `O(media * 2)` HTTP calls per refresh — fine at the default 1-hour interval but
- * not something we'd want to do on every navigation event.
- *
- * TODO: server-side aggregated activity endpoint — Phase 7 polish.
+ * Backed by the aggregated `GET /api/activity/recent` endpoint — one HTTP call per refresh,
+ * regardless of how many albums or media items the user owns.
  */
 class RecentActivityWidget : GlanceAppWidget() {
 
@@ -61,98 +56,37 @@ class RecentActivityWidget : GlanceAppWidget() {
     }
 
     private suspend fun loadData(context: Context, id: GlanceId): RecentActivityData {
+        // The widget config activity is shared with LatestPhotoWidget and stores a
+        // selected album. We don't need it for the activity feed (the endpoint already
+        // scopes to the caller's albums), but we keep the "NotConfigured" state so an
+        // un-configured widget instance prompts the user — same UX as before.
         val prefs = getAppWidgetState(context, PreferencesGlanceStateDefinition, id)
-        val albumId = prefs.albumId() ?: return RecentActivityData.NotConfigured
-        val albumTitle = prefs.albumTitle() ?: ""
+        if (prefs.albumId() == null) return RecentActivityData.NotConfigured
 
         val api = WidgetApi(context)
         return try {
             if (!api.isSignedIn()) return RecentActivityData.SignedOut
 
-            val mediaList = api.media.getAlbumMedia(albumId).data.orEmpty()
-                .filter { it.status == MediaStatus.ACTIVE }
-                .sortedByDescending { it.uploadedAt }
-                .take(MAX_MEDIA_TO_INSPECT)
-
-            if (mediaList.isEmpty()) {
-                return RecentActivityData.Loaded(albumId, albumTitle, emptyList())
-            }
-
-            val items = mutableListOf<ActivityItem>()
-            for (media in mediaList) {
-                runCatching {
-                    val reactions = api.reactions.list(albumId, media.id).data?.reactions.orEmpty()
-                    reactions.forEach { reaction ->
-                        items += ActivityItem.Reaction(
-                            albumId = albumId,
-                            media = media,
-                            actorName = reaction.userDisplayName,
-                            type = reaction.type,
-                            createdAt = reaction.createdAt
-                        )
-                    }
-                }
-                runCatching {
-                    val comments = api.comments.list(albumId, media.id).data.orEmpty()
-                    comments.forEach { comment ->
-                        items += ActivityItem.Comment(
-                            albumId = albumId,
-                            media = media,
-                            actorName = comment.authorDisplayName,
-                            body = comment.body,
-                            createdAt = comment.createdAt
-                        )
-                    }
-                }
-            }
-
-            val recent = items.sortedByDescending { it.createdAt }.take(MAX_ITEMS)
-            RecentActivityData.Loaded(albumId, albumTitle, recent)
+            val response = api.activity.recent(limit = MAX_ITEMS)
+            val items = response.data?.items.orEmpty()
+            RecentActivityData.Loaded(items)
         } catch (_: Throwable) {
-            RecentActivityData.Error(albumId, albumTitle)
+            RecentActivityData.Error
         } finally {
             api.close()
         }
     }
 
     companion object {
-        private const val MAX_MEDIA_TO_INSPECT = 5
         private const val MAX_ITEMS = 10
     }
-}
-
-internal sealed interface ActivityItem {
-    val albumId: String
-    val media: MediaDto
-    val actorName: String
-    val createdAt: Instant
-
-    data class Reaction(
-        override val albumId: String,
-        override val media: MediaDto,
-        override val actorName: String,
-        val type: ReactionType,
-        override val createdAt: Instant
-    ) : ActivityItem
-
-    data class Comment(
-        override val albumId: String,
-        override val media: MediaDto,
-        override val actorName: String,
-        val body: String,
-        override val createdAt: Instant
-    ) : ActivityItem
 }
 
 internal sealed interface RecentActivityData {
     data object NotConfigured : RecentActivityData
     data object SignedOut : RecentActivityData
-    data class Error(val albumId: String, val albumTitle: String) : RecentActivityData
-    data class Loaded(
-        val albumId: String,
-        val albumTitle: String,
-        val items: List<ActivityItem>
-    ) : RecentActivityData
+    data object Error : RecentActivityData
+    data class Loaded(val items: List<ActivityItemDto>) : RecentActivityData
 }
 
 @Composable
@@ -164,24 +98,23 @@ private fun RecentActivityContent(data: RecentActivityData) {
             .cornerRadius(16.dp)
     ) {
         when (data) {
-            RecentActivityData.NotConfigured -> CenterMessage("Tap to pick an album", null)
-            RecentActivityData.SignedOut -> CenterMessage("Sign in to Thykra", null)
-            is RecentActivityData.Error -> CenterMessage("Couldn't load activity", data.albumId)
+            RecentActivityData.NotConfigured -> CenterMessage("Tap to set up", openAlbum = null)
+            RecentActivityData.SignedOut -> CenterMessage("Sign in to Thykra", openAlbum = null)
+            RecentActivityData.Error -> CenterMessage("Couldn't load activity", openAlbum = null)
             is RecentActivityData.Loaded -> if (data.items.isEmpty()) {
-                CenterMessage("No recent activity in ${data.albumTitle}", data.albumId)
+                CenterMessage("No recent activity", openAlbum = null)
             } else {
-                ActivityList(data)
+                ActivityList(data.items)
             }
         }
     }
 }
 
 @Composable
-private fun ActivityList(data: RecentActivityData.Loaded) {
-    val context = LocalContext.current
+private fun ActivityList(items: List<ActivityItemDto>) {
     Column(modifier = GlanceModifier.fillMaxSize().padding(12.dp)) {
         Text(
-            text = "Recent in ${data.albumTitle}".trim(),
+            text = "Recent activity",
             style = TextStyle(
                 color = ColorProvider(ThykraColors.DeepNavy),
                 fontSize = 13.sp,
@@ -191,7 +124,7 @@ private fun ActivityList(data: RecentActivityData.Loaded) {
         )
         Spacer(GlanceModifier.height(6.dp))
         LazyColumn(modifier = GlanceModifier.fillMaxSize()) {
-            items(data.items) { item ->
+            items(items) { item ->
                 ActivityRow(item)
             }
         }
@@ -199,10 +132,10 @@ private fun ActivityList(data: RecentActivityData.Loaded) {
 }
 
 @Composable
-private fun ActivityRow(item: ActivityItem) {
+private fun ActivityRow(item: ActivityItemDto) {
     val context = LocalContext.current
     val tapAction = actionStartActivity(
-        WidgetDeepLinks.openAlbum(context, item.albumId, item.media.id)
+        WidgetDeepLinks.openAlbum(context, item.albumId, item.mediaId)
     )
 
     Row(
@@ -228,7 +161,7 @@ private fun ActivityRow(item: ActivityItem) {
                 maxLines = 2
             )
             Text(
-                text = formatRelative(item.createdAt),
+                text = "in ${item.albumTitle}",
                 style = TextStyle(
                     color = ColorProvider(ThykraColors.MutedSlate),
                     fontSize = 10.sp
@@ -240,10 +173,10 @@ private fun ActivityRow(item: ActivityItem) {
 }
 
 @Composable
-private fun CenterMessage(text: String, albumId: String?) {
+private fun CenterMessage(text: String, openAlbum: String?) {
     val context = LocalContext.current
     val tapAction = actionStartActivity(
-        if (albumId != null) WidgetDeepLinks.openAlbum(context, albumId)
+        if (openAlbum != null) WidgetDeepLinks.openAlbum(context, openAlbum)
         else Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
@@ -266,21 +199,22 @@ private fun CenterMessage(text: String, albumId: String?) {
     }
 }
 
-private fun badgeFor(item: ActivityItem): String = when (item) {
-    is ActivityItem.Comment -> "💬" // 💬
-    is ActivityItem.Reaction -> when (item.type) {
-        ReactionType.LOVE -> "❤️" // ❤️
-        ReactionType.WOW -> "😲" // 😲
-        ReactionType.LAUGH -> "😂" // 😂
-        ReactionType.WISH_I_WAS_THERE -> "✨" // ✨
-        ReactionType.WANDERLUST -> "🌍" // 🌍
-        ReactionType.BEACH -> "🏖️" // 🏖️
-        ReactionType.MOUNTAIN -> "⛰️" // ⛰️
-        ReactionType.FOOD -> "🍴" // 🍴
+private fun badgeFor(item: ActivityItemDto): String = when (item.type) {
+    ActivityType.COMMENT -> "💬"
+    ActivityType.REACTION -> when (item.reactionType) {
+        ReactionType.LOVE -> "❤️"
+        ReactionType.WOW -> "😲"
+        ReactionType.LAUGH -> "😂"
+        ReactionType.WISH_I_WAS_THERE -> "✨"
+        ReactionType.WANDERLUST -> "🌍"
+        ReactionType.BEACH -> "🏖️"
+        ReactionType.MOUNTAIN -> "⛰️"
+        ReactionType.FOOD -> "🍴"
+        null -> "•"
     }
 }
 
-private fun lineFor(item: ActivityItem): String = when (item) {
-    is ActivityItem.Reaction -> "${item.actorName} reacted to ${item.media.filename}"
-    is ActivityItem.Comment -> "${item.actorName}: ${item.body.take(80)}"
+private fun lineFor(item: ActivityItemDto): String = when (item.type) {
+    ActivityType.REACTION -> "${item.actorDisplayName} reacted"
+    ActivityType.COMMENT -> "${item.actorDisplayName}: ${item.commentBody.orEmpty().take(80)}"
 }
