@@ -12,6 +12,7 @@ import { AlbumsPage } from './routes/albums';
 import { AlbumDetailPage } from './routes/albums/detail';
 import { LandingPage1 } from './routes/landing1';
 import { PublicAlbumPage } from './routes/publicAlbum';
+import { InvitePage } from './routes/invite';
 import { getAccessToken } from './api/client';
 
 const rootRoute = createRootRoute({
@@ -71,6 +72,14 @@ const publicAlbumRoute = createRoute({
   component: PublicAlbumPage,
 });
 
+// Invite landing — handles both authenticated (auto-join) and
+// unauthenticated (prompt to sign in) flows internally.
+const inviteRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/invite/$token',
+  component: InvitePage,
+});
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   indexRoute,
@@ -79,6 +88,7 @@ const routeTree = rootRoute.addChildren([
   albumDetailRoute,
   landing1Route,
   publicAlbumRoute,
+  inviteRoute,
 ]);
 
 export const router = createRouter({ routeTree });
