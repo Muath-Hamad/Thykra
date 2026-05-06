@@ -1,0 +1,41 @@
+# Build outputs
+**/build/
+.gradle/
+*/.gradle/
+
+# IDE / editor
+.idea/
+.vscode/
+*.iml
+
+# VCS
+.git/
+.gitignore
+.gitattributes
+
+# Modules not used by the server image
+composeApp/
+iosApp/
+webApp/
+node_modules/
+kotlin-js-store/
+
+# Local dev data (never bake into image)
+data/
+**/data/
+.env
+.env.*
+!.env.prod.example
+local.properties
+*.log
+
+# CI / docs
+.github/
+.devcontainer/
+docker-compose.dev.yml
+docker-compose.prod.yml
+*.md
+!server/Dockerfile
+
+# Misc
+.DS_Store

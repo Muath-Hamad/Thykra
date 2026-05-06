@@ -1,0 +1,83 @@
+# Thykra production-like local stack
+#
+#   cp .env.prod.example .env.prod
+#   # edit .env.prod with real values
+#   docker compose -f docker-compose.prod.yml --env-file .env.prod up --build
+#
+# Brings up Postgres + LocalStack S3 + the Ktor server, all wired together.
+# Use this for end-to-end smoke testing before promoting to a real cloud env.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: thykra-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-thykra}
+      POSTGRES_USER: ${DATABASE_USER:-thykra}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?DATABASE_PASSWORD is required}
+    volumes:
+      - thykra_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-thykra} -d ${DATABASE_NAME:-thykra}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  localstack:
+    image: localstack/localstack:3
+    container_name: thykra-localstack
+    restart: unless-stopped
+    environment:
+      SERVICES: s3
+      DEBUG: 0
+      AWS_DEFAULT_REGION: ${S3_REGION:-us-east-1}
+      # Auto-create the media bucket on container start.
+      INIT_SCRIPTS_DIR: /etc/localstack/init/ready.d
+    volumes:
+      - thykra_localstack_data:/var/lib/localstack
+      - ./infra/localstack/init-bucket.sh:/etc/localstack/init/ready.d/init-bucket.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "awslocal s3 ls s3://${S3_BUCKET:-thykra-media} >/dev/null 2>&1 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    image: thykra-server:latest
+    container_name: thykra-server
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+    environment:
+      # --- Database ---
+      DATABASE_URL: jdbc:postgresql://postgres:5432/${DATABASE_NAME:-thykra}
+      DATABASE_DRIVER: org.postgresql.Driver
+      DATABASE_USER: ${DATABASE_USER:-thykra}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      # --- Storage (LocalStack S3) ---
+      STORAGE_TYPE: s3
+      S3_BUCKET: ${S3_BUCKET:-thykra-media}
+      S3_REGION: ${S3_REGION:-us-east-1}
+      S3_ENDPOINT: http://localstack:4566
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-test}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-test}
+      S3_PATH_STYLE_ACCESS: "true"
+      # Public URL clients reach the bucket through (host-side LocalStack endpoint).
+      S3_PUBLIC_BASE_URL: ${S3_PUBLIC_BASE_URL:-http://localhost:4566/${S3_BUCKET:-thykra-media}}
+      # --- Auth ---
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      ALLOW_DEV_LOGIN: ${ALLOW_DEV_LOGIN:-false}
+    ports:
+      - "${SERVER_PORT:-8081}:8081"
+
+volumes:
+  thykra_postgres_data:
+  thykra_localstack_data:
