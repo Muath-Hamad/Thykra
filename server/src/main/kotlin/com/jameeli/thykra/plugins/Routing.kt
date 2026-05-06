@@ -38,7 +38,8 @@ fun Application.configureRouting(
     reactionRepository: ReactionRepository,
     commentRepository: CommentRepository,
     activityRepository: ActivityRepository,
-    storageService: StorageService
+    storageService: StorageService,
+    allowDevLogin: Boolean = false
 ) {
     routing {
         get("/") {
@@ -48,7 +49,7 @@ fun Application.configureRouting(
             get("/health") {
                 call.respondText("OK")
             }
-            authRoutes(authService)
+            authRoutes(authService, allowDevLogin = allowDevLogin)
             profileRoutes(userRepository)
             albumRoutes(albumRepository, albumMemberRepository, albumInviteRepository, blockedMemberRepository)
             mediaRoutes(mediaService, mediaRepository, albumMemberRepository, storageService)

@@ -38,6 +38,29 @@ class AuthService(
                 subject = userInfo.subject
             )
 
+        return issueAuthResponse(user)
+    }
+
+    /**
+     * E2E test backdoor — looks up (or creates) a user keyed by email under the synthetic "dev" OAuth
+     * provider and issues a normal AuthResponse. This is ONLY wired in by the `/auth/dev-login` route
+     * when `ALLOW_DEV_LOGIN=true` is set. Never enable this in production.
+     */
+    suspend fun devLogin(email: String, displayName: String): AuthResponse {
+        val provider = "dev"
+        val subject = email
+        val user = userRepository.findByOAuthSubject(provider, subject)
+            ?: userRepository.createUser(
+                email = email,
+                displayName = displayName,
+                avatarUrl = null,
+                provider = provider,
+                subject = subject
+            )
+        return issueAuthResponse(user)
+    }
+
+    private suspend fun issueAuthResponse(user: com.jameeli.thykra.model.UserDto): AuthResponse {
         val accessToken = jwtService.generateAccessToken(user.id, user.email)
         val refreshToken = jwtService.generateRefreshToken()
         val refreshTokenHash = RefreshTokenRepository.hashToken(refreshToken)

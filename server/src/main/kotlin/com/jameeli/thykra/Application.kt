@@ -84,9 +84,11 @@ fun Application.module() {
     configureCors()
     configureStatusPages()
     configureSecurity(jwtService)
+    val allowDevLogin = environment.config.propertyOrNull("auth.allowDevLogin")?.getString()?.toBoolean() ?: false
+
     configureRouting(
         authService, userRepository, albumRepository, albumMemberRepository, albumInviteRepository,
         blockedMemberRepository, mediaService, mediaRepository, reactionRepository, commentRepository,
-        activityRepository, storageService
+        activityRepository, storageService, allowDevLogin
     )
 }
