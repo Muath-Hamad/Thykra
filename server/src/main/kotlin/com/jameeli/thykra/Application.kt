@@ -49,7 +49,16 @@ fun Application.module() {
 
     val storageType = environment.config.propertyOrNull("storage.type")?.getString() ?: "local"
     val storageService: StorageService = when (storageType) {
-        "s3" -> S3StorageService()
+        "s3" -> S3StorageService(
+            bucket = environment.config.property("storage.s3.bucket").getString(),
+            region = environment.config.property("storage.s3.region").getString(),
+            endpoint = environment.config.propertyOrNull("storage.s3.endpoint")?.getString()?.takeIf { it.isNotBlank() },
+            accessKey = environment.config.propertyOrNull("storage.s3.accessKey")?.getString()?.takeIf { it.isNotBlank() },
+            secretKey = environment.config.propertyOrNull("storage.s3.secretKey")?.getString()?.takeIf { it.isNotBlank() },
+            publicBaseUrl = environment.config.propertyOrNull("storage.s3.publicBaseUrl")?.getString()?.takeIf { it.isNotBlank() },
+            pathStyleAccess = environment.config.propertyOrNull("storage.s3.pathStyleAccess")?.getString()?.toBoolean() ?: false,
+            presignExpirySeconds = environment.config.propertyOrNull("storage.s3.presignExpirySeconds")?.getString()?.toIntOrNull() ?: 3600,
+        )
         else -> LocalStorageService(
             baseUrl = environment.config.property("storage.baseUrl").getString(),
             storagePath = environment.config.property("storage.localPath").getString()

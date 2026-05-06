@@ -58,6 +58,9 @@ dependencies {
     implementation(libs.thumbnailator)
     implementation(libs.metadataExtractor)
 
+    // AWS SDK v2 (S3 + presigner) for production / S3-compatible storage (LocalStack, MinIO, etc.)
+    implementation(libs.aws.s3)
+
     // Serialization
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.datetime)
