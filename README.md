@@ -72,6 +72,25 @@ in your IDE’s toolbar or run it directly from the terminal:
 To build and run the development version of the iOS app, use the run configuration from the run widget
 in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
 
+### Production-like local stack (Docker)
+
+Brings up Postgres, LocalStack S3, and the Ktor server, all wired together via Docker Compose.
+
+```shell
+cp .env.prod.example .env.prod
+# edit .env.prod — set JWT_SECRET, DATABASE_PASSWORD, GOOGLE_CLIENT_ID
+docker compose -f docker-compose.prod.yml --env-file .env.prod up --build
+```
+
+The server boots on `http://localhost:${SERVER_PORT:-8081}` and writes media to a LocalStack-hosted
+S3 bucket reachable at `http://localhost:4566/thykra-media`. State persists across `up`/`down`
+cycles in named Docker volumes (`thykra_postgres_data`, `thykra_localstack_data`); `docker compose
+down -v` wipes everything.
+
+For real production, swap `STORAGE_TYPE=s3` to point at a real AWS S3 bucket — leave `S3_ENDPOINT`
+unset, drop the `localstack` service, and use the AWS default credential chain (instance role) by
+clearing `S3_ACCESS_KEY`/`S3_SECRET_KEY`.
+
 ### Headless Compose UI tests
 
 Compose Multiplatform UI behaviour is verified on the JVM via Robolectric — no Android emulator

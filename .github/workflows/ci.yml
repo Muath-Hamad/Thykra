@@ -132,6 +132,10 @@ jobs:
       - name: Assemble debug APK
         run: ./gradlew :composeApp:assembleDebug --no-daemon --stacktrace
 
+      # Headless Compose UI tests via Robolectric — no emulator required.
+      - name: Run Compose UI tests
+        run: ./gradlew :composeApp:testDebugUnitTest --no-daemon --stacktrace
+
       - name: Upload composeApp reports on failure
         if: failure()
         uses: actions/upload-artifact@v4
@@ -139,6 +143,7 @@ jobs:
           name: android-reports
           path: |
             composeApp/build/reports
+            composeApp/build/test-results
             composeApp/build/outputs/logs
           if-no-files-found: ignore
 
@@ -234,3 +239,39 @@ jobs:
           name: web-build-logs
           path: webApp/dist
           if-no-files-found: ignore
+
+  docker-build:
+    name: Docker (server image)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # BuildKit cache: speeds up rebuilds when only application sources change
+      # by preserving Gradle's downloaded dependencies between runs.
+      - name: Cache Docker BuildKit
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: buildx-${{ runner.os }}-${{ hashFiles('**/*.gradle*', 'gradle/libs.versions.toml', 'server/Dockerfile') }}
+          restore-keys: |
+            buildx-${{ runner.os }}-
+
+      - name: Build server image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: server/Dockerfile
+          push: false
+          tags: thykra-server:ci
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+
+      # Move-the-cache trick avoids unbounded growth across runs.
+      - name: Rotate cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
