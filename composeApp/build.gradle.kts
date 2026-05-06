@@ -59,6 +59,17 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
+        // Android-only unit tests: Robolectric + Compose UI test on the JVM.
+        // Runs headless via `:composeApp:testDebugUnitTest` — no emulator needed.
+        val androidUnitTest by getting {
+            dependencies {
+                implementation(libs.kotlin.testJunit)
+                implementation(libs.junit)
+                implementation(libs.robolectric)
+                implementation(libs.androidx.test.core)
+                implementation(libs.androidx.compose.ui.test.junit4)
+            }
+        }
     }
 }
 
@@ -98,8 +109,17 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    // Robolectric needs Android resources on the JVM unit-test classpath.
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
 }
 
 dependencies {
     debugImplementation(libs.compose.uiTooling)
+    // ui-test-manifest carries a debug AndroidManifest declaring ComponentActivity
+    // so Robolectric can launch the host activity Compose's test rule needs.
+    // It must be on the *Android* configuration, not androidUnitTest, because
+    // Robolectric reads from the merged debug manifest.
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

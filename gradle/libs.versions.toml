@@ -32,6 +32,8 @@ work = "2.10.0"
 media3 = "1.5.0"
 glance = "1.1.1"
 awsSdk = "2.29.34"
+robolectric = "4.14.1"
+androidxTestCore = "1.6.1"
 
 [libraries]
 # Kotlin
@@ -115,6 +117,12 @@ metadataExtractor = { module = "com.drewnoakes:metadata-extractor", version.ref 
 
 # AWS SDK v2 (S3 includes the presigner under software.amazon.awssdk.services.s3.presigner)
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "awsSdk" }
+
+# Headless UI testing (Robolectric + Compose UI test, JVM-only — no emulator required)
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+androidx-test-core = { module = "androidx.test:core", version.ref = "androidxTestCore" }
+androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4-android", version.ref = "composeMultiplatform" }
+androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "composeMultiplatform" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
