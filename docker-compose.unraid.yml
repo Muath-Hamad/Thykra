@@ -1,0 +1,124 @@
+# Thykra — Unraid deployment stack
+#
+#   cp .env.unraid.example .env.unraid   # then edit it with real values
+#   docker compose -f docker-compose.unraid.yml --env-file .env.unraid up -d --build
+#
+# Brings up Postgres + MinIO + the Ktor server + an nginx-served web app.
+#
+# Topology
+#   web (nginx)  :${WEB_PORT}    -> serves the SPA, proxies /api to server
+#   server       :${SERVER_PORT} -> published directly for the Android/iOS apps,
+#                                   which hardcode port 8081 (shared/Constants.kt)
+#   minio        :${MINIO_API_PORT} / :${MINIO_CONSOLE_PORT}
+#   postgres                     -> internal only, never published
+#
+# Why S3_ENDPOINT must be a LAN-reachable address, not http://minio:9000
+#   The server presigns upload URLs with SigV4, which signs the Host header.
+#   The presigner and the internal S3 client share one endpoint, so whatever is
+#   configured here is what ends up in the URL handed to browsers and phones.
+#   An internal Compose hostname would be unresolvable off-network and would
+#   invalidate the signature if rewritten. The `extra_hosts` entry below lets
+#   the server container resolve that same LAN name (containers do not do mDNS).
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: thykra-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-thykra}
+      POSTGRES_USER: ${DATABASE_USER:-thykra}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?DATABASE_PASSWORD is required}
+    volumes:
+      - ${APPDATA_ROOT:-/mnt/user/appdata/thykra}/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-thykra} -d ${DATABASE_NAME:-thykra}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  minio:
+    image: minio/minio:latest
+    container_name: thykra-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:?S3_ACCESS_KEY is required}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:?S3_SECRET_KEY is required}
+      # Browsers PUT directly to MinIO from the web app's origin, which is a
+      # different port and therefore cross-origin.
+      MINIO_API_CORS_ALLOW_ORIGIN: ${MINIO_CORS_ALLOW_ORIGIN:-*}
+    volumes:
+      - ${APPDATA_ROOT:-/mnt/user/appdata/thykra}/minio:/data
+    ports:
+      - "${MINIO_API_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+
+  # Short-lived: creates the bucket and grants anonymous read, then exits 0.
+  minio-init:
+    image: minio/mc:latest
+    container_name: thykra-minio-init
+    depends_on:
+      - minio
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY}
+      MINIO_INTERNAL_URL: http://minio:9000
+      S3_BUCKET: ${S3_BUCKET:-thykra-media}
+    volumes:
+      - ./infra/minio/init-bucket.sh:/init-bucket.sh:ro
+    entrypoint: ["/bin/sh", "/init-bucket.sh"]
+    restart: "no"
+
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    image: thykra-server:latest
+    container_name: thykra-server
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+    # Lets the container resolve the LAN hostname baked into S3_ENDPOINT.
+    extra_hosts:
+      - "${PUBLIC_HOST:-tower.local}:${UNRAID_HOST_IP:?UNRAID_HOST_IP is required}"
+    environment:
+      # --- Database ---
+      DATABASE_URL: jdbc:postgresql://postgres:5432/${DATABASE_NAME:-thykra}
+      DATABASE_DRIVER: org.postgresql.Driver
+      DATABASE_USER: ${DATABASE_USER:-thykra}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      # --- Storage (MinIO) ---
+      STORAGE_TYPE: s3
+      S3_BUCKET: ${S3_BUCKET:-thykra-media}
+      S3_REGION: ${S3_REGION:-us-east-1}
+      S3_ENDPOINT: http://${PUBLIC_HOST:-tower.local}:${MINIO_API_PORT:-9000}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      S3_PATH_STYLE_ACCESS: "true"
+      S3_PUBLIC_BASE_URL: http://${PUBLIC_HOST:-tower.local}:${MINIO_API_PORT:-9000}/${S3_BUCKET:-thykra-media}
+      # --- Auth ---
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      # Must stay false outside CI — it mints real tokens for any email.
+      ALLOW_DEV_LOGIN: "false"
+    ports:
+      - "${SERVER_PORT:-8081}:8081"
+
+  web:
+    build:
+      context: ./webApp
+      dockerfile: Dockerfile
+      args:
+        # Inlined into the JS bundle at build time; changing it needs a rebuild.
+        VITE_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+    image: thykra-web:latest
+    container_name: thykra-web
+    restart: unless-stopped
+    depends_on:
+      - server
+    ports:
+      - "${WEB_PORT:-8088}:80"
