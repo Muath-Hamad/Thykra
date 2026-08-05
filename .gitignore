@@ -24,6 +24,8 @@ node_modules/
 *.env.local
 .env.prod
 !.env.prod.example
+.env.unraid
+!.env.unraid.example
 CLAUDE.md
 .claude/
 data/
