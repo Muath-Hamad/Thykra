@@ -26,6 +26,15 @@ tasks.named<JavaExec>("run") {
     }
 }
 
+tasks.withType<Test> {
+    // Each test class boots the whole Ktor module against its own H2 database.
+    // Exposed's Database.connect is a JVM-global singleton with thread-local
+    // transaction managers, so classes sharing a JVM can bleed into each other —
+    // fork a fresh JVM per class for real isolation.
+    forkEvery = 1
+    maxParallelForks = 1
+}
+
 dependencies {
     implementation(projects.shared)
 

@@ -1,0 +1,78 @@
+/* The plate — media with zero border-radius, its true aspect ratio, a 1px
+   ink hairline at 10% and a low, wide shadow. A print on a page, not a tile. */
+
+.plate {
+  position: relative;
+  display: block;
+  background: var(--bg-sunken);
+  outline: 1px solid var(--rule);
+  outline-offset: -1px;
+  box-shadow: var(--sh-plate);
+  overflow: hidden;
+  padding: 0;
+  width: 100%;
+}
+
+.plate img,
+.plate video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Grid plate hover: no lift — overlay chips brighten + 2px inset outline. */
+.interactive { cursor: pointer; }
+@media (hover: hover) {
+  .interactive:hover { outline: 2px solid var(--text); outline-offset: -2px; }
+  .interactive:hover .chips { opacity: 1; }
+}
+.interactive:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.chips {
+  position: absolute;
+  inset-inline-start: 6px;
+  bottom: 6px;
+  display: flex;
+  gap: 3px;
+  opacity: 0;
+  transition: opacity var(--dur-1) var(--ease-out);
+  pointer-events: none;
+}
+/* Always visible on touch. */
+@media (hover: none) {
+  .chips { opacity: 1; }
+}
+
+.chip {
+  background: var(--scrim);
+  color: var(--on-scrim);
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: var(--r-pill);
+  white-space: nowrap;
+}
+
+.duration {
+  position: absolute;
+  inset-inline-end: 6px;
+  bottom: 6px;
+  background: var(--scrim);
+  color: var(--on-scrim);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 5px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.playGlyph {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  color: rgba(242, 235, 223, .92);
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, .4));
+}

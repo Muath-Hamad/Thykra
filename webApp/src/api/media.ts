@@ -42,36 +42,62 @@ export interface ConfirmUploadRequest {
 }
 
 export async function getAlbumMedia(albumId: string) {
-  return apiClient(`/api/albums/${albumId}/media`);
+  return apiClient<MediaDto[]>(`/api/albums/${albumId}/media`);
 }
 
 export async function getMedia(albumId: string, mediaId: string) {
-  return apiClient(`/api/albums/${albumId}/media/${mediaId}`);
+  return apiClient<MediaDto>(`/api/albums/${albumId}/media/${mediaId}`);
 }
 
 export async function deleteMedia(albumId: string, mediaId: string) {
-  return apiClient(`/api/albums/${albumId}/media/${mediaId}`, { method: 'DELETE' });
+  return apiClient<string>(`/api/albums/${albumId}/media/${mediaId}`, { method: 'DELETE' });
 }
 
 export async function requestUploadUrl(albumId: string, req: RequestUploadUrlRequest) {
-  return apiClient(`/api/albums/${albumId}/media/request-upload`, {
+  return apiClient<PresignedUploadDto>(`/api/albums/${albumId}/media/request-upload`, {
     method: 'POST',
     body: JSON.stringify(req),
   });
 }
 
-export async function uploadFile(url: string, file: File, contentType: string): Promise<Response> {
-  const resp = await fetch(url, {
-    method: 'PUT',
-    headers: { 'Content-Type': contentType },
-    body: file,
+/**
+ * Presigned PUT via XMLHttpRequest — xhr.upload.onprogress gives true bytes
+ * with no API change (Doc 2, "Honest progress"). This is what makes the
+ * per-file upload bars real rather than decorative.
+ */
+export function uploadFileWithProgress(
+  url: string,
+  file: File,
+  contentType: string,
+  onProgress: (loaded: number, total: number) => void,
+  signal?: AbortSignal,
+): Promise<{ ok: boolean; status: number }> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('PUT', url);
+    xhr.setRequestHeader('Content-Type', contentType);
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) onProgress(e.loaded, e.total);
+    };
+    xhr.onload = () => {
+      if (import.meta.env.DEV) console.log(`[API] PUT ${url} → ${xhr.status}`);
+      resolve({ ok: xhr.status >= 200 && xhr.status < 300, status: xhr.status });
+    };
+    xhr.onerror = () => reject(new Error('Network error during upload'));
+    xhr.onabort = () => reject(new DOMException('Aborted', 'AbortError'));
+    if (signal) {
+      if (signal.aborted) {
+        xhr.abort();
+        return;
+      }
+      signal.addEventListener('abort', () => xhr.abort(), { once: true });
+    }
+    xhr.send(file);
   });
-  if (import.meta.env.DEV) console.log(`[API] PUT ${url} → ${resp.status}`);
-  return resp;
 }
 
 export async function confirmUpload(albumId: string, mediaId: string, req: ConfirmUploadRequest) {
-  return apiClient(`/api/albums/${albumId}/media/${mediaId}/confirm`, {
+  return apiClient<MediaDto>(`/api/albums/${albumId}/media/${mediaId}/confirm`, {
     method: 'POST',
     body: JSON.stringify(req),
   });

@@ -1,0 +1,343 @@
+/* The lightbox is Darkroom in both modes — a viewing surface. Its portal
+   root carries data-theme="dark", so every token inside resolves dark. */
+
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-lightbox);
+  background: var(--bg-sunken);
+  display: flex;
+  animation: fade-in var(--dur-3) var(--ease-out) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .root { animation: fade-in 120ms both; }
+}
+
+.stage {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Chrome — pills on rgba(0,0,0,.55), auto-hides after 2.5s idle ── */
+.chrome {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity var(--dur-2) var(--ease-out);
+}
+.chromeHidden { opacity: 0; }
+.chrome > * { pointer-events: auto; }
+.chromeHidden > * { pointer-events: none; }
+
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, .55);
+  border: 1px solid rgba(242, 235, 223, .14);
+  border-radius: var(--r-pill);
+  padding: 6px;
+  color: var(--text);
+}
+
+.topLeading {
+  position: absolute;
+  top: var(--sp-4);
+  inset-inline-start: var(--sp-4);
+  max-width: min(60%, 480px);
+}
+.topTrailing {
+  position: absolute;
+  top: var(--sp-4);
+  inset-inline-end: var(--sp-4);
+}
+
+.info { padding-inline-end: 10px; min-width: 0; }
+.infoName {
+  font-size: var(--t-meta-size);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.infoMeta {
+  font-size: 11px;
+  color: var(--text-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.iconButton {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  background: rgba(242, 235, 223, .12);
+  transition: background-color var(--dur-1) var(--ease-out);
+}
+.iconButton:hover { background: rgba(242, 235, 223, .22); }
+.iconButton[aria-pressed="true"], .iconButtonActive {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.commentCount {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.navButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .55);
+  border: 1px solid rgba(242, 235, 223, .14);
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.navButton:hover { background: rgba(0, 0, 0, .75); }
+.navPrev { inset-inline-start: var(--sp-4); }
+.navNext { inset-inline-end: var(--sp-4); }
+
+/* ── Media area ── */
+.mediaArea {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-6);
+  overflow: hidden;
+}
+@media (max-width: 767px) {
+  .mediaArea { padding: 0; }
+}
+
+.mediaBox {
+  position: relative;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 120ms var(--ease-out);
+}
+
+.mediaBox img, .mediaBox video {
+  max-width: 100%;
+  max-height: calc(100dvh - 48px);
+  object-fit: contain;
+  user-select: none;
+}
+@media (max-width: 767px) {
+  .mediaBox img, .mediaBox video { max-height: 100dvh; }
+}
+
+/* Loading: the 400px thumbnail scaled up, slightly soft, 2px accent line. */
+.loadingThumb { filter: blur(4px) brightness(.9); }
+.progressLine {
+  position: absolute;
+  top: 0;
+  inset-inline: 0;
+  height: 2px;
+  z-index: 3;
+  background-color: color-mix(in srgb, var(--accent) 25%, transparent);
+  background-image: linear-gradient(100deg, transparent 20%, var(--accent) 45%, transparent 70%);
+  background-size: 220% 100%;
+  animation: indeterminate-sweep 1.2s linear infinite;
+}
+
+.failed {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  color: var(--text-2);
+}
+.failedPlate {
+  width: 96px;
+  height: 72px;
+  border: 1px dashed var(--rule-strong);
+  transform: rotate(-2deg);
+}
+
+/* ── Bottom: reaction bar + filmstrip ── */
+.bottom {
+  position: absolute;
+  bottom: var(--sp-4);
+  inset-inline: 0;
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+}
+
+.reactionBar {
+  display: flex;
+  gap: 4px;
+  background: rgba(0, 0, 0, .55);
+  border: 1px solid rgba(242, 235, 223, .14);
+  border-radius: var(--r-pill);
+  padding: 5px;
+  position: relative;
+}
+
+.picker {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  background: var(--bg-raised);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  box-shadow: var(--sh-3);
+  padding: 8px;
+  animation: rise-in var(--dur-2) var(--ease-out) both;
+}
+html[dir="rtl"] .picker { transform: translateX(50%); }
+.pickerItem {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+.pickerItem:hover { background: var(--bg-sunken); }
+.pickerItemMine { background: var(--warm-soft); }
+
+.filmstrip {
+  display: flex;
+  gap: 3px;
+  justify-content: center;
+}
+@media (max-width: 1023px) {
+  .filmstrip { display: none; }
+}
+.filmThumb {
+  width: 34px;
+  height: 24px;
+  padding: 0;
+  opacity: .45;
+  overflow: hidden;
+  transition: opacity var(--dur-1) var(--ease-out);
+}
+.filmThumb img { width: 100%; height: 100%; object-fit: cover; }
+.filmThumb:hover { opacity: .8; }
+.filmCurrent {
+  opacity: 1;
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* ── Comments panel ── */
+.commentsPanel {
+  width: 340px;
+  flex: none;
+  background: var(--bg-raised);
+  border-inline-start: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  padding: var(--sp-4);
+}
+@media (max-width: 1023px) {
+  .commentsPanel {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    width: auto;
+    height: 60dvh;
+    z-index: 4;
+    border-inline-start: 0;
+    border-top: 1px solid var(--rule);
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+    animation: sheet-up var(--dur-3) var(--ease-out) both;
+  }
+}
+@media (max-width: 767px) {
+  .commentsPanel { height: 72dvh; }
+}
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .commentsPanel { animation: fade-in 120ms both; }
+}
+
+.commentsHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.commentsTitle {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+}
+.commentsHint {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+html[lang="ar"] .commentsHint { text-transform: none; letter-spacing: 0; }
+
+.commentsList {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  margin-top: var(--sp-4);
+  padding-inline-end: 4px;
+}
+
+.comment { display: flex; gap: 10px; }
+.commentPending { opacity: .6; }
+.commentMain { flex: 1; min-width: 0; }
+.commentAuthor {
+  font-size: var(--t-meta-size);
+  color: var(--warm-text);
+  font-weight: 600;
+}
+.commentTime { color: var(--text-3); font-weight: 400; }
+.commentBody {
+  font-size: 13.5px;
+  line-height: 1.5;
+  margin-top: 2px;
+  overflow-wrap: anywhere;
+}
+.commentActions { display: flex; gap: 12px; margin-top: 5px; }
+.commentAction { font-size: 11.5px; color: var(--accent-text); }
+.commentDelete { font-size: 11.5px; color: var(--bad); }
+
+.composer {
+  border-top: 1px solid var(--rule);
+  padding-top: var(--sp-3);
+  margin-top: var(--sp-3);
+}
+.composerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+.composerHint { font-size: 11px; color: var(--text-3); }

@@ -76,6 +76,21 @@ class MediaRepository(private val storageService: StorageService) {
             .map { it.toMediaDto() }
     }
 
+    suspend fun countActiveForAlbum(albumId: UUID): Int = newSuspendedTransaction {
+        MediaTable.selectAll()
+            .where { (MediaTable.albumId eq albumId) and (MediaTable.status eq MediaStatus.ACTIVE.name) }
+            .count().toInt()
+    }
+
+    /** Public thumbnail URLs of the latest ACTIVE media, newest first. */
+    suspend fun latestActiveThumbnailUrls(albumId: UUID, limit: Int): List<String> = newSuspendedTransaction {
+        MediaTable.selectAll()
+            .where { (MediaTable.albumId eq albumId) and (MediaTable.status eq MediaStatus.ACTIVE.name) }
+            .orderBy(MediaTable.uploadedAt, SortOrder.DESC)
+            .limit(limit)
+            .map { storageService.getPublicUrl(it[MediaTable.thumbnailKey] ?: it[MediaTable.storageKey]) }
+    }
+
     suspend fun activate(
         id: UUID,
         width: Int?,

@@ -1,0 +1,89 @@
+/* Tabs navigate routes — underlined <a> elements, aria-current="page".
+   Overflow scrolls horizontally with no scrollbar and a fade mask. */
+.tabs {
+  display: flex;
+  gap: 22px;
+  border-bottom: 1px solid rgba(21, 23, 38, .14);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(to var(--mask-dir, right), black calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to var(--mask-dir, right), black calc(100% - 24px), transparent);
+}
+html[dir="rtl"] .tabs { --mask-dir: left; }
+[data-theme="dark"] .tabs { border-bottom-color: var(--rule); }
+.tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  padding-block: 11px;
+  color: var(--text-3);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  white-space: nowrap;
+  transition: color var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out);
+}
+html[lang="ar"] .tab { font-weight: 600; }
+.tab:hover { color: var(--text-2); border-bottom-color: var(--rule-strong); }
+.tab[aria-current="page"] {
+  font-weight: 700;
+  color: var(--text);
+  border-bottom-color: var(--text);
+}
+
+/* ── Segmented — filled pill group, switches a view in place ── */
+.segmented {
+  display: inline-flex;
+  background: var(--bg-sunken);
+  padding: 3px;
+  border-radius: var(--r-sm);
+  gap: 3px;
+}
+
+.segment {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.segmentInput {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.segmentLabel {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 13.5px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  color: var(--text-2);
+  white-space: nowrap;
+  transition: background-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out), box-shadow var(--dur-1) var(--ease-out);
+}
+.segmentInput:checked + .segmentLabel {
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(21, 23, 38, .08);
+}
+[data-theme="dark"] .segmentInput:checked + .segmentLabel {
+  background: var(--bg-raised);
+  box-shadow: none;
+  outline: 1px solid var(--rule);
+}
+.segmentInput:disabled + .segmentLabel { color: var(--text-3); opacity: .55; }
+.segmentInput:disabled { cursor: default; }
+.segmentInput:focus-visible + .segmentLabel {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+  .fullWidthMobile { display: flex; width: 100%; }
+  .fullWidthMobile .segment { flex: 1; }
+  .fullWidthMobile .segmentLabel { width: 100%; text-align: center; padding-block: 11px; }
+}

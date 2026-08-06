@@ -1,0 +1,97 @@
+/* /trips/:id/recaps — the make panel and the pre-launch "coming" state
+   (Doc 3 § s-recaps). Tokens only; logical properties. */
+
+.panel {
+  text-align: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  padding: var(--sp-8) var(--sp-4);
+  margin-block-start: var(--sp-6);
+}
+
+.panelBody {
+  margin-block-start: var(--sp-2);
+  color: var(--text-2);
+  max-width: 42ch;
+  margin-inline: auto;
+}
+
+.panelActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  justify-content: center;
+  margin-block-start: var(--sp-5);
+}
+
+.gate {
+  margin-block-start: var(--sp-3);
+  color: var(--warm-text);
+}
+
+/* ── Pre-launch: two blank plates, slightly out of true ── */
+.coming {
+  text-align: center;
+  padding-block: var(--sp-10);
+  padding-inline: var(--sp-3);
+}
+
+.comingPlates {
+  position: relative;
+  inline-size: 110px;
+  block-size: 76px;
+  margin-inline: auto;
+}
+
+.comingPlate {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-sunken);
+  border: 1px dashed var(--rule-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.comingPlateBack { transform: rotate(-5deg); }
+.comingPlateFront { transform: rotate(3deg); }
+
+/* RTL: the stack leans the other way, like the stamp. */
+html[dir="rtl"] .comingPlateBack { transform: rotate(5deg); }
+html[dir="rtl"] .comingPlateFront { transform: rotate(-3deg); }
+
+.comingTitle {
+  margin-block-start: var(--sp-5);
+}
+
+.comingBody {
+  margin-block-start: var(--sp-2);
+  color: var(--text-2);
+  max-width: 42ch;
+  margin-inline: auto;
+}
+
+.comingActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  justify-content: center;
+  align-items: center;
+  margin-block-start: var(--sp-5);
+}
+
+/* A text link with button metrics — the ghost-link shape, as a router link. */
+.ghostLink {
+  display: inline-flex;
+  align-items: center;
+  block-size: 40px;
+  padding-inline: 12px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--accent-text);
+  border-radius: var(--r-sm);
+}
+html[lang="ar"] .ghostLink { font-weight: 700; }
+.ghostLink:hover { background: var(--bg-sunken); }

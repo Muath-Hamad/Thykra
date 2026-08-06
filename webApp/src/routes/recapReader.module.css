@@ -1,0 +1,100 @@
+/* /r/:token — the recap reader. A scrolling edition, not a lightbox.
+   No app chrome: the document is the page. Tokens only; media radius 0. */
+
+.reader {
+  background: var(--bg);
+}
+
+/* ── Cover — full bleed, the title over the plate's lower third ── */
+.cover {
+  position: relative;
+  block-size: 100dvh;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  background: var(--bg-sunken);
+  color: var(--text);
+}
+
+.coverImg {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  max-width: none;
+}
+
+.coverScrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 30%,
+    color-mix(in srgb, var(--bg) 55%, transparent) 62%,
+    color-mix(in srgb, var(--bg) 92%, transparent) 100%
+  );
+}
+
+.coverText {
+  position: relative;
+  inline-size: 100%;
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  padding-block-end: 14vh;
+}
+
+.coverTitle {
+  max-width: 18ch;
+}
+
+.coverMeta {
+  margin-block-start: var(--sp-3);
+}
+
+/* ── One plate per screen ── */
+.plateSection {
+  min-block-size: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--sp-8) var(--gutter);
+}
+
+.figure {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-3);
+  max-inline-size: 100%;
+}
+
+.caption {
+  text-align: center;
+}
+
+/* ── Closing panel ── */
+.closing {
+  min-block-size: 60dvh;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--sp-4);
+  padding: var(--sp-16) var(--gutter);
+  text-align: center;
+  border-block-start: 1px solid var(--rule);
+}
+
+.owner {
+  color: var(--text-2);
+}
+
+/* ── Not found / loading ── */
+.notFound {
+  min-block-size: 100dvh;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--sp-3);
+  padding: var(--sp-6);
+  text-align: center;
+}

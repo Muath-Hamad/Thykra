@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Thykra — a plate on paper. Bone ground, ink frame, clay stamp corner. -->
+  <rect width="64" height="64" rx="14" fill="#FBF6ED"/>
+  <rect x="12" y="10" width="40" height="34" fill="#1B6FBE"/>
+  <rect x="12" y="10" width="40" height="34" fill="none" stroke="#151726" stroke-opacity=".22" stroke-width="1.5"/>
+  <path d="M12 36l11-10 8 7 9-9 12 12v8H12z" fill="#F4EDE0" fill-opacity=".9"/>
+  <rect x="12" y="48" width="26" height="5" rx="2.5" fill="#151726"/>
+  <rect x="42" y="48" width="10" height="5" rx="2.5" fill="#AA4324"/>
+</svg>

@@ -1,0 +1,21 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: var(--r-xs);
+  white-space: nowrap;
+}
+html[lang="ar"] .badge { text-transform: none; letter-spacing: 0; font-size: 12px; }
+
+.owner { background: var(--warm-soft); color: var(--warm-text); }
+.contributor { background: var(--accent-soft); color: var(--accent-text); }
+.viewer { background: var(--bg-sunken); color: var(--text-2); }
+.ink { background: var(--text); color: var(--bg); }
+.blocked { background: var(--bad-soft); color: var(--bad); }
+.warm { background: var(--warm); color: var(--on-warm); }
+.good { background: var(--good-soft); color: var(--good); }

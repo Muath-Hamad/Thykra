@@ -1,0 +1,34 @@
+.skeleton {
+  background: var(--bg-sunken);
+  background-image: linear-gradient(
+    100deg,
+    transparent 20%,
+    rgba(255, 255, 255, .55) 45%,
+    transparent 70%
+  );
+  background-size: 220% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+[data-theme="dark"] .skeleton {
+  background-image: linear-gradient(
+    100deg,
+    transparent 20%,
+    rgba(242, 235, 223, .07) 45%,
+    transparent 70%
+  );
+  background-size: 220% 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background-image: none;
+  }
+}
+
+.listRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.listRows { display: grid; gap: 12px; }

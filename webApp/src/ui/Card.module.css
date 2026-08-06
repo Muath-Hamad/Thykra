@@ -1,0 +1,132 @@
+.card {
+  background: var(--bg-raised);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  box-shadow: var(--sh-1);
+  padding: var(--sp-5);
+}
+@media (max-width: 479px) {
+  .card { padding: var(--sp-4); }
+}
+.flush { padding: 0; overflow: hidden; }
+
+/* ── TripCard — the whole card is one <a>, never a div with onClick ── */
+.tripCard {
+  display: block;
+  background: var(--bg-raised);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  box-shadow: var(--sh-1);
+  overflow: hidden;
+  color: var(--text);
+  transition:
+    transform var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-1) var(--ease-out),
+    border-color var(--dur-1) var(--ease-out);
+}
+@media (hover: hover) {
+  .tripCard:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sh-2);
+    border-color: var(--rule-strong);
+  }
+  .tripCard:hover .cover img { transform: scale(1.03); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tripCard:hover { transform: none; }
+  .tripCard:hover .cover img { transform: none; }
+}
+
+.cover {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: var(--bg-sunken);
+  overflow: hidden;
+}
+.cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-2) var(--ease-out);
+}
+.coverEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: var(--bg);
+}
+.coverEmptyLabel {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+html[lang="ar"] .coverEmptyLabel { text-transform: none; letter-spacing: 0; }
+
+.dashed { border-style: dashed; border-color: rgba(21, 23, 38, .28); }
+[data-theme="dark"] .dashed { border-color: var(--rule-strong); }
+
+.newBadge {
+  position: absolute;
+  inset-inline-start: 10px;
+  top: 10px;
+  background: var(--warm);
+  color: var(--on-warm);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: var(--r-xs);
+}
+html[lang="ar"] .newBadge { text-transform: none; letter-spacing: 0; }
+
+.visBadge {
+  position: absolute;
+  inset-inline-end: 10px;
+  top: 10px;
+  background: var(--scrim);
+  color: var(--on-scrim);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: var(--r-xs);
+}
+html[lang="ar"] .visBadge { text-transform: none; letter-spacing: 0; }
+
+.body { padding: var(--sp-4); }
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 19px;
+  letter-spacing: -.012em;
+}
+html[lang="ar"] .title { letter-spacing: 0; }
+
+.meta {
+  font-size: var(--t-meta-size);
+  color: var(--text-3);
+  margin-top: 3px;
+}
+.metaLive { color: var(--warm-text); }
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+.footerEnd {
+  margin-inline-start: auto;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+html[lang="ar"] .footerEnd { text-transform: none; letter-spacing: 0; }

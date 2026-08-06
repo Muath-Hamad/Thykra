@@ -1,0 +1,270 @@
+/* Shared presentation for the Activity + Recaps screen group
+   (Doc 3 § s-activity, § s-recaps). One row system, two scopes.
+   Tokens only; logical properties; media radius 0. */
+
+/* ── Page frame — a reading column, not a dashboard ── */
+.page {
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  padding-block: var(--sp-8) var(--sp-16);
+}
+.column {
+  max-width: 720px;
+}
+
+.header {
+  margin-block-end: var(--sp-5);
+}
+.headline {
+  margin-block-start: var(--sp-2);
+}
+
+.tabsRow {
+  margin-block-end: var(--sp-6);
+}
+
+/* ── Day groups ── */
+.list {
+  display: grid;
+  margin-block-start: var(--sp-6);
+}
+
+.group {
+  display: grid;
+}
+
+.groupHead {
+  position: sticky;
+  top: var(--nav-h);
+  z-index: var(--z-sticky);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-3);
+  padding-block: var(--sp-2);
+  padding-inline-start: 20px;
+  margin-block-start: var(--sp-6);
+  border-block-end: 1px solid var(--rule-strong);
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
+  backdrop-filter: blur(6px);
+}
+.group:first-child .groupHead {
+  margin-block-start: 0;
+}
+
+/* The scale has nothing between t-title (20px) and t-body (15px); the day
+   heading sits with the rows it labels, so it takes the display face at 15. */
+.groupTitle {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.2;
+  letter-spacing: -.012em;
+}
+html[lang="ar"] .groupTitle {
+  letter-spacing: 0;
+}
+
+.rows {
+  display: grid;
+  padding-block-start: var(--sp-1);
+}
+
+/* ── The row — one link, avatar, sentence, thumbnail cluster ── */
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding-block: 10px;
+  padding-inline: 20px var(--sp-2);
+  border-radius: var(--r-xs);
+  color: var(--text);
+  border-block-start: 1px solid var(--rule);
+}
+.rows > .row:first-child {
+  border-block-start: 0;
+}
+@media (hover: hover) {
+  .row:hover {
+    background: var(--bg-raised);
+  }
+}
+
+.rowBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.sentence {
+  display: block;
+  color: var(--text);
+}
+
+.actor {
+  font-weight: 600;
+  color: var(--warm-text);
+}
+
+.rowMeta {
+  display: block;
+}
+
+/* Unseen — the clay dot, sized once. */
+.dot {
+  position: absolute;
+  inset-inline-start: 4px;
+  top: 50%;
+  margin-block-start: -4px;
+  inline-size: 8px;
+  block-size: 8px;
+  border-radius: 50%;
+  background: var(--warm);
+}
+
+/* ── Thumbnail cluster — the only square crops in the product ── */
+.thumbs {
+  display: flex;
+  gap: 3px;
+  flex: none;
+}
+
+.thumb {
+  inline-size: 36px;
+  block-size: 36px;
+  object-fit: cover;
+  border-radius: 0;
+  background: var(--bg-sunken);
+}
+
+.chip {
+  inline-size: 36px;
+  block-size: 36px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-sunken);
+  color: var(--text-2);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* <768: the cluster drops to two squares; the overflow count follows. */
+.chipNarrow { display: none; }
+@media (max-width: 767px) {
+  .thumbThird { display: none; }
+  .chipWide { display: none; }
+  .chipNarrow { display: flex; }
+}
+
+/* ── Paging ── */
+.pager {
+  display: flex;
+  justify-content: center;
+  padding-block-start: var(--sp-6);
+}
+
+.sentinel {
+  block-size: 1px;
+}
+
+.pagerError {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+  padding-block: var(--sp-4);
+  color: var(--text-2);
+  border-block-start: 1px solid var(--rule);
+}
+
+.loading {
+  padding-block-start: var(--sp-6);
+}
+
+.stateArea {
+  margin-block-start: var(--sp-6);
+}
+
+/* ── Recap cards ── */
+.recapList {
+  display: grid;
+  gap: var(--sp-4);
+  margin-block-start: var(--sp-5);
+}
+
+.recapCard {
+  background: var(--bg-raised);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.recapCover {
+  position: relative;
+}
+
+.recapStamp {
+  position: absolute;
+  inset-block-start: var(--sp-3);
+  inset-inline-end: var(--sp-3);
+}
+
+.recapCoverBlank {
+  aspect-ratio: 21 / 9;
+  background: var(--bg-sunken);
+}
+
+.recapBody {
+  padding: var(--sp-4);
+}
+
+.recapMeta {
+  margin-block-start: var(--sp-1);
+}
+
+.recapActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-block-start: var(--sp-3);
+}
+
+/* BUILDING / FAILED rows */
+.recapRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  background: var(--bg-raised);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  padding: var(--sp-4);
+}
+
+.recapRowBad {
+  background: var(--bad-soft);
+  border-color: color-mix(in srgb, var(--bad) 32%, transparent);
+}
+
+.recapRowText {
+  flex: 1;
+  min-width: 0;
+}
+
+.recapRowTitle {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.25;
+  letter-spacing: -.012em;
+}
+html[lang="ar"] .recapRowTitle { letter-spacing: 0; }
+
+.buildingSquare {
+  inline-size: 88px;
+  block-size: 88px;
+  flex: none;
+}

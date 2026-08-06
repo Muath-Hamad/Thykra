@@ -236,6 +236,44 @@ fun Route.albumRoutes(
                 call.respond(HttpStatusCode.Created, ApiResponse(success = true, data = invite))
             }
 
+            get("/{id}/invites") {
+                val userId = call.principal<JWTPrincipal>()!!.subject!!
+                val albumId = UUID.fromString(call.parameters["id"])
+                val role = albumMemberRepository.getMemberRole(albumId, UUID.fromString(userId))
+                if (role != MemberRole.OWNER && role != MemberRole.CONTRIBUTOR) {
+                    call.respond(
+                        HttpStatusCode.Forbidden,
+                        ApiResponse<Unit>(success = false, error = "Only owners and contributors can view invite links")
+                    )
+                    return@get
+                }
+                val invites = albumInviteRepository.listActiveForAlbum(albumId)
+                call.respond(ApiResponse(success = true, data = invites))
+            }
+
+            delete("/{id}/invites/{token}") {
+                val userId = call.principal<JWTPrincipal>()!!.subject!!
+                val albumId = UUID.fromString(call.parameters["id"])
+                val token = call.parameters["token"]!!
+                val role = albumMemberRepository.getMemberRole(albumId, UUID.fromString(userId))
+                if (role != MemberRole.OWNER) {
+                    call.respond(
+                        HttpStatusCode.Forbidden,
+                        ApiResponse<Unit>(success = false, error = "Only the owner can revoke invite links")
+                    )
+                    return@delete
+                }
+                val revoked = albumInviteRepository.revoke(albumId, token)
+                if (!revoked) {
+                    call.respond(
+                        HttpStatusCode.NotFound,
+                        ApiResponse<Unit>(success = false, error = "Invite not found")
+                    )
+                    return@delete
+                }
+                call.respond(ApiResponse(success = true, data = "Invite revoked"))
+            }
+
             post("/join/{token}") {
                 val userId = call.principal<JWTPrincipal>()!!.subject!!
                 val token = call.parameters["token"]!!
@@ -263,7 +301,8 @@ fun Route.albumRoutes(
                     return@post
                 }
                 albumMemberRepository.addMember(invite.albumId, userUuid, MemberRole.CONTRIBUTOR)
-                albumInviteRepository.markUsed(token, userUuid)
+                // Links are multi-use: record the join instead of consuming the token.
+                albumInviteRepository.recordJoin(invite.id, userUuid)
                 val album = albumRepository.findById(invite.albumId)
                 call.respond(ApiResponse(success = true, data = album))
             }

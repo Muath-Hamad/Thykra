@@ -1,0 +1,49 @@
+/* ═══ /me — You. Single column at every width, capped at 560px. ═══ */
+
+.page {
+  max-width: 560px;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  padding-block: var(--sp-8) var(--sp-16);
+}
+
+/* Sections are separated by a hairline, never by cards. */
+.section { padding-block: var(--sp-6); }
+.section + .section { border-block-start: 1px solid var(--rule); }
+
+/* ── Identity ── */
+.identity {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  padding-block-start: 0;
+}
+.identityText { min-width: 0; }
+.identityText > p { margin-block-start: 4px; }
+
+/* ── Display name ── */
+.nameRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+}
+.nameField { flex: 1; min-width: 0; }
+/* Clears the field label so Save lines up with the control, not the label. */
+.saveButton { flex: none; margin-block-start: 25px; }
+
+.groupLabel {
+  display: block;
+  margin-block-end: var(--sp-3);
+}
+
+.caption {
+  margin-block-start: var(--sp-3);
+}
+
+/* ── Sign out ── */
+.signOutRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}

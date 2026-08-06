@@ -1,0 +1,90 @@
+.gallery { display: grid; gap: var(--sp-10); }
+
+.chapter { display: block; }
+
+/* ── Chapter header: numeral, 2px ink rule, date, count ── */
+.header {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  border-bottom: 2px solid var(--text);
+  padding-bottom: 8px;
+  position: sticky;
+  top: var(--sticky-top, var(--nav-h));
+  z-index: var(--z-sticky);
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
+  backdrop-filter: blur(6px);
+  transition: padding var(--dur-1) var(--ease-out);
+}
+
+.numeral {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--t-numeral-size);
+  line-height: .78;
+  letter-spacing: -.045em;
+  transition: font-size var(--dur-1) var(--ease-out);
+}
+html[lang="ar"] .numeral { letter-spacing: 0; font-weight: 700; line-height: .9; }
+
+.headerText { flex: 1; padding-bottom: 4px; }
+.dayLabel {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+html[lang="ar"] .dayLabel { text-transform: none; letter-spacing: 0; font-size: 12px; }
+.dayDate {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+}
+.counts {
+  font-size: var(--t-meta-size);
+  color: var(--text-3);
+  padding-bottom: 5px;
+  white-space: nowrap;
+}
+
+/* Pinned: the header shrinks to a hairline bar (~40px). */
+.header[data-pinned="true"] {
+  padding-block: 6px 6px;
+  align-items: center;
+}
+.header[data-pinned="true"] .numeral { font-size: 15px; line-height: 1; letter-spacing: -.02em; }
+.header[data-pinned="true"] .headerText { padding-bottom: 0; display: flex; gap: 12px; align-items: baseline; }
+.header[data-pinned="true"] .dayLabel { display: none; }
+.header[data-pinned="true"] .dayDate { font-size: 14px; }
+.header[data-pinned="true"] .counts { padding-bottom: 0; font-size: 12px; }
+
+.lead { margin-top: 12px; }
+/* Lead plate: full chapter width, capped at 62vh. */
+.lead > * { max-height: 62vh; }
+.lead img { max-height: 62vh; object-fit: cover; }
+
+.rows { display: grid; margin-top: var(--row-gap, 4px); gap: var(--row-gap, 4px); }
+.row { display: flex; gap: var(--row-gap, 4px); }
+
+/* Chapter stagger: rows fade up 8px, 40ms apart, cap 8, once per session. */
+.stagger .row,
+.stagger .lead {
+  animation: rise-in var(--dur-2) var(--ease-out) both;
+  animation-delay: calc(var(--stagger) * min(var(--row-index, 0), 8));
+}
+@media (prefers-reduced-motion: reduce) {
+  .stagger .row, .stagger .lead { animation: none; }
+}
+
+/* ── Contact sheet — uniform squares, 2px gap, 5/4/3/2 columns ── */
+.contact {
+  display: grid;
+  gap: 2px;
+  grid-template-columns: repeat(2, 1fr);
+}
+@media (min-width: 480px) { .contact { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 768px) { .contact { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 1024px) { .contact { grid-template-columns: repeat(5, 1fr); } }
+.contact .cell { aspect-ratio: 1; }
+.contact .cell img { width: 100%; height: 100%; object-fit: cover; }

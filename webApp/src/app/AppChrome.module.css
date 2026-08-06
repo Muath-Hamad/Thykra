@@ -1,0 +1,166 @@
+/* ── AppNav — one 56px top bar ≥768px ── */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-nav);
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding-inline: var(--gutter);
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--rule);
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: -.03em;
+  color: var(--text);
+}
+html[lang="ar"] .wordmark { letter-spacing: 0; }
+
+.links {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  align-self: stretch;
+}
+@media (max-width: 767px) {
+  .links { display: none; }
+}
+
+.link {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-3);
+  display: inline-flex;
+  align-items: center;
+  align-self: stretch;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.link:hover { color: var(--text-2); }
+.link[aria-current="page"], .link.active {
+  color: var(--text);
+  font-weight: 700;
+  border-bottom-color: var(--text);
+}
+
+.trailing {
+  margin-inline-start: auto;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.newTripDesktop { display: inline-flex; }
+@media (max-width: 767px) {
+  .newTripDesktop { display: none; }
+}
+
+.avatarButton {
+  border-radius: 50%;
+  display: inline-flex;
+}
+
+/* ── Mobile context bar (52px) — back chevron, title, one overflow ── */
+.contextBar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-nav);
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-inline: var(--sp-3);
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--rule);
+}
+@media (min-width: 768px) {
+  .contextBar { display: none; }
+}
+.contextTitle {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.contextButton {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-sm);
+  color: var(--text);
+}
+.contextButton:hover { background: var(--bg-sunken); }
+
+@media (max-width: 767px) {
+  .hideOnMobile { display: none; }
+}
+
+/* ── Bottom tab bar <768px — four tabs, 48px targets, labels visible ── */
+.tabbar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: var(--z-nav);
+  height: var(--tabbar-h);
+  display: flex;
+  background: var(--bg-raised);
+  border-top: 1px solid var(--rule);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+@media (min-width: 768px) {
+  .tabbar { display: none; }
+}
+
+.tab {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  padding-block: 8px;
+  color: var(--text-3);
+  min-height: 48px;
+}
+.tab[aria-current="page"], .tab.active { color: var(--text); }
+.tabLabel { font-size: 10px; font-weight: 600; }
+
+/* ── App shell ── */
+.main {
+  min-height: calc(100dvh - var(--nav-h));
+}
+@media (max-width: 767px) {
+  .main { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0)); }
+}
+
+/* Mobile FAB (create trip) */
+.fab {
+  position: fixed;
+  inset-inline-end: var(--sp-4);
+  bottom: calc(var(--tabbar-h) + var(--sp-4));
+  z-index: var(--z-sticky);
+  width: 52px;
+  height: 52px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--on-accent);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--sh-3);
+}
+@media (max-width: 767px) {
+  .fab { display: inline-flex; }
+}

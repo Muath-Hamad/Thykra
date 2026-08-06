@@ -1,0 +1,71 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-sunken);
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: var(--r-pill);
+  border: 1px solid transparent;
+  color: var(--text);
+  transition: background-color var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out);
+  position: relative;
+}
+.chip:hover { background: var(--bg-raised); border-color: var(--rule-strong); }
+
+.mine {
+  background: var(--warm-soft);
+  border-color: var(--warm);
+  color: var(--warm-text);
+}
+.mine:hover { background: var(--warm-soft); border-color: var(--warm-hover); }
+
+.count { font-weight: 600; }
+
+/* On the Darkroom lightbox surface the chips ride dark pills — always
+   rendered inside the lightbox's data-theme="dark" scope, so tokens resolve
+   to their Darkroom values. */
+.onDark {
+  background: rgba(242, 235, 223, .12);
+  color: var(--text);
+}
+.onDark:hover { background: rgba(242, 235, 223, .2); border-color: transparent; }
+.onDark.mine {
+  background: var(--warm);
+  color: var(--on-warm);
+  border-color: transparent;
+}
+
+/* Burst: chip scales 1 → 1.32 → .96 → 1 on --ease-spring. */
+.burst { animation: chip-burst var(--dur-3) var(--ease-spring); }
+@keyframes chip-burst {
+  0% { transform: scale(1); }
+  34% { transform: scale(1.32); }
+  58% { transform: scale(.96); }
+  100% { transform: scale(1); }
+}
+
+/* One particle, not a shower. */
+.particle {
+  position: absolute;
+  inset-inline-start: 12px;
+  top: 0;
+  pointer-events: none;
+  animation: particle-float 480ms ease-out both;
+}
+@keyframes particle-float {
+  0% { opacity: 0; transform: translate(0, 0) scale(.6); }
+  40% { opacity: 1; }
+  100% { opacity: 0; transform: translate(6px, -26px) scale(1.05); }
+}
+html[dir="rtl"] .particle { animation-name: particle-float-rtl; }
+@keyframes particle-float-rtl {
+  0% { opacity: 0; transform: translate(0, 0) scale(.6); }
+  40% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-6px, -26px) scale(1.05); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .burst { animation: none; }
+  .particle { display: none; }
+}

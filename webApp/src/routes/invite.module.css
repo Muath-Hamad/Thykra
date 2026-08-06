@@ -1,0 +1,409 @@
+/* ═══ /invite/:token — the trip is the page, the invitation is a stamp on it ═══ */
+
+.page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+/* ── Top bar ── */
+.topbar {
+  flex: none;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  padding-inline: var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 19px;
+  letter-spacing: -.03em;
+  color: var(--text);
+}
+html[lang="ar"] .wordmark { letter-spacing: 0; font-weight: 700; }
+
+.topbarTrail {
+  margin-inline-start: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--text-3);
+}
+
+.signInLink {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--accent-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* ── Two-column body ── */
+.split {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: stretch;
+}
+@media (min-width: 768px) {
+  .split { grid-template-columns: 1.15fr .85fr; }
+}
+@media (min-width: 1024px) {
+  .split { grid-template-columns: 1fr 1fr; }
+}
+
+.contentCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-block: var(--sp-10) var(--sp-12);
+  padding-inline: var(--gutter);
+  max-width: 60ch;
+  justify-self: end;
+  width: 100%;
+  min-width: 0;
+}
+@media (min-width: 1024px) {
+  .contentCol {
+    padding-block: var(--sp-16) var(--sp-16);
+    padding-inline-end: var(--sp-10);
+  }
+}
+
+.microLabel { margin-top: 26px; }
+
+.title {
+  margin-top: 10px;
+  max-width: 18ch;
+}
+
+.description {
+  margin-top: 14px;
+  max-width: 46ch;
+  color: var(--text-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  /* Fade the third line out rather than cutting a word with an ellipsis. */
+  -webkit-mask-image: linear-gradient(to bottom, currentColor 64%, transparent 100%);
+  mask-image: linear-gradient(to bottom, currentColor 64%, transparent 100%);
+}
+
+.peopleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  margin-top: var(--sp-5);
+  color: var(--text-2);
+}
+
+.strong { font-weight: 600; color: var(--text); }
+
+/* ── Signed-in panel — the account is stated before the irreversible act ── */
+.signedInPanel {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  margin-top: var(--sp-5);
+  padding-block: 10px;
+  padding-inline: 12px;
+  background: var(--accent-soft);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-sm);
+  color: var(--text-2);
+}
+
+.inlineLink {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-body-s-size);
+  color: var(--accent-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 0;
+}
+
+/* ── Join failure — the page keeps all its context ── */
+.failStrip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: var(--sp-4);
+  padding-block: 10px;
+  padding-inline: 12px;
+  background: var(--bad-soft);
+  border-radius: var(--r-sm);
+  color: var(--text-2);
+}
+
+/* ── The one warm CTA, with the honest sub-line beside it ── */
+.ctaRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  flex-wrap: nowrap;
+  margin-top: var(--sp-6);
+  width: 100%;
+}
+
+.ctaSub {
+  color: var(--text-3);
+  max-width: 22ch;
+}
+
+/* ── What you get ── */
+.whatList {
+  display: grid;
+  gap: 9px;
+  margin-top: var(--sp-6);
+  padding-top: var(--sp-5);
+  border-top: 1px solid var(--rule);
+  width: 100%;
+  color: var(--text-2);
+}
+
+.whatList li {
+  display: flex;
+  gap: 9px;
+  align-items: baseline;
+}
+
+.whatList li::before {
+  content: "·";
+  color: var(--warm);
+  font-weight: 800;
+  flex: none;
+}
+
+.expiry { margin-top: var(--sp-4); }
+
+/* ── Cover column — a print laid on a darker surface ── */
+.coverCol {
+  background: var(--bg-sunken);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--sp-4);
+  padding-block: var(--sp-10);
+  padding-inline: var(--sp-8);
+  min-width: 0;
+}
+
+.coverFrame {
+  box-shadow: var(--sh-plate);
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.blankPlate {
+  background: var(--bg-raised);
+  border: 1px dashed var(--rule-strong);
+  border-radius: 0;
+  display: grid;
+  place-items: center;
+  width: 100%;
+}
+
+/* Blurred teaser — texture, not content. */
+.teaser {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-2);
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .teaser { grid-template-columns: repeat(2, 1fr); }
+  .teaser > :nth-child(3) { display: none; }
+}
+
+.teaserThumb {
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 0;
+  filter: blur(1.5px);
+  opacity: .85;
+}
+
+.coverFooter {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding-top: var(--sp-1);
+}
+
+/* ── Mobile: cover first, stamp straddling the seam ── */
+.hero {
+  position: relative;
+  background: var(--bg-sunken);
+  margin-bottom: var(--sp-6);
+}
+
+.heroChip {
+  position: absolute;
+  inset-block-start: var(--sp-3);
+  inset-inline-start: var(--sp-3);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: -.03em;
+  padding-block: 5px;
+  padding-inline: 10px;
+  border-radius: var(--r-xs);
+  box-shadow: var(--sh-1);
+}
+html[lang="ar"] .heroChip { letter-spacing: 0; font-weight: 700; }
+
+.heroStamp {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-start: var(--gutter);
+  transform: translateY(50%);
+}
+
+/* Sticky, never fixed — it must not cover the last line of the description. */
+.stickyBar {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: var(--z-sticky);
+  margin-top: auto;
+  display: grid;
+  gap: 6px;
+  background: var(--bg-raised);
+  border-top: 1px solid var(--rule);
+  padding-block-start: var(--sp-3);
+  padding-block-end: var(--sp-3);
+  padding-inline: var(--gutter);
+}
+.stickyBar > :first-child { width: 100%; }
+
+.stickySub { text-align: center; }
+
+@media (max-width: 767px) {
+  .contentCol {
+    padding-block: 0 var(--sp-8);
+    max-width: none;
+  }
+  .contentCol .microLabel { margin-top: 34px; }
+  .teaser { display: none; }
+}
+
+/* ── Dead ends ── */
+.deadEnd {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--sp-2);
+  padding-block: var(--sp-16);
+  padding-inline: var(--gutter);
+  max-width: 56ch;
+  margin-inline: auto;
+  width: 100%;
+}
+
+.deadTitle { margin-top: var(--sp-5); }
+
+.deadBody {
+  color: var(--text-2);
+  margin-top: var(--sp-2);
+}
+
+.deadActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  justify-content: center;
+  margin-top: var(--sp-6);
+}
+
+.checkTile {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  background: var(--good-soft);
+  color: var(--good);
+  border-radius: var(--r-sm);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.blankDevice {
+  width: 84px;
+  height: 66px;
+  display: grid;
+  place-items: center;
+  background: var(--bg-sunken);
+  border: 1px dashed var(--rule-strong);
+  border-radius: 0;
+  transform: rotate(-3deg);
+}
+html[dir="rtl"] .blankDevice { transform: rotate(3deg); }
+
+/* ── Success — the second of the product's two celebrations ── */
+.celebration {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-block: var(--sp-16);
+  padding-inline: var(--gutter);
+}
+
+.celebrationBody {
+  color: var(--text-2);
+  margin-top: var(--sp-2);
+}
+
+.progressTrack {
+  width: min(280px, 70vw);
+  height: 3px;
+  margin-top: var(--sp-6);
+  background: var(--bg-sunken);
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  animation: invite-progress 700ms var(--ease-out) forwards;
+}
+
+@keyframes invite-progress {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progressBar { width: 100%; animation: none; }
+}
+
+/* ── Loading skeletons, in the real boxes ── */
+.skelTitle { margin-top: 26px; width: 100%; }
+.skelLines { display: grid; gap: 9px; margin-top: var(--sp-4); width: 100%; }
+.skelAvatars { display: flex; gap: 6px; margin-top: var(--sp-5); }
+.skelCta { margin-top: var(--sp-6); }

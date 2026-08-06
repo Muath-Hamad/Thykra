@@ -1,0 +1,102 @@
+.viewport {
+  position: fixed;
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  inset-inline-end: var(--sp-6);
+  bottom: var(--sp-6);
+  width: min(420px, calc(100vw - 2 * var(--sp-6)));
+  pointer-events: none;
+}
+
+/* Bottom-centre on mobile, above the tab bar. */
+@media (max-width: 767px) {
+  .viewport {
+    inset-inline: 0;
+    margin-inline: auto;
+    bottom: calc(var(--tabbar-h) + var(--sp-3));
+    width: min(420px, calc(100vw - 2 * var(--sp-4)));
+  }
+}
+
+.toast {
+  pointer-events: auto;
+  background: var(--bg-raised);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  border-inline-start: 4px solid var(--kind, var(--accent));
+  box-shadow: var(--sh-3);
+  padding: 14px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-width: min(320px, 100%);
+  animation: toast-in var(--dur-2) var(--ease-out) both;
+}
+.leaving {
+  animation: toast-out var(--dur-2) var(--ease-out) both;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes toast-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast { animation: fade-in 120ms both; }
+  .leaving { animation: toast-out 120ms both; }
+}
+
+.success { --kind: var(--good); }
+.info { --kind: var(--accent); }
+.warm { --kind: var(--warm); }
+.error { --kind: var(--bad); }
+
+.content { flex: 1; min-width: 0; }
+.title { font-size: 14px; font-weight: 500; }
+.body { font-size: var(--t-meta-size); color: var(--text-3); margin-top: 2px; }
+
+.spinner {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  border: 2px solid var(--accent-soft);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+
+.action {
+  color: var(--accent-text);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 13.5px;
+  flex: none;
+}
+.actionOutline {
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-sm);
+  height: 32px;
+  padding-inline: 10px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  color: var(--text);
+}
+.dismiss {
+  color: var(--text-3);
+  font-size: 14px;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+.dismiss:hover { background: var(--bg-sunken); color: var(--text); }
