@@ -4,6 +4,9 @@ on:
   push:
     branches: [main, 'claude/**']
   pull_request:
+  # Manual runs — also the only way to exercise CI on branches pushed by
+  # integrations whose tokens don't emit push events.
+  workflow_dispatch:
 
 permissions:
   contents: read
