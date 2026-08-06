@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { getAccessToken, saveTokens, clearTokens } from '../api/client';
+import { getAccessToken, saveTokens, clearTokens, tryRefreshToken } from '../api/client';
 
 interface User {
   id: string;
@@ -24,23 +24,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const token = getAccessToken();
-    if (token) {
-      fetch('/api/profile', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success && data.data) {
-            setUser(data.data);
-          } else {
-            clearTokens();
-          }
-        })
-        .catch(() => clearTokens())
-        .finally(() => setIsLoading(false));
-    } else {
+    if (!token) {
       setIsLoading(false);
+      return;
     }
+    const bootstrap = async () => {
+      let res = await fetch('/api/profile', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      // An expired access token is refreshable — only give the session up
+      // when the refresh itself is rejected. Network failures keep the
+      // tokens: the next navigation retries.
+      if (res.status === 401 && (await tryRefreshToken())) {
+        res = await fetch('/api/profile', {
+          headers: { Authorization: `Bearer ${getAccessToken()}` },
+        });
+      }
+      const data = await res.json();
+      if (data.success && data.data) {
+        setUser(data.data);
+      } else if (res.status === 401) {
+        clearTokens();
+      }
+    };
+    bootstrap()
+      .catch(() => {})
+      .finally(() => setIsLoading(false));
   }, []);
 
   const login = (accessToken: string, refreshToken: string, userData: User) => {

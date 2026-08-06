@@ -31,6 +31,9 @@ describe('relativeTimeParts', () => {
     expect(relativeTimeParts('2026-04-12T14:59:40Z', now)).toEqual({ kind: 'justNow' });
     expect(relativeTimeParts('2026-04-12T14:20:00Z', now)).toEqual({ kind: 'minutes', n: 40 });
     expect(relativeTimeParts('2026-04-10T15:00:00Z', now)).toEqual({ kind: 'days', n: 2 });
+    // Calendar days, not 24h blocks: 47 hours ago is two days ago, not yesterday.
+    expect(relativeTimeParts('2026-04-11T20:00:00Z', now)).toEqual({ kind: 'yesterday' });
+    expect(relativeTimeParts('2026-04-10T16:00:00Z', now)).toEqual({ kind: 'days', n: 2 });
     expect(relativeTimeParts('2026-04-01T15:00:00Z', now)).toEqual({
       kind: 'date',
       iso: '2026-04-01T15:00:00Z',

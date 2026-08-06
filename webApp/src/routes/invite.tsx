@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, useNavigate, useParams } from '@tanstack/react-router';
 import { joinByInvite, type AlbumDto } from '../api/albums';
-import { clearTokens } from '../api/client';
 import { getInvitePreview, type InvitePreviewDto } from '../api/invites';
 import { useAuth } from '../auth/AuthContext';
 import { useLocale } from '../i18n/LocaleProvider';
@@ -24,20 +23,51 @@ type JoinPhase = 'idle' | 'joining' | 'failed' | 'success';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+/** A stash older than this is an abandoned invite, not an intent. */
+const STASH_MAX_AGE_MS = 30 * 60 * 1000;
+
 function stashToken(token: string) {
   try {
-    localStorage.setItem(PENDING_INVITE_KEY, token);
+    localStorage.setItem(PENDING_INVITE_KEY, JSON.stringify({ token, at: Date.now() }));
   } catch {
     /* private mode — the flow still works, it just forgets */
   }
 }
 
-function forgetToken() {
+export function forgetToken() {
   try {
     localStorage.removeItem(PENDING_INVITE_KEY);
   } catch {
     /* private mode */
   }
+}
+
+/**
+ * The stashed token, or null. Entries older than 30 minutes are dropped so an
+ * abandoned invite never hijacks a later sign-in. A value written before the
+ * stash carried a timestamp is a bare token — honoured once, then consumed.
+ */
+export function readPendingInvite(): string | null {
+  let raw: string | null = null;
+  try {
+    raw = localStorage.getItem(PENDING_INVITE_KEY);
+  } catch {
+    return null;
+  }
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as { token?: unknown; at?: unknown };
+    if (parsed && typeof parsed.token === 'string') {
+      if (typeof parsed.at === 'number' && Date.now() - parsed.at > STASH_MAX_AGE_MS) {
+        forgetToken();
+        return null;
+      }
+      return parsed.token;
+    }
+  } catch {
+    /* legacy shape — the raw string is the token */
+  }
+  return raw;
 }
 
 /** Emphasise one run of characters inside an already-interpolated sentence. */
@@ -141,7 +171,8 @@ export function InvitePage() {
 
   const useAnotherAccount = useCallback(() => {
     stashToken(token);
-    clearTokens();
+    // logout() needs the access token to reach POST /api/auth/logout — and it
+    // clears the tokens itself once the call is away.
     auth.logout();
     void navigate({ to: '/login', search: {} });
   }, [auth, navigate, token]);

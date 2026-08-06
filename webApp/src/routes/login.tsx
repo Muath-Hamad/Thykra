@@ -5,19 +5,11 @@ import { getInvitePreview } from '../api/invites';
 import type { AlbumDto } from '../api/albums';
 import { useAuth } from '../auth/AuthContext';
 import { useLocale } from '../i18n/LocaleProvider';
-import { PENDING_INVITE_KEY } from './invite';
+import { forgetToken, readPendingInvite } from './invite';
 import styles from './login.module.css';
 
 const HERO_PHOTO =
   'https://images.unsplash.com/photo-1527631746610-bca00a040d60?w=1920&q=85';
-
-function readStash(): string | null {
-  try {
-    return localStorage.getItem(PENDING_INVITE_KEY);
-  } catch {
-    return null;
-  }
-}
 
 /** Emphasise one run of characters inside an already-interpolated sentence. */
 function emphasise(text: string, needle: string): ReactNode {
@@ -48,7 +40,7 @@ export function LoginPage() {
 
   // ── Why am I here? The stashed invite token answers it. ──
   useEffect(() => {
-    const token = readStash();
+    const token = readPendingInvite();
     if (!token) return;
     setStash(token);
     let cancelled = false;
@@ -72,14 +64,17 @@ export function LoginPage() {
   }, []);
 
   const goAfterSignIn = useCallback(() => {
-    // 1 — a stashed invite beats everything; the invite page consumes it.
+    // 1 — a stashed invite beats everything; consume it as we hand it over so a
+    // link that is never joined cannot hijack the next sign-in.
     if (stash) {
+      forgetToken();
       void navigate({ to: '/invite/$token', params: { token: stash }, replace: true });
       return;
     }
-    // 2 — the return path we were sent here with.
+    // 2 — the return path we were sent here with. '//evil.com' is protocol-
+    // relative, not a local path.
     const next = search.next;
-    if (typeof next === 'string' && next.startsWith('/')) {
+    if (typeof next === 'string' && next.startsWith('/') && !next.startsWith('//')) {
       try {
         void navigate({ to: next as never, replace: true }).catch(() => {
           window.location.assign(next);

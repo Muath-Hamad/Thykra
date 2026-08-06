@@ -7,7 +7,7 @@
  * offers a rebuild.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   getMyRecaps,
   parseRecapGate,
@@ -27,7 +27,7 @@ import {
   activityStyles as styles,
 } from './activityShared';
 
-/** Polling gives up after two minutes — an honest failure beats a spinner. */
+/** Each edition gets two minutes of its own — an honest failure beats a spinner. */
 const GIVE_UP_MS = 120_000;
 const POLL_MS = 5_000;
 
@@ -38,9 +38,9 @@ export function RecapsPage() {
 
   const [recaps, setRecaps] = useState<RecapDto[] | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
-  const [gaveUp, setGaveUp] = useState(false);
+  /** Ids of editions that have been BUILDING for longer than GIVE_UP_MS. */
+  const [stalled, setStalled] = useState<ReadonlySet<string>>(() => new Set<string>());
   const [retrying, setRetrying] = useState<string | null>(null);
-  const pollStart = useRef<number | null>(null);
 
   const load = useCallback(async () => {
     setStatus('loading');
@@ -57,22 +57,34 @@ export function RecapsPage() {
     void load();
   }, [load]);
 
-  // Poll while anything is building; stop at two minutes and treat it as failed.
+  const markStalled = useCallback((list: RecapDto[]) => {
+    const now = Date.now();
+    const overdue = list
+      .filter(
+        (r) => r.status === 'BUILDING' && now - new Date(r.createdAt).getTime() > GIVE_UP_MS,
+      )
+      .map((r) => r.id);
+    if (overdue.length === 0) return;
+    setStalled((prev) => {
+      const fresh = overdue.filter((id) => !prev.has(id));
+      if (fresh.length === 0) return prev;
+      const next = new Set(prev);
+      for (const id of fresh) next.add(id);
+      return next;
+    });
+  }, []);
+
+  // Poll while anything is building. Patience is counted per edition, from when
+  // it was requested — one stalled build never condemns one started seconds ago.
   useEffect(() => {
     if (!recaps) return;
-    const building = recaps.some((r) => r.status === 'BUILDING');
-    if (!building) {
-      pollStart.current = null;
-      setGaveUp(false);
-      return;
-    }
-    if (gaveUp) return;
-    if (pollStart.current === null) pollStart.current = Date.now();
+    const building = recaps.filter((r) => r.status === 'BUILDING');
+    if (building.length === 0) return;
+    markStalled(recaps);
+    // Nothing left worth waiting for.
+    if (building.every((r) => stalled.has(r.id))) return;
     const handle = window.setInterval(() => {
-      if (pollStart.current !== null && Date.now() - pollStart.current > GIVE_UP_MS) {
-        setGaveUp(true);
-        return;
-      }
+      markStalled(recaps);
       void getMyRecaps().then(
         (resp) => {
           if (resp.success && resp.data) setRecaps(resp.data);
@@ -81,7 +93,7 @@ export function RecapsPage() {
       );
     }, POLL_MS);
     return () => window.clearInterval(handle);
-  }, [recaps, gaveUp]);
+  }, [recaps, stalled, markStalled]);
 
   const share = useCallback(
     async (recap: RecapDto) => {
@@ -102,8 +114,12 @@ export function RecapsPage() {
       const resp = await requestRecap(recap.albumId).catch(() => null);
       setRetrying(null);
       if (resp?.success) {
-        pollStart.current = null;
-        setGaveUp(false);
+        setStalled((prev) => {
+          if (!prev.has(recap.id)) return prev;
+          const next = new Set(prev);
+          next.delete(recap.id);
+          return next;
+        });
         void load();
         return;
       }
@@ -118,7 +134,7 @@ export function RecapsPage() {
   );
 
   const effectiveStatus = (recap: RecapDto) =>
-    gaveUp && recap.status === 'BUILDING' ? 'FAILED' : recap.status;
+    recap.status === 'BUILDING' && stalled.has(recap.id) ? 'FAILED' : recap.status;
 
   return (
     <div className={`${styles.page} page-enter`}>

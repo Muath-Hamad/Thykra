@@ -65,7 +65,7 @@ function isMediaFile(file: File): boolean {
 
 export function UploadProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<UploadItem[]>([]);
-  const queueRef = useRef<{ item: UploadItem; file: File }[]>([]);
+  const queueRef = useRef<{ item: UploadItem; file: File; reported?: boolean }[]>([]);
   const processingRef = useRef(false);
   const settledListeners = useRef(new Set<(s: UploadBatchSummary) => void>());
   const confirmedListeners = useRef(new Set<(m: MediaDto) => void>());
@@ -77,12 +77,15 @@ export function UploadProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const checkSettled = useCallback(() => {
-    // A batch = everything currently in the queue for one album.
-    const byAlbum = new Map<string, UploadItem[]>();
-    for (const { item } of queueRef.current) {
-      (byAlbum.get(item.albumId) ?? byAlbum.set(item.albumId, []).get(item.albumId)!).push(item);
+    // A batch = everything not yet reported in the queue for one album.
+    const byAlbum = new Map<string, typeof queueRef.current>();
+    for (const entry of queueRef.current) {
+      if (entry.reported) continue;
+      (byAlbum.get(entry.item.albumId) ??
+        byAlbum.set(entry.item.albumId, []).get(entry.item.albumId)!).push(entry);
     }
-    for (const [albumId, albumItems] of byAlbum) {
+    for (const [albumId, entries] of byAlbum) {
+      const albumItems = entries.map((e) => e.item);
       const unfinished = albumItems.some(
         (i) =>
           i.status === 'QUEUED' ||
@@ -101,8 +104,14 @@ export function UploadProvider({ children }: { children: ReactNode }) {
         if (summary.added.length > 0 || summary.failed > 0) {
           settledListeners.current.forEach((fn) => fn(summary));
         }
-        // Keep DONE rows in the dock until dismissed, but stop re-reporting.
-        queueRef.current = queueRef.current.filter((q) => q.item.albumId !== albumId);
+        // DONE entries no longer need their File; FAILED entries keep it so
+        // Retry can re-upload. `reported` stops the batch from re-reporting.
+        queueRef.current = queueRef.current.filter(
+          (q) => q.item.albumId !== albumId || q.item.status === 'FAILED',
+        );
+        for (const e of entries) {
+          if (e.item.status === 'FAILED') e.reported = true;
+        }
       }
     }
   }, []);
@@ -183,7 +192,14 @@ export function UploadProvider({ children }: { children: ReactNode }) {
         return { item, file };
       });
       queueRef.current.push(...entries);
-      setItems((prev) => [...prev, ...entries.map((e) => e.item)]);
+      setItems((prev) => {
+        // A new batch replaces finished rows — otherwise the dock's counts
+        // and progress bar start inflated by the previous batch's DONE rows.
+        prev
+          .filter((u) => u.status === 'DONE' && u.previewUrl)
+          .forEach((u) => URL.revokeObjectURL(u.previewUrl!));
+        return [...prev.filter((u) => u.status !== 'DONE'), ...entries.map((e) => e.item)];
+      });
       void processQueue();
       return rejected;
     },
@@ -195,10 +211,11 @@ export function UploadProvider({ children }: { children: ReactNode }) {
       const entry = queueRef.current.find((q) => q.item.id === id);
       if (entry && entry.item.status === 'FAILED') {
         entry.item.attempt = 0;
+        entry.reported = false;
         patch(id, { status: 'QUEUED', attempt: 0, error: undefined });
         void processQueue();
       } else {
-        // Terminal failure already flushed from the queue: nothing to retry.
+        // No file to re-upload (defensive — Retry only renders for FAILED).
         setItems((prev) => prev.filter((u) => u.id !== id));
       }
     },
@@ -210,6 +227,7 @@ export function UploadProvider({ children }: { children: ReactNode }) {
     for (const entry of queueRef.current) {
       if (entry.item.status === 'FAILED') {
         entry.item.attempt = 0;
+        entry.reported = false;
         patch(entry.item.id, { status: 'QUEUED', attempt: 0, error: undefined });
         any = true;
       }

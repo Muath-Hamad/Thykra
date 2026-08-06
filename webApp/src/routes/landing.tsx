@@ -9,7 +9,7 @@ import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { Plate } from '../ui/Plate';
 import { useDocumentTitle, useMediaQuery } from '../ui/hooks';
-import { PENDING_INVITE_KEY } from './invite';
+import { forgetToken, readPendingInvite } from './invite';
 import styles from './landing.module.css';
 
 const HERO_PHOTO =
@@ -58,13 +58,9 @@ export function LandingPage() {
       const data = await response.json();
       if (data.success && data.data) {
         auth.login(data.data.accessToken, data.data.refreshToken, data.data.user);
-        let stash: string | null = null;
-        try {
-          stash = localStorage.getItem(PENDING_INVITE_KEY);
-        } catch {
-          /* private mode */
-        }
+        const stash = readPendingInvite();
         if (stash) {
+          forgetToken();
           void navigate({ to: '/invite/$token', params: { token: stash }, replace: true });
         } else {
           void navigate({ to: '/trips', search: {}, replace: true });

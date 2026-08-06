@@ -89,7 +89,23 @@ export async function apiClientPublic<T = unknown>(
   return response.json() as Promise<ApiEnvelope<T>>;
 }
 
-async function tryRefreshToken(): Promise<boolean> {
+let refreshInFlight: Promise<boolean> | null = null;
+
+/**
+ * Deduped: the server rotates refresh tokens, so two concurrent refresh
+ * requests would invalidate each other — every caller that hits a 401 in the
+ * same window must share one refresh round-trip.
+ */
+export function tryRefreshToken(): Promise<boolean> {
+  if (!refreshInFlight) {
+    refreshInFlight = doRefreshToken().finally(() => {
+      refreshInFlight = null;
+    });
+  }
+  return refreshInFlight;
+}
+
+async function doRefreshToken(): Promise<boolean> {
   try {
     const refreshToken = getRefreshToken();
     if (!refreshToken) return false;

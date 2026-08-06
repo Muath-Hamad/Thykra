@@ -77,10 +77,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               : 4000;
       setItems((prev) => {
         const next = [...prev, { ...options, kind, id, leaving: false }];
-        // Max 3 stacked — oldest non-error goes first.
+        // Max 3 stacked — oldest non-error goes first; never the one we just added.
         if (next.filter((t) => !t.leaving).length > MAX_STACK) {
-          const evict = next.find((t) => !t.leaving && t.kind !== 'error') ?? next[0];
-          window.setTimeout(() => remove(evict.id), 0);
+          const evict = next.find((t) => !t.leaving && t.kind !== 'error' && t.id !== id);
+          // If everything else is an error, let the stack exceed the cap.
+          if (evict) window.setTimeout(() => remove(evict.id), 0);
         }
         return next;
       });

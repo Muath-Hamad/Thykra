@@ -223,15 +223,18 @@ export function MediaGallery<T extends GalleryMedia>({
         break;
       }
       case 'PageDown': {
-        e.preventDefault();
+        // No next chapter — leave the key to the browser rather than eat the scroll.
         const next = flat.findIndex((f) => f.chapterIdx === entry.chapterIdx + 1);
-        if (next >= 0) focusEntry(next);
+        if (next < 0) return;
+        e.preventDefault();
+        focusEntry(next);
         break;
       }
       case 'PageUp': {
-        e.preventDefault();
         const prev = flat.findIndex((f) => f.chapterIdx === entry.chapterIdx - 1);
-        if (prev >= 0) focusEntry(prev);
+        if (prev < 0) return;
+        e.preventDefault();
+        focusEntry(prev);
         break;
       }
       default:
@@ -257,7 +260,9 @@ export function MediaGallery<T extends GalleryMedia>({
     );
     chapterEls.current.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, [animKey, chapters.length]);
+    // `view` matters: the chapter sections only exist in the chapters view, so
+    // the observer has to re-attach when the view swaps them in.
+  }, [animKey, chapters.length, view]);
 
   // ── Sticky pin sensing per chapter header ──
   const sentinelEls = useRef(new Map<string, HTMLElement>());

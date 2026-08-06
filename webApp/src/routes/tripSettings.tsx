@@ -210,13 +210,21 @@ export function TripSettingsPage() {
   const hashHandled = useRef(false);
   useEffect(() => {
     if (hashHandled.current || !album) return;
-    hashHandled.current = true;
     const id = window.location.hash.replace('#', '');
-    if (!id) return;
-    window.setTimeout(() => {
-      document.getElementById(id)?.scrollIntoView({ behavior: 'auto', block: 'start' });
+    if (!id) {
+      hashHandled.current = true;
+      return;
+    }
+    // Owner-gated sections only mount once members load, so the target may not
+    // exist yet — stay unhandled and retry when they do.
+    const handle = window.setTimeout(() => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      hashHandled.current = true;
+      el.scrollIntoView({ behavior: 'auto', block: 'start' });
     }, 0);
-  }, [album]);
+    return () => window.clearTimeout(handle);
+  }, [album, members, isOwner]);
 
   // ── Details form ──
   const [form, setForm] = useState<{ title: string; description: string } | null>(null);
@@ -303,7 +311,7 @@ export function TripSettingsPage() {
       setBusyToken(token);
       const revoked = await revokeInvite(albumId, token).catch(() => null);
       if (revoked?.success) {
-        const created = await createInviteLink(albumId, 7).catch(() => null);
+        const created = await createInviteLink(albumId, Number(expiresIn)).catch(() => null);
         if (!created?.success) toast({ kind: 'error', title: t('common.errorGeneric') });
       } else {
         toast({ kind: 'error', title: t('common.errorGeneric') });
@@ -311,7 +319,7 @@ export function TripSettingsPage() {
       await loadInvites();
       setBusyToken(null);
     },
-    [albumId, loadInvites, t, toast],
+    [albumId, expiresIn, loadInvites, t, toast],
   );
 
   // ── Destructive flows ──
@@ -339,7 +347,7 @@ export function TripSettingsPage() {
         action: {
           label: t('common.undo'),
           onClick: () => {
-            void addMember(albumId, member.userId, 'CONTRIBUTOR')
+            void addMember(albumId, member.userId, member.role)
               .catch(() => null)
               .then(() => loadMembers());
           },
@@ -368,7 +376,7 @@ export function TripSettingsPage() {
           onClick: () => {
             void (async () => {
               await unblockMember(albumId, member.userId).catch(() => null);
-              await addMember(albumId, member.userId, 'CONTRIBUTOR').catch(() => null);
+              await addMember(albumId, member.userId, member.role).catch(() => null);
               await Promise.all([loadMembers(), loadBlocked()]);
             })();
           },

@@ -54,6 +54,15 @@ const FOCUSABLE =
 // Comments closed by default; the choice persists for the session so someone
 // reading a conversation is not re-closing it on every photo.
 let commentsOpenSession = false;
+let nextPendingKey = 1;
+
+interface PendingComment {
+  key: number;
+  albumId: string;
+  mediaId: string;
+  body: string;
+  failed: boolean;
+}
 
 const IDLE_MS = 2500;
 const SLIDESHOW_MS = 4000;
@@ -170,18 +179,20 @@ export function Lightbox({
     setCommentsOpen(open);
   }, []);
   const [comments, setComments] = useState<CommentDto[] | null>(null);
-  const [pendingComment, setPendingComment] = useState<{ body: string; failed: boolean } | null>(
-    null,
-  );
+  // Keyed by media so a failed comment's text survives photo changes — it
+  // reappears (with Retry) when the user navigates back to that photo.
+  const [pendingComments, setPendingComments] = useState<PendingComment[]>([]);
   const [draft, setDraft] = useState('');
   const [editing, setEditing] = useState<{ id: string; body: string } | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<CommentDto | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
+  const itemIdRef = useRef<string | null>(null);
 
   useEffect(() => {
+    itemIdRef.current = item?.id ?? null;
     setComments(null);
-    setPendingComment(null);
     setEditing(null);
+    setDeleteTarget(null);
     if (!item) return;
     let cancelled = false;
     getComments(item.albumId, item.id).then((resp) => {
@@ -196,30 +207,47 @@ export function Lightbox({
     const body = draft.trim();
     if (!body || !item) return;
     setDraft('');
-    setPendingComment({ body, failed: false });
-    const resp = await addComment(item.albumId, item.id, body).catch(() => null);
+    const row: PendingComment = {
+      key: nextPendingKey++,
+      albumId: item.albumId,
+      mediaId: item.id,
+      body,
+      failed: false,
+    };
+    setPendingComments((prev) => [...prev, row]);
+    const resp = await addComment(row.albumId, row.mediaId, body).catch(() => null);
     if (resp?.success && resp.data) {
-      setComments((prev) => [...(prev ?? []), resp.data!]);
-      setPendingComment(null);
+      setPendingComments((prev) => prev.filter((p) => p.key !== row.key));
+      // Only splice into the visible list if the user is still on this photo.
+      if (itemIdRef.current === row.mediaId) {
+        setComments((prev) => [...(prev ?? []), resp.data!]);
+      }
     } else {
       // The text is never lost — it stays in place with a Retry.
-      setPendingComment({ body, failed: true });
+      setPendingComments((prev) =>
+        prev.map((p) => (p.key === row.key ? { ...p, failed: true } : p)),
+      );
       toast({ kind: 'error', title: t('lightbox.commentFailed') });
     }
   }, [draft, item, t, toast]);
 
-  const retryComment = useCallback(async () => {
-    if (!pendingComment || !item) return;
-    const body = pendingComment.body;
-    setPendingComment({ body, failed: false });
-    const resp = await addComment(item.albumId, item.id, body).catch(() => null);
-    if (resp?.success && resp.data) {
-      setComments((prev) => [...(prev ?? []), resp.data!]);
-      setPendingComment(null);
-    } else {
-      setPendingComment({ body, failed: true });
-    }
-  }, [pendingComment, item]);
+  const retryComment = useCallback(
+    async (key: number) => {
+      const row = pendingComments.find((p) => p.key === key);
+      if (!row) return;
+      setPendingComments((prev) => prev.map((p) => (p.key === key ? { ...p, failed: false } : p)));
+      const resp = await addComment(row.albumId, row.mediaId, row.body).catch(() => null);
+      if (resp?.success && resp.data) {
+        setPendingComments((prev) => prev.filter((p) => p.key !== key));
+        if (itemIdRef.current === row.mediaId) {
+          setComments((prev) => [...(prev ?? []), resp.data!]);
+        }
+      } else {
+        setPendingComments((prev) => prev.map((p) => (p.key === key ? { ...p, failed: true } : p)));
+      }
+    },
+    [pendingComments],
+  );
 
   const saveEdit = useCallback(async () => {
     if (!editing || !item) return;
@@ -330,6 +358,9 @@ export function Lightbox({
   // ── Keyboard — the complete map ──
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      // A modal dialog owns the keyboard — navigating photos under the
+      // delete confirm would retarget the pending action.
+      if (deleteTarget) return;
       // Don't hijack typing.
       const target = e.target as HTMLElement;
       const typing = target.tagName === 'TEXTAREA' || target.tagName === 'INPUT';
@@ -419,6 +450,7 @@ export function Lightbox({
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [
+    deleteTarget,
     dir,
     download,
     goTo,
@@ -508,7 +540,8 @@ export function Lightbox({
 
   if (!item) return null;
 
-  const commentCount = (comments?.length ?? 0) + (pendingComment ? 1 : 0);
+  const pendingForItem = pendingComments.filter((p) => p.mediaId === item.id);
+  const commentCount = (comments?.length ?? 0) + pendingForItem.length;
   const takenLabel = item.takenAt
     ? formatDateTime(item.takenAt, lang)
     : t('lightbox.addedOn', { date: formatDateTime(item.uploadedAt, lang) });
@@ -739,20 +772,24 @@ export function Lightbox({
                 />
               ))
             )}
-            {pendingComment && (
-              <div className={`${styles.comment} ${styles.commentPending}`}>
+            {pendingForItem.map((p) => (
+              <div key={p.key} className={`${styles.comment} ${styles.commentPending}`}>
                 <div className={styles.commentMain}>
-                  <div className={styles.commentBody}>{pendingComment.body}</div>
-                  {pendingComment.failed && (
+                  <div className={styles.commentBody}>{p.body}</div>
+                  {p.failed && (
                     <div className={styles.commentActions}>
-                      <button type="button" className={styles.commentAction} onClick={retryComment}>
+                      <button
+                        type="button"
+                        className={styles.commentAction}
+                        onClick={() => void retryComment(p.key)}
+                      >
                         {t('common.retry')}
                       </button>
                     </div>
                   )}
                 </div>
               </div>
-            )}
+            ))}
           </div>
           <div className={styles.composer}>
             <textarea

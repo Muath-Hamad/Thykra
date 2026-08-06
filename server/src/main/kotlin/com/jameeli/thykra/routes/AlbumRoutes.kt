@@ -149,7 +149,25 @@ fun Route.albumRoutes(
                 val albumId = UUID.fromString(call.parameters["id"])
                 val targetUserId = call.parameters["userId"]!!
                 val role = albumMemberRepository.getMemberRole(albumId, UUID.fromString(currentUserId))
-                if (role != MemberRole.OWNER) {
+                val leavingSelf = currentUserId == targetUserId
+                if (leavingSelf) {
+                    // Any member may leave — except the owner, who must delete
+                    // the album (or transfer it) instead of orphaning it.
+                    if (role == null) {
+                        call.respond(
+                            HttpStatusCode.Forbidden,
+                            ApiResponse<Unit>(success = false, error = "Not a member of this album")
+                        )
+                        return@delete
+                    }
+                    if (role == MemberRole.OWNER) {
+                        call.respond(
+                            HttpStatusCode.Forbidden,
+                            ApiResponse<Unit>(success = false, error = "The owner cannot leave the album")
+                        )
+                        return@delete
+                    }
+                } else if (role != MemberRole.OWNER) {
                     call.respond(
                         HttpStatusCode.Forbidden,
                         ApiResponse<Unit>(success = false, error = "Only the owner can remove members")

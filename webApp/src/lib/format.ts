@@ -77,6 +77,11 @@ export type RelativeTimeParts =
   | { kind: 'days'; n: number }
   | { kind: 'date'; iso: string };
 
+/** Local midnight — so "yesterday" means the calendar day before, not 24 hours. */
+function startOfLocalDay(d: Date): number {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+}
+
 /** Structured relative time — the caller renders it through i18n. */
 export function relativeTimeParts(iso: string, now: Date = new Date()): RelativeTimeParts {
   const then = new Date(iso);
@@ -86,7 +91,9 @@ export function relativeTimeParts(iso: string, now: Date = new Date()): Relative
   if (minutes < 60) return { kind: 'minutes', n: minutes };
   const hours = Math.floor(minutes / 60);
   if (hours < 24 && now.getDate() === then.getDate()) return { kind: 'hours', n: hours };
-  const days = Math.floor(diffMs / 86_400_000);
+  // Calendar days apart, rounded to survive DST — 47 hours ago is two days ago,
+  // not yesterday.
+  const days = Math.round((startOfLocalDay(now) - startOfLocalDay(then)) / 86_400_000);
   if (days <= 1) return { kind: 'yesterday' };
   if (days < 7) return { kind: 'days', n: days };
   return { kind: 'date', iso };

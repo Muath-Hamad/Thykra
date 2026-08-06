@@ -110,12 +110,24 @@ export function TripPage() {
     else setMediaError(resp?.error ?? t('common.connectionError'));
   }, [albumId, t]);
 
+  const loadMembers = useCallback(async () => {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const resp = await getMembers(albumId).catch(() => null);
+      if (resp?.success && resp.data) {
+        setMembers(resp.data);
+        return;
+      }
+      await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+    }
+    // Degraded but usable: the gallery and lightbox still render (uploader
+    // names fall back), only the role-gated affordances stay hidden.
+    setMembers([]);
+  }, [albumId]);
+
   useEffect(() => {
     void loadAlbum();
     void loadMedia();
-    getMembers(albumId).then((resp) => {
-      if (resp.success && resp.data) setMembers(resp.data);
-    });
+    void loadMembers();
     getAlbumActivity(albumId).then(
       (resp) => {
         if (resp.success && resp.data) setServerActivity(resp.data.items);
@@ -123,7 +135,7 @@ export function TripPage() {
       () => undefined,
     );
     markVisited(albumId);
-  }, [albumId, loadAlbum, loadMedia]);
+  }, [albumId, loadAlbum, loadMedia, loadMembers]);
 
   // ── J2 handoff: welcome banner, once per trip ──
   useEffect(() => {
@@ -365,6 +377,9 @@ export function TripPage() {
     if (resp?.success) {
       toast({ kind: 'info', title: t('settings.leave.toast', { title: album?.title ?? '' }) });
       void navigate({ to: '/trips', search: {} });
+    } else {
+      setLeaveOpen(false);
+      toast({ kind: 'error', title: resp?.error ?? t('common.errorGeneric') });
     }
   };
 
