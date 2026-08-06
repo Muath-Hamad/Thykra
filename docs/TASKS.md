@@ -127,12 +127,12 @@
 - [ ] Web: Map view (Mapbox/Leaflet) with media pins
 
 ### 4.2 Trip Recaps (Auto-Generated Highlight Reels)
-- [ ] Server: Recap generation service (select best media, order chronologically)
+- [x] Server: Recap generation service (select best media, order chronologically) — photo-sequence recaps: ≥12-photo gate, ≤24 selected round-robin across days, engagement-ranked
 - [ ] Server: Video stitching pipeline (FFmpeg or cloud service)
-- [ ] Shared: Recap data model and status tracking
+- [x] Shared: Recap data model and status tracking (`RecapModels.kt`)
 - [ ] Android: Recap viewer (video playback)
 - [ ] iOS: Recap viewer (video playback)
-- [ ] Web: Recap viewer (video playback)
+- [x] Web: Recap viewer — photo-sequence reader + public `/r/:token` share page (video playback pending stitching)
 - [ ] Android/iOS: Share recap to external apps
 
 ---
@@ -182,17 +182,17 @@
 
 ### 7.1 Performance & UX
 - [ ] Image caching strategy (Coil on Android, platform caches)
-- [ ] Pagination for all list endpoints (cursor-based)
-- [ ] Loading states, error states, empty states across all screens
-- [ ] Animations and transitions polish
-- [ ] Accessibility audit (screen readers, contrast)
+- [~] Pagination for all list endpoints (cursor-based) — activity feeds are cursor-paginated; older list endpoints pending
+- [~] Loading states, error states, empty states across all screens — **Web: done** (delayed skeletons, error + empty states on every screen); mobile pending
+- [~] Animations and transitions polish — **Web: done** (chapter stagger, plate-resolve, shared-element lightbox, reduced-motion floor); mobile pending
+- [~] Accessibility audit (screen readers, contrast) — **Web: done** (focus-visible rings, roving tabindex gallery, focus-trapped modals, AA contrast via tokens); mobile pending
 
 ### 7.2 Testing
-- [ ] Shared: Unit tests for business logic
-- [ ] Server: Integration tests for all API endpoints
+- [~] Shared: Unit tests for business logic — web pure libs covered (44 vitest tests: chapters, justified layout, formatting, derived activity)
+- [x] Server: Integration tests for all API endpoints — 39 tests (auth'd flows, invites, activity, recaps, public pages, member-leave)
 - [ ] Android: UI tests for critical flows
 - [ ] iOS: UI tests for critical flows
-- [ ] Web: E2E tests for critical flows
+- [x] Web: E2E tests for critical flows — 18-check Playwright smoke against the real stack (H2 + dev-login; see Wanderlust-Editions.md §6)
 
 ### 7.3 Deployment
 - [ ] Server: Docker containerization
@@ -200,6 +200,24 @@
 - [ ] Android: Play Store listing and release
 - [ ] iOS: App Store listing and release
 - [ ] Web: Production deployment (CDN + hosting)
+
+---
+
+## Phase 8 — Wanderlust Editions Web Redesign (2026-08-06)
+
+> Complete rebuild of `webApp/` against the Wanderlust Editions design spec,
+> plus the server APIs it needed. Details: [Wanderlust-Editions.md](./Wanderlust-Editions.md).
+
+- [x] Design system: Paper/Darkroom themes, tokens-only CSS, editorial type scale, Arabic type rules
+- [x] Day-chapter gallery (big numerals, pinned headers, 62vh lead plate) + justified rows + contact sheet
+- [x] Darkroom lightbox: zoom/pan, slideshow, comments, reactions, filmstrip, full keyboard map
+- [x] Upload manager: real byte progress, dock, retry semantics, batch celebration
+- [x] Screens: landing, login, invite (9 states), trips, trip, settings, activity ×2, recaps ×3, public trip, /me, 404
+- [x] Full Arabic i18n (401-key parity) + wholesale RTL
+- [x] Server: invite preview, multi-use invite links + management, activity feeds + seen, recaps (build/read/public), public reaction summaries, member self-leave
+- [x] Adversarial code review — 19 confirmed findings, all fixed
+- [x] Verification: 39/39 server, 44/44 web unit, 18/18 Playwright E2E
+- [ ] Follow-ups → tracked in [Actions.md](./Actions.md) (OAuth client id, CI, per-trip OG unfurls, role-change endpoint)
 
 ---
 
@@ -216,7 +234,8 @@
 | 1 | Foundation & Auth | Done |
 | 2 | Shared Albums | In Progress (2.1 Done, 2.2 Done all platforms, 2.3 mostly done — iOS BGTask remaining) |
 | 3 | Social & Engagement | In Progress (3.1 Done — 3.2 Notifications pending) |
-| 4 | Smart Features | Not Started |
+| 4 | Smart Features | In Progress (4.2 Recaps done on server + web as photo sequences; video stitching + mobile viewers pending) |
 | 5 | Widgets | Done (compile-verified; on-device runtime + Xcode target wiring pending) |
 | 6 | Privacy & Sharing | Done |
-| 7 | Polish & Launch | Not Started |
+| 7 | Polish & Launch | In Progress (web polish, server integration tests, and web E2E done; mobile + deployment pending) |
+| 8 | Wanderlust Editions Web Redesign | Done (follow-ups in Actions.md) |

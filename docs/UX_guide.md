@@ -2,6 +2,14 @@
 ## UI/UX Design Specification — MVP v1.0
 *Travel Together. Remember Forever.*
 
+> **⚠️ Superseded for Web (2026-08-06):** the web app now follows the
+> **Wanderlust Editions** redesign — an editorial print direction
+> (Paper/Darkroom themes, Archivo/Readex type, day chapters, justified
+> rows, the Stamp) that replaces the "Wanderlust Bold" visual identity
+> described below. See [Wanderlust-Editions.md](./Wanderlust-Editions.md).
+> This document remains the reference for the **Android and iOS apps** and
+> as historical context for the original MVP.
+
 ---
 
 | Field | Details |
