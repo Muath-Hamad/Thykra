@@ -32,7 +32,11 @@ jobs:
         uses: gradle/actions/wrapper-validation@v4
 
       - name: Check gradlew is executable
-        run: test -x gradlew || { echo "::error::gradlew is not executable — fix with: git update-index --chmod=+x gradlew"; exit 1; }
+        run: |
+          if ! test -x gradlew; then
+            echo "::error::gradlew is not executable. Fix with 'git update-index --chmod=+x gradlew' and commit."
+            exit 1
+          fi
 
   server:
     name: Server (Ktor JVM)
