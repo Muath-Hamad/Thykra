@@ -514,7 +514,11 @@ export function TripPage() {
                     })
                   }
                 />
-                <span className="t-body-s">{t('common.people.count', { n: album.memberCount })}</span>
+                <span className="t-body-s">
+                  {album.memberCount === 1
+                    ? t('common.people.one')
+                    : t('common.people.count', { n: album.memberCount })}
+                </span>
               </span>
             )}
             {media && media.length > 0 && (

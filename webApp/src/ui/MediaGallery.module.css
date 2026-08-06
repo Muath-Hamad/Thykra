@@ -60,9 +60,10 @@ html[lang="ar"] .dayLabel { text-transform: none; letter-spacing: 0; font-size: 
 .header[data-pinned="true"] .counts { padding-bottom: 0; font-size: 12px; }
 
 .lead { margin-top: 12px; }
-/* Lead plate: full chapter width, capped at 62vh. */
-.lead > * { max-height: 62vh; }
-.lead img { max-height: 62vh; object-fit: cover; }
+/* Lead plate: full chapter width, capped at 62vh — the cap sits on the plate
+   itself so a portrait lead crops (object-fit) instead of letterboxing. */
+.leadPlate { max-height: 62vh; }
+.leadPlate img { height: 100%; max-height: 62vh; object-fit: cover; }
 
 .rows { display: grid; margin-top: var(--row-gap, 4px); gap: var(--row-gap, 4px); }
 .row { display: flex; gap: var(--row-gap, 4px); }

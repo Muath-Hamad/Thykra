@@ -22,9 +22,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object DatabaseFactory {
 
-    private var dataSource: HikariDataSource? = null
-    private var database: Database? = null
-
     fun init(environment: ApplicationEnvironment) {
         val config = environment.config
         val driver = config.property("database.driver").getString()
@@ -41,9 +38,12 @@ object DatabaseFactory {
             validate()
         }
 
-        val ds = HikariDataSource(hikariConfig)
-        dataSource = ds
-        database = Database.connect(ds)
+        val db = Database.connect(HikariDataSource(hikariConfig))
+        // Exposed resolves un-scoped transactions against its default database,
+        // which is NOT necessarily the most recent connection. Pin it explicitly
+        // so a process that connects more than once (the test harness boots one
+        // app per test) always routes to the database it just created.
+        TransactionManager.defaultDatabase = db
 
         transaction {
             SchemaUtils.createMissingTablesAndColumns(
@@ -54,28 +54,4 @@ object DatabaseFactory {
         }
     }
 
-    /**
-     * Unregisters the database from Exposed and closes the pool (shutting down
-     * an H2 in-memory database, which otherwise lives until JVM exit).
-     *
-     * Unregistering matters: Exposed resolves transactions against its oldest
-     * registered database by default, so a test JVM that boots several apps
-     * would silently keep routing queries to the first one. Used by the test
-     * harness; production never calls it.
-     */
-    fun close() {
-        val db = database
-        val ds = dataSource
-        database = null
-        dataSource = null
-        if (db != null) runCatching { TransactionManager.closeAndUnregister(db) }
-        if (ds != null) {
-            runCatching {
-                if (ds.jdbcUrl.startsWith("jdbc:h2:mem:")) {
-                    ds.connection.use { it.createStatement().execute("SHUTDOWN") }
-                }
-            }
-            runCatching { ds.close() }
-        }
-    }
 }

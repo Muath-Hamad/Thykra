@@ -233,7 +233,7 @@ export function InvitePage() {
       <div className={styles.peopleRow}>
         <AvatarStack people={album.previewMembers} totalCount={album.memberCount} asDecoration />
         <span className="t-body-s">
-          {emphasise(t('invite.people', { n: album.memberCount }), String(album.memberCount))}
+          {emphasise((album.memberCount === 1 ? t('invite.people.one') : t('invite.people', { n: album.memberCount })), String(album.memberCount))}
         </span>
       </div>
 

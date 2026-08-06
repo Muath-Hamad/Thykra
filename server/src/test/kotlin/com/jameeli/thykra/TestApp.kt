@@ -1,6 +1,5 @@
 package com.jameeli.thykra
 
-import com.jameeli.thykra.db.DatabaseFactory
 import com.jameeli.thykra.db.tables.AlbumInvitesTable
 import com.jameeli.thykra.db.tables.AlbumMembersTable
 import com.jameeli.thykra.db.tables.CommentsTable
@@ -38,51 +37,52 @@ import kotlin.io.path.createTempDirectory
  * temp-dir local storage, with dev-login enabled so tests can mint real bearer tokens.
  */
 fun thykraTestApp(block: suspend ApplicationTestBuilder.() -> Unit) {
-    try {
-        testApplication {
-            val dbName = "thykra_test_" + UUID.randomUUID().toString().replace("-", "")
-            val storageDir = createTempDirectory("thykra-test-storage").toString()
-            environment {
-                config = MapApplicationConfig(
-                    "database.url" to "jdbc:h2:mem:$dbName;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
-                    "database.driver" to "org.h2.Driver",
-                    "database.user" to "sa",
-                    "database.password" to "",
-                    "database.maxPoolSize" to "5",
-                    "jwt.issuer" to "thykra-api",
-                    "jwt.audience" to "thykra-users",
-                    "jwt.realm" to "thykra",
-                    "jwt.secret" to "test-secret",
-                    "jwt.accessTokenExpiry" to "3600",
-                    "jwt.refreshTokenExpiry" to "2592000",
-                    "storage.type" to "local",
-                    "storage.localPath" to storageDir,
-                    "storage.baseUrl" to "http://localhost:8081",
-                    "auth.allowDevLogin" to "true",
-                    "oauth.google.clientId" to "",
-                    "oauth.apple.clientId" to ""
-                )
-            }
-            application { module() }
-            // Force the app (and thus DatabaseFactory.init) to start before the test body runs,
-            // so direct-DB helpers in TestData see the connected database.
-            startApplication()
-            block()
+    testApplication {
+        val dbName = "thykra_test_" + UUID.randomUUID().toString().replace("-", "")
+        val storageDir = createTempDirectory("thykra-test-storage").toString()
+        environment {
+            config = MapApplicationConfig(
+                "database.url" to "jdbc:h2:mem:$dbName;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
+                "database.driver" to "org.h2.Driver",
+                "database.user" to "sa",
+                "database.password" to "",
+                "database.maxPoolSize" to "5",
+                "jwt.issuer" to "thykra-api",
+                "jwt.audience" to "thykra-users",
+                "jwt.realm" to "thykra",
+                "jwt.secret" to "test-secret",
+                "jwt.accessTokenExpiry" to "3600",
+                "jwt.refreshTokenExpiry" to "2592000",
+                "storage.type" to "local",
+                "storage.localPath" to storageDir,
+                "storage.baseUrl" to "http://localhost:8081",
+                "auth.allowDevLogin" to "true",
+                "oauth.google.clientId" to "",
+                "oauth.apple.clientId" to ""
+            )
         }
-    } finally {
-        // Shut the per-test H2 database down — otherwise every test leaves a live
-        // in-memory database and connection pool behind for the rest of the JVM.
-        DatabaseFactory.close()
+        application { module() }
+        // Force the app (and thus DatabaseFactory.init) to start before the test body runs,
+        // so direct-DB helpers in TestData see the connected database.
+        startApplication()
+        block()
     }
 }
 
 /**
  * H2 (like Postgres) stores timestamps at microsecond precision, while
- * Clock.System.now() carries nanoseconds — truncate before comparing a value
- * that made a round-trip through the database.
+ * Clock.System.now() carries nanoseconds — H2 ROUNDS to the nearest
+ * microsecond on write, so mirror that before comparing a value that made
+ * a round-trip through the database.
  */
-fun Instant.dbPrecision(): Instant =
-    Instant.fromEpochSeconds(epochSeconds, nanosecondsOfSecond / 1000 * 1000)
+fun Instant.dbPrecision(): Instant {
+    val micros = (nanosecondsOfSecond + 500L) / 1000L
+    return if (micros == 1_000_000L) {
+        Instant.fromEpochSeconds(epochSeconds + 1, 0)
+    } else {
+        Instant.fromEpochSeconds(epochSeconds, micros * 1000)
+    }
+}
 
 val testJson = Json { ignoreUnknownKeys = true }
 

@@ -302,6 +302,7 @@ export function MediaGallery<T extends GalleryMedia>({
         setButtonRef(item.id)(el);
       }}
       eager={opts.lead}
+      className={opts.lead ? styles.leadPlate : undefined}
       style={
         opts.lead
           ? { aspectRatio: `${ratioOf(item.width, item.height)}` }
