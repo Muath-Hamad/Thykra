@@ -44,7 +44,10 @@ COMPOSE_CMD="docker compose"
 echo "    using: $COMPOSE_CMD"
 
 echo "==> Syncing sources to $SSH_HOST:$REMOTE_DIR"
-ssh "$SSH_HOST" "mkdir -p '$REMOTE_DIR'"
+# Tar extraction only ever adds files — sources deleted or renamed locally would
+# linger on the server and break builds (tsc compiles everything under src/).
+# Everything in REMOTE_DIR is re-synced here; data volumes live outside it.
+ssh "$SSH_HOST" "rm -rf '$REMOTE_DIR' && mkdir -p '$REMOTE_DIR'"
 
 # Only what the two images actually need. Build outputs and dependency dirs are
 # excluded — they are regenerated inside the images and would bloat the stream.
