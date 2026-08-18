@@ -121,4 +121,10 @@ services:
     depends_on:
       - server
     ports:
+      # Host side must never be 80 — that is the Unraid WebGUI's own nginx.
+      # Publishing 80:80 here wins the race at boot and leaves the WebGUI dead
+      # with 'bind() to 0.0.0.0:80 failed (98: Address already in use)'.
+      # 8080 is taken on this host too (StirlingPDF), hence 8088.
+      # The container side stays 80 (webApp/nginx.conf listens there) — that is
+      # inside the container's own netns and collides with nothing.
       - "${WEB_PORT:-8088}:80"
