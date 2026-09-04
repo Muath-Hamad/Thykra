@@ -1,0 +1,145 @@
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  background: var(--scrim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-6);
+  animation: fade-in var(--dur-2) var(--ease-out) both;
+}
+
+.dialog {
+  background: var(--bg-raised);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-3);
+  width: 100%;
+  max-width: 480px;
+  max-height: min(88dvh, 720px);
+  display: flex;
+  flex-direction: column;
+  animation: dialog-in var(--dur-3) var(--ease-out) both;
+  border: 1px solid var(--rule);
+}
+.wide { max-width: 560px; }
+
+@keyframes dialog-in {
+  from { opacity: 0; transform: translateY(8px) scale(.98); }
+  to { opacity: 1; transform: none; }
+}
+
+.header { padding: var(--sp-5) var(--sp-5) 0; }
+.eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+html[lang="ar"] .eyebrow { text-transform: none; letter-spacing: 0; }
+.title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 23px;
+  letter-spacing: -.02em;
+  margin-top: 5px;
+}
+html[lang="ar"] .title { letter-spacing: 0; font-weight: 700; }
+
+.body {
+  padding: var(--sp-4) var(--sp-5);
+  overflow-y: auto;
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.errorStrip {
+  margin: 0 var(--sp-5);
+  background: var(--bad-soft);
+  border: 1px solid rgba(195, 58, 50, .3);
+  border-radius: var(--r-sm);
+  padding: 9px 12px;
+  font-size: 13.5px;
+  color: var(--bad);
+}
+
+.footer {
+  padding: 14px var(--sp-5);
+  border-top: 1px solid var(--rule);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex: none;
+}
+
+/* ── <768px: the same component becomes a bottom sheet ── */
+@media (max-width: 767px) {
+  .scrim {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .dialog {
+    max-width: none;
+    max-height: 88dvh;
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+    animation: sheet-in var(--dur-3) var(--ease-out) both;
+    border: 0;
+  }
+  .handle {
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(21, 23, 38, .22);
+    margin: 12px auto 2px;
+    flex: none;
+  }
+  [data-theme="dark"] .handle { background: var(--rule-strong); }
+  @keyframes sheet-in {
+    from { transform: translateY(100%); }
+    to { transform: none; }
+  }
+}
+@media (min-width: 768px) {
+  .handle { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrim { animation: fade-in 120ms both; }
+  .dialog { animation: fade-in 120ms both; }
+}
+
+/* ── Confirm variant ── */
+.confirmIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-sm);
+  background: var(--bad-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bad);
+  font-size: 20px;
+  font-weight: 700;
+}
+.confirmTitle {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: -.02em;
+  margin-top: 12px;
+}
+html[lang="ar"] .confirmTitle { letter-spacing: 0; font-weight: 700; }
+.confirmBody {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-2);
+  margin-top: 8px;
+}
+.confirmPad { padding: var(--sp-5); overflow-y: auto; }
+.confirmActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}

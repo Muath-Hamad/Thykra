@@ -4,28 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thykra</title>
-    <link rel="stylesheet" href="/src/theme.css">
+    <meta name="description" content="One shared trip album. Everyone drops their photos in. Nobody chases anybody for the good ones.">
+
+    <!-- App-level OG/Twitter floor — per-trip tags are a hosting task (edge inject on /invite/*, /public/*, /s/*). -->
+    <meta property="og:site_name" content="Thykra">
+    <meta property="og:title" content="Thykra — Travel Together. Remember Forever.">
+    <meta property="og:description" content="One shared trip album. Everyone drops their photos in.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="/og.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Thykra — Travel Together. Remember Forever.">
+    <meta name="twitter:description" content="One shared trip album. Everyone drops their photos in.">
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400..900;1,400..900&family=Readex+Pro:wght@200..700&display=swap" rel="stylesheet">
+
+    <script>
+      // Resolve theme before first paint so there is no flash of the wrong mode.
+      (function () {
+        try {
+          var stored = localStorage.getItem('thykra.theme');
+          var dark = stored === 'dark' ||
+            (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (dark) document.documentElement.setAttribute('data-theme', 'dark');
+          var lang = localStorage.getItem('thykra.lang');
+          if (lang === 'ar') {
+            document.documentElement.setAttribute('lang', 'ar');
+            document.documentElement.setAttribute('dir', 'rtl');
+          }
+        } catch (e) { /* private mode — defaults hold */ }
+      })();
+    </script>
     <style>
-        #root:empty {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #FDF8EF;
-        }
+      /* Boot backdrop only — real styles arrive with the bundle. */
+      html { background: #FBF6ED; }
+      html[data-theme="dark"] { background: #121114; }
     </style>
 </head>
 <body>
-    <div id="root">
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 50 50" role="presentation">
-            <circle cx="25" cy="25" r="20" stroke="#F5E6C8" stroke-width="4" fill="none"/>
-            <circle cx="25" cy="25" r="20" stroke="#1B7FCC" stroke-width="4" fill="none" stroke-linecap="round"
-                    stroke-dasharray="90 125">
-                <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s"
-                                  repeatCount="indefinite"/>
-            </circle>
-        </svg>
-    </div>
+    <div id="root"></div>
     <script type="module" src="/src/index.tsx"></script>
 </body>
 </html>

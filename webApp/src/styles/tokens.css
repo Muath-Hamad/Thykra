@@ -1,0 +1,171 @@
+/* ═══════════════════════════════════════════════════════════
+   Thykra design tokens — "Wanderlust Editions"
+   Two modes: Paper (light, :root) and Darkroom ([data-theme="dark"]).
+   Components may only reference these tokens — a literal colour
+   in a module is a review failure.
+   Breakpoints (min-width, mobile-first): sm 480 · md 768 · lg 1024 · xl 1440
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  color-scheme: light;
+
+  /* ── Colour — semantic, one name per role ── */
+  --bg: #FBF6ED;
+  --bg-raised: #F4EDE0;
+  --bg-sunken: #EAE1D1;
+  --text: #151726;
+  --text-2: #3B4453;
+  --text-3: #5C6B7A;
+  --rule: rgba(21, 23, 38, .10);
+  --rule-strong: rgba(21, 23, 38, .20);
+  --accent: #1B6FBE;
+  --accent-hover: #155C9F;
+  --accent-soft: #E4EFF9;
+  --accent-text: #124F8C;
+  --warm: #AA4324;
+  --warm-hover: #8C3718;
+  --warm-soft: #F7E7DF;
+  --warm-text: #8F3A1E;
+  --good: #1F7A4D;
+  --good-soft: #DFF0E6;
+  --warn: #8A5D12;
+  --warn-soft: #F6EBD4;
+  --bad: #C33A32;
+  --bad-soft: #FBE7E4;
+  --on-accent: #FFFFFF;
+  --on-warm: #FFFFFF;
+  --on-good: #FFFFFF;
+  --on-bad: #FFFFFF;
+  /* Text over --scrim and over media — bone in both modes. */
+  --on-scrim: #F2EBDF;
+  --scrim: rgba(21, 23, 38, .72);
+
+  /* ── Elevation — ink-tinted, never black, never blue ── */
+  --sh-1: 0 1px 2px rgba(21, 23, 38, .06), 0 1px 1px rgba(21, 23, 38, .04);
+  --sh-2: 0 2px 6px rgba(21, 23, 38, .07), 0 8px 20px -8px rgba(21, 23, 38, .10);
+  --sh-3: 0 12px 32px -12px rgba(21, 23, 38, .22), 0 2px 6px rgba(21, 23, 38, .06);
+  --sh-plate: 0 1px 0 rgba(21, 23, 38, .10), 0 10px 24px -14px rgba(21, 23, 38, .30);
+
+  /* ── Type families ── */
+  --font-display: "Archivo", system-ui, sans-serif;
+  --font-text: "Readex Pro", system-ui, sans-serif;
+
+  /* ── Type scale — display sizes clamp between 480 and 1024 ── */
+  --t-display-xl-size: clamp(44px, 5.147vw + 19.3px, 72px);
+  --t-display-xl-lh: .96;              /* .98 mobile / .94 desktop — split the difference, overridden at lg */
+  --t-display-l-size: clamp(34px, 3.309vw + 18.12px, 52px);
+  --t-display-l-lh: 1.0;
+  --t-display-m-size: clamp(28px, 1.838vw + 19.18px, 38px);
+  --t-display-m-lh: 1.04;
+  --t-display-s-size: clamp(23px, .919vw + 18.59px, 28px);
+  --t-display-s-lh: 1.1;
+  --t-numeral-size: clamp(40px, 4.412vw + 18.82px, 64px);
+  --t-title-size: clamp(18px, .368vw + 16.24px, 20px);
+  --t-body-l-size: clamp(16px, .184vw + 15.12px, 17px);
+  --t-body-size: 15px;
+  --t-body-s-size: 13.5px;
+  --t-meta-size: 12.5px;
+  --t-label-size: 11px;
+
+  /* ── Spacing — 4px base ── */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+  --sp-24: 96px;
+
+  /* ── Radius — media is always 0; chrome is soft ── */
+  --r-plate: 0;
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --r-pill: 999px;
+
+  /* ── Motion ── */
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --dur-3: 320ms;
+  --dur-4: 520ms;
+  --ease-out: cubic-bezier(.2, .8, .28, 1);
+  --ease-in-out: cubic-bezier(.5, 0, .3, 1);
+  --ease-spring: cubic-bezier(.2, 1.25, .3, 1);
+  --stagger: 40ms;
+
+  /* ── Z ── */
+  --z-sticky: 60;
+  --z-nav: 100;
+  --z-drawer: 200;
+  --z-modal: 300;
+  --z-lightbox: 400;
+  --z-toast: 500;
+
+  /* ── Layout ── */
+  --gutter: 24px;            /* 16 <480 · 24 480–1023 · 32 ≥1024 */
+  --content-max: 1280px;
+  --nav-h: 56px;
+  --tabbar-h: 60px;
+}
+
+@media (max-width: 479px) {
+  :root { --gutter: 16px; }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 32px;
+    --t-display-xl-lh: .94;
+    --t-display-l-lh: .96;
+    --t-display-m-lh: 1.0;
+    --t-display-s-lh: 1.08;
+  }
+}
+
+/* ═══ Darkroom — warm near-black, bone text, no shadows ═══ */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121114;
+  --bg-raised: #1B191E;
+  --bg-sunken: #0C0B0E;
+  --text: #F2EBDF;
+  --text-2: #CFC7BC;
+  --text-3: #ABA3A0;
+  --rule: rgba(242, 235, 223, .12);
+  --rule-strong: rgba(242, 235, 223, .24);
+  --accent: #5AA6EA;
+  --accent-hover: #7FBCF2;
+  --accent-soft: rgba(90, 166, 234, .14);
+  --accent-text: #8CC3F5;
+  --warm: #E4794C;
+  --warm-hover: #EE8F65;
+  --warm-soft: rgba(228, 121, 76, .14);
+  --warm-text: #F0A183;
+  --good: #4FBE85;
+  --good-soft: rgba(79, 190, 133, .16);
+  --warn: #E0AC4C;
+  --warn-soft: rgba(224, 172, 76, .16);
+  --bad: #F0736A;
+  --bad-soft: rgba(240, 115, 106, .16);
+  --on-accent: #121114;
+  --on-warm: #121114;
+  --on-good: #121114;
+  --on-bad: #121114;
+  --on-scrim: #F2EBDF;
+  --scrim: rgba(0, 0, 0, .82);
+  --sh-1: none;
+  --sh-2: none;
+  --sh-3: 0 24px 60px -20px rgba(0, 0, 0, .7);
+  --sh-plate: 0 0 0 1px rgba(242, 235, 223, .14);
+}
+
+/* Arabic: Archivo has no Arabic — display falls back to Readex Pro. */
+html[lang="ar"] {
+  --font-display: "Readex Pro", system-ui, sans-serif;
+}

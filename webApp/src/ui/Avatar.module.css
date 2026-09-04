@@ -1,0 +1,66 @@
+.avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  overflow: hidden;
+  flex: none;
+  /* The five tints are mode-constant, so their foreground is too. */
+  color: #fff;
+  font-weight: 600;
+  user-select: none;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.failed {
+  background: var(--bg-sunken);
+  border: 1px dashed rgba(21, 23, 38, .3);
+}
+[data-theme="dark"] .failed { border-color: var(--rule-strong); }
+
+/* ── Stack — overlap 10, ring = parent bg via --stack-ring ── */
+.stack {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border-radius: var(--r-pill);
+}
+.stack .avatar,
+.stack .more {
+  border: 2px solid var(--stack-ring, var(--bg));
+}
+.stack > * + * { margin-inline-start: -10px; }
+
+.more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex: none;
+  background: var(--bg-sunken);
+  color: var(--text-2);
+  font-weight: 600;
+  user-select: none;
+}
+
+.ownerBadge {
+  position: absolute;
+  inset-inline-end: -2px;
+  bottom: -2px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 2px 4px;
+  border-radius: 4px;
+  border: 1.5px solid var(--bg);
+}
+html[lang="ar"] .ownerBadge { text-transform: none; letter-spacing: 0; }

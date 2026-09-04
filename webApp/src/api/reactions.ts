@@ -65,11 +65,11 @@ export interface MediaReactionsDto {
 }
 
 export async function getReactions(albumId: string, mediaId: string) {
-  return apiClient(`/api/albums/${albumId}/media/${mediaId}/reactions`);
+  return apiClient<MediaReactionsDto>(`/api/albums/${albumId}/media/${mediaId}/reactions`);
 }
 
 export async function toggleReaction(albumId: string, mediaId: string, type: ReactionType) {
-  return apiClient(`/api/albums/${albumId}/media/${mediaId}/reactions`, {
+  return apiClient<MediaReactionsDto>(`/api/albums/${albumId}/media/${mediaId}/reactions`, {
     method: 'POST',
     body: JSON.stringify({ type }),
   });

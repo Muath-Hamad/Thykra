@@ -1,12 +1,15 @@
 package com.jameeli.thykra.db
 
+import com.jameeli.thykra.db.tables.ActivitySeenTable
 import com.jameeli.thykra.db.tables.AlbumInvitesTable
 import com.jameeli.thykra.db.tables.AlbumMembersTable
 import com.jameeli.thykra.db.tables.AlbumsTable
 import com.jameeli.thykra.db.tables.BlockedMembersTable
 import com.jameeli.thykra.db.tables.CommentsTable
+import com.jameeli.thykra.db.tables.InviteJoinsTable
 import com.jameeli.thykra.db.tables.MediaTable
 import com.jameeli.thykra.db.tables.ReactionsTable
+import com.jameeli.thykra.db.tables.RecapsTable
 import com.jameeli.thykra.db.tables.RefreshTokensTable
 import com.jameeli.thykra.db.tables.UsersTable
 import com.zaxxer.hikari.HikariConfig
@@ -14,6 +17,7 @@ import com.zaxxer.hikari.HikariDataSource
 import io.ktor.server.application.ApplicationEnvironment
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object DatabaseFactory {
@@ -34,13 +38,20 @@ object DatabaseFactory {
             validate()
         }
 
-        Database.connect(HikariDataSource(hikariConfig))
+        val db = Database.connect(HikariDataSource(hikariConfig))
+        // Exposed resolves un-scoped transactions against its default database,
+        // which is NOT necessarily the most recent connection. Pin it explicitly
+        // so a process that connects more than once (the test harness boots one
+        // app per test) always routes to the database it just created.
+        TransactionManager.defaultDatabase = db
 
         transaction {
             SchemaUtils.createMissingTablesAndColumns(
                 UsersTable, RefreshTokensTable, AlbumsTable, AlbumMembersTable, AlbumInvitesTable,
-                MediaTable, ReactionsTable, CommentsTable, BlockedMembersTable
+                MediaTable, ReactionsTable, CommentsTable, BlockedMembersTable,
+                InviteJoinsTable, ActivitySeenTable, RecapsTable
             )
         }
     }
+
 }

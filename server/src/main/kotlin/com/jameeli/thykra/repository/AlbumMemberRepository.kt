@@ -5,6 +5,7 @@ import com.jameeli.thykra.db.tables.UsersTable
 import com.jameeli.thykra.model.AlbumMemberDto
 import com.jameeli.thykra.model.MemberRole
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
@@ -67,4 +68,11 @@ class AlbumMemberRepository {
 
     suspend fun isMember(albumId: UUID, userId: UUID): Boolean =
         getMemberRole(albumId, userId) != null
+
+    suspend fun getJoinedAt(albumId: UUID, userId: UUID): Instant? =
+        newSuspendedTransaction {
+            AlbumMembersTable.selectAll().where {
+                (AlbumMembersTable.albumId eq albumId) and (AlbumMembersTable.userId eq userId)
+            }.singleOrNull()?.get(AlbumMembersTable.joinedAt)
+        }
 }

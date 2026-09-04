@@ -1,5 +1,8 @@
 // Public album API — does NOT require authentication.
-// Used by the unauthenticated /public/:id share route.
+// Used by the unauthenticated /public/:id and /s/:id share routes.
+
+import type { ApiEnvelope } from './client';
+import type { ReactionType } from './reactions';
 
 export interface PublicAlbumDto {
   id: string;
@@ -12,6 +15,11 @@ export interface PublicAlbumDto {
   createdAt: string;
 }
 
+export interface PublicReactionSummaryDto {
+  type: ReactionType;
+  count: number;
+}
+
 export interface PublicMediaDto {
   id: string;
   type: 'PHOTO' | 'VIDEO';
@@ -19,19 +27,16 @@ export interface PublicMediaDto {
   thumbnailUrl?: string;
   width?: number;
   height?: number;
+  durationMs?: number;
   takenAt?: string;
   uploadedAt: string;
+  /** Counts only, no identities — absent until the API ships it. */
+  reactionSummary?: PublicReactionSummaryDto[];
 }
 
 export interface PublicAlbumViewDto {
   album: PublicAlbumDto;
   media: PublicMediaDto[];
-}
-
-interface ApiEnvelope<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
 }
 
 export async function getPublicAlbum(id: string): Promise<ApiEnvelope<PublicAlbumViewDto>> {

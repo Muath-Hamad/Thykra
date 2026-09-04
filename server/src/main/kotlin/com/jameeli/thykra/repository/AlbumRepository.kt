@@ -3,6 +3,7 @@ package com.jameeli.thykra.repository
 import com.jameeli.thykra.db.tables.AlbumMembersTable
 import com.jameeli.thykra.db.tables.AlbumsTable
 import com.jameeli.thykra.db.tables.MediaTable
+import com.jameeli.thykra.db.tables.ReactionsTable
 import com.jameeli.thykra.db.tables.UsersTable
 import com.jameeli.thykra.model.AlbumDto
 import com.jameeli.thykra.model.AlbumMemberSummary
@@ -13,12 +14,15 @@ import com.jameeli.thykra.model.MemberRole
 import com.jameeli.thykra.model.PublicAlbumDto
 import com.jameeli.thykra.model.PublicAlbumViewDto
 import com.jameeli.thykra.model.PublicMediaDto
+import com.jameeli.thykra.model.PublicReactionSummaryDto
+import com.jameeli.thykra.model.ReactionType
 import com.jameeli.thykra.storage.StorageService
 import kotlinx.datetime.Clock
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
@@ -118,6 +122,23 @@ class AlbumRepository(private val storageService: StorageService) {
         val coverUrl = albumRow[AlbumsTable.coverUrl]
             ?: mediaRows.firstOrNull()?.let { storageService.getPublicUrl(it[MediaTable.thumbnailKey] ?: it[MediaTable.storageKey]) }
 
+        // Reaction counts for every media of the album in ONE grouped query (no N+1).
+        // Counts only — identities never reach the public payload.
+        val reactionCountExpr = ReactionsTable.id.count()
+        val reactionSummaries: Map<UUID, List<PublicReactionSummaryDto>> = ReactionsTable
+            .innerJoin(MediaTable)
+            .select(ReactionsTable.mediaId, ReactionsTable.type, reactionCountExpr)
+            .where { (MediaTable.albumId eq id) and (MediaTable.status eq MediaStatus.ACTIVE.name) }
+            .groupBy(ReactionsTable.mediaId, ReactionsTable.type)
+            .map { row ->
+                row[ReactionsTable.mediaId].value to PublicReactionSummaryDto(
+                    type = ReactionType.valueOf(row[ReactionsTable.type]),
+                    count = row[reactionCountExpr].toInt()
+                )
+            }
+            .groupBy({ it.first }, { it.second })
+            .mapValues { (_, summaries) -> summaries.sortedByDescending { it.count } }
+
         PublicAlbumViewDto(
             album = PublicAlbumDto(
                 id = id.toString(),
@@ -130,15 +151,17 @@ class AlbumRepository(private val storageService: StorageService) {
                 createdAt = albumRow[AlbumsTable.createdAt]
             ),
             media = mediaRows.map { row ->
+                val mediaId = row[MediaTable.id].value
                 PublicMediaDto(
-                    id = row[MediaTable.id].value.toString(),
+                    id = mediaId.toString(),
                     type = MediaType.valueOf(row[MediaTable.type]),
                     url = storageService.getPublicUrl(row[MediaTable.storageKey]),
                     thumbnailUrl = row[MediaTable.thumbnailKey]?.let { storageService.getPublicUrl(it) },
                     width = row[MediaTable.width],
                     height = row[MediaTable.height],
                     takenAt = row[MediaTable.takenAt],
-                    uploadedAt = row[MediaTable.uploadedAt]
+                    uploadedAt = row[MediaTable.uploadedAt],
+                    reactionSummary = reactionSummaries[mediaId] ?: emptyList()
                 )
             }
         )

@@ -1,0 +1,155 @@
+/* ═══ /login — split-screen; the page states why you are here ═══ */
+
+.page {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  min-height: 100dvh;
+  background: var(--bg);
+}
+
+/* ── Photo side ── */
+.photoSide {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-sunken);
+  min-height: 0;
+}
+
+.photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+.photoOverlay {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  padding-block: var(--sp-16) var(--sp-8);
+  padding-inline: var(--sp-8);
+  /* Bottom-anchored scrim so the words hold at any exposure. */
+  background: linear-gradient(to top, var(--scrim), transparent);
+}
+
+/* Bone in both themes: --bg is bone in Paper, --text is bone in Darkroom. */
+.quote,
+.overlayTitle {
+  color: var(--bg);
+}
+[data-theme="dark"] .quote,
+[data-theme="dark"] .overlayTitle {
+  color: var(--text);
+}
+
+.quoteAccent { font-style: italic; }
+html[lang="ar"] .quoteAccent { font-style: normal; font-weight: 700; }
+
+.overlayLabel {
+  color: var(--bg);
+  opacity: .78;
+  margin-bottom: 8px;
+}
+[data-theme="dark"] .overlayLabel { color: var(--text); }
+
+/* ── Form side ── */
+.formSide {
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: var(--sp-10);
+  padding-inline: var(--gutter);
+  min-width: 0;
+}
+
+.card {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 19px;
+  letter-spacing: -.03em;
+  color: var(--text);
+}
+html[lang="ar"] .wordmark { letter-spacing: 0; font-weight: 700; }
+
+.invitePanel {
+  margin-top: var(--sp-5);
+  padding-block: 10px;
+  padding-inline: 12px;
+  background: var(--warm-soft);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-sm);
+  color: var(--text-2);
+}
+
+.strong { font-weight: 600; color: var(--text); }
+
+.title { margin-top: var(--sp-5); }
+
+.sub {
+  margin-top: 6px;
+  color: var(--text-2);
+}
+
+.errorStrip {
+  margin-top: var(--sp-4);
+  padding-block: 10px;
+  padding-inline: 12px;
+  background: var(--bad-soft);
+  border-radius: var(--r-sm);
+  color: var(--text-2);
+}
+
+.buttonArea {
+  margin-top: var(--sp-5);
+  min-height: 44px;
+}
+
+.authenticating {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  color: var(--text-2);
+}
+
+.spinner {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--r-pill);
+  border: 2px solid var(--rule-strong);
+  border-top-color: var(--accent);
+  animation: spin 700ms linear infinite;
+}
+
+.terms {
+  margin-top: var(--sp-4);
+}
+
+/* ── <768: the photograph becomes a banner; the card sits on solid ground ── */
+@media (max-width: 767px) {
+  .page {
+    grid-template-columns: 1fr;
+    grid-template-rows: 40vh auto;
+  }
+  .photoOverlay {
+    padding-block: var(--sp-10) var(--sp-5);
+    padding-inline: var(--gutter);
+  }
+  .formSide {
+    align-items: flex-start;
+    padding-block: var(--sp-8) var(--sp-12);
+  }
+  .card { max-width: none; }
+}

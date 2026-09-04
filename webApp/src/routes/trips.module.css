@@ -1,0 +1,49 @@
+/* /trips — greeting band over the trip grid (Doc 3 § s-trips).
+   Layout only; cards, segmented, modal and empty states come from the kit. */
+
+.page {
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  padding-block: var(--sp-8) var(--sp-16);
+}
+
+/* Greeting + counts on the leading side, segmented filter trailing,
+   baseline-aligned; wraps below ~700px. */
+.band {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-5);
+}
+
+.headline {
+  margin-block-start: var(--sp-2);
+}
+
+/* Counts render last with no reserved skeleton — they fade in. */
+.counts {
+  margin-block-start: var(--sp-2);
+  color: var(--text-2);
+  animation: fade-in var(--dur-3) var(--ease-out) both;
+}
+
+/* 1 col <480 · 2 at 480–767 · 3 at 768–1279 · 4 at 1440+, all from
+   auto-fill — no fixed column counts anywhere. */
+.grid {
+  margin-block-start: var(--sp-6);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  gap: var(--sp-4);
+}
+
+/* Empty / error occupy the grid area. */
+.stateArea {
+  margin-block-start: var(--sp-6);
+}
+
+.form {
+  display: grid;
+  gap: var(--sp-4);
+}

@@ -56,7 +56,10 @@ data class AlbumMemberDto(
 data class InviteLinkDto(
     val albumId: String,
     val token: String,
-    val expiresAt: Instant
+    val expiresAt: Instant,
+    // Number of distinct users who joined through this link. Defaults to 0 so
+    // existing mobile clients (which never send/expect it) keep working.
+    val joinCount: Int = 0
 )
 
 @Serializable
@@ -90,6 +93,13 @@ data class PublicAlbumDto(
     val createdAt: Instant
 )
 
+// Reaction counts for a media item on public surfaces. Counts only — never identities.
+@Serializable
+data class PublicReactionSummaryDto(
+    val type: ReactionType,
+    val count: Int
+)
+
 @Serializable
 data class PublicMediaDto(
     val id: String,
@@ -99,7 +109,8 @@ data class PublicMediaDto(
     val width: Int? = null,
     val height: Int? = null,
     val takenAt: Instant? = null,
-    val uploadedAt: Instant
+    val uploadedAt: Instant,
+    val reactionSummary: List<PublicReactionSummaryDto> = emptyList()
 )
 
 @Serializable

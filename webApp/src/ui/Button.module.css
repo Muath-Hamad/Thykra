@@ -1,0 +1,112 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -.005em;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  white-space: nowrap;
+  transition:
+    background-color var(--dur-1) var(--ease-out),
+    border-color var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-1) var(--ease-out),
+    transform var(--dur-1) var(--ease-out);
+  user-select: none;
+}
+html[lang="ar"] .btn { letter-spacing: 0; font-weight: 700; }
+
+/* Press is a 1px translate down, never a scale. */
+.btn:active:not(:disabled) { transform: translateY(1px); }
+
+.btn:disabled { cursor: default; }
+
+/* ── Sizes — heights 32 / 40 / 48 ── */
+.sm { height: 32px; padding-inline: 12px; font-size: 13px; }
+.md { height: 40px; padding-inline: 18px; font-size: 15px; }
+.lg { height: 48px; padding-inline: 24px; font-size: 16px; }
+.iconOnly.sm { width: 32px; padding-inline: 0; }
+.iconOnly.md { width: 40px; padding-inline: 0; }
+.iconOnly.lg { width: 48px; padding-inline: 0; }
+
+/* ── Primary — blue, what the system does ── */
+.primary {
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow: var(--sh-1);
+}
+.primary:hover:not(:disabled) { background: var(--accent-hover); box-shadow: var(--sh-2); }
+.primary:disabled:not(.loading) {
+  background: var(--bg-sunken);
+  color: var(--text-3);
+  box-shadow: none;
+}
+
+/* ── Secondary — outlined on paper ── */
+.secondary {
+  background: var(--bg);
+  border-color: var(--rule-strong);
+  color: var(--text);
+}
+.secondary:hover:not(:disabled) {
+  background: var(--bg-raised);
+  border-color: rgba(21, 23, 38, .34);
+}
+[data-theme="dark"] .secondary:hover:not(:disabled) { border-color: var(--rule-strong); }
+.secondary:disabled:not(.loading) {
+  border-color: var(--rule);
+  color: var(--text-3);
+  opacity: .7;
+}
+
+/* ── Warm — clay, people-moments only. Never two on a screen. ── */
+.warm {
+  background: var(--warm);
+  color: var(--on-warm);
+  box-shadow: var(--sh-1);
+}
+.warm:hover:not(:disabled) { background: var(--warm-hover); box-shadow: var(--sh-2); }
+.warm:disabled:not(.loading) {
+  background: var(--bg-sunken);
+  color: var(--text-3);
+  box-shadow: none;
+}
+
+/* ── Ghost ── */
+.ghost {
+  background: transparent;
+  color: var(--text);
+  padding-inline: 14px;
+}
+.ghost:hover:not(:disabled) { background: var(--bg-sunken); }
+.ghost.link { color: var(--accent-text); }
+.ghost:disabled:not(.loading) { color: var(--text-3); }
+
+/* ── Danger — filled only inside a confirm modal; quiet in list rows ── */
+.danger {
+  background: var(--bad);
+  color: var(--on-bad);
+}
+.danger:hover:not(:disabled) { filter: brightness(.92); }
+.dangerQuiet {
+  background: var(--bad-soft);
+  border-color: rgba(195, 58, 50, .35);
+  color: var(--bad);
+}
+.dangerQuiet:hover:not(:disabled) { filter: brightness(.97); }
+
+/* ── Loading — width locked before the swap; no reflow ── */
+.loading { opacity: .75; }
+
+.spinner {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  opacity: .9;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}

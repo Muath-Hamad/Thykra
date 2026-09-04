@@ -1,0 +1,58 @@
+.wrap {
+  background: var(--bg-raised);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  padding: 26px 20px;
+  text-align: center;
+}
+
+.plate {
+  width: 76px;
+  height: 60px;
+  margin: 0 auto;
+  background: var(--bg-sunken);
+  border: 1px dashed rgba(21, 23, 38, .28);
+  transform: rotate(-2deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+html[dir="rtl"] .plate { transform: rotate(2deg); }
+[data-theme="dark"] .plate { border-color: var(--rule-strong); }
+
+.plateError { background: var(--bad-soft); }
+
+.plateLabel {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+html[lang="ar"] .plateLabel { text-transform: none; letter-spacing: 0; }
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: -.02em;
+  margin-top: 16px;
+}
+html[lang="ar"] .title { letter-spacing: 0; font-weight: 700; }
+
+.body {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-2);
+  margin-top: 6px;
+  max-width: 46ch;
+  margin-inline: auto;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}

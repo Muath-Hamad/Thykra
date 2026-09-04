@@ -1,0 +1,51 @@
+/* The stamp — the one piece of decoration in the system. Double-ruled,
+   slightly rotated; it means: this came from a person, on a date.
+   Never more than one per viewport; never on a destructive surface.
+   In RTL it rotates the other way so it leans into the page. */
+
+.stamp {
+  display: inline-block;
+  transform: rotate(-3deg);
+  border: 2px solid var(--warm);
+  padding: 3px;
+  border-radius: var(--r-xs);
+  background: var(--bg);
+}
+html[dir="rtl"] .stamp { transform: rotate(3deg); }
+
+.inner {
+  border: 1px solid var(--warm);
+  border-radius: 3px;
+  padding: 7px 13px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--warm);
+}
+
+.ink { border-color: var(--text); background: var(--bg); }
+.ink .inner { border-color: var(--text); color: var(--text); }
+.warn { border-color: var(--warn); opacity: .85; }
+.warn .inner { border-color: var(--warn); color: var(--warn); }
+
+.text { text-align: start; }
+
+.eyebrow {
+  display: block;
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  opacity: .75;
+}
+html[lang="ar"] .eyebrow { letter-spacing: 0; text-transform: none; font-size: 10px; }
+
+.name {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+html[lang="ar"] .name { letter-spacing: 0; text-transform: none; font-weight: 700; }

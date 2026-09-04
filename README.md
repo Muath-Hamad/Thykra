@@ -1,80 +1,93 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Web, Server.
+# Thykra
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+*Travel together. Remember forever.* — a shared trip photo-album app for
+friends, couples, and families. Kotlin Multiplatform targeting Android, iOS,
+Web, and a Ktor server.
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+> **The web app was rebuilt (2026-08-06)** as **Wanderlust Editions** — an
+> editorial, print-inspired redesign with Paper/Darkroom themes, day-chapter
+> galleries, a Darkroom lightbox, full Arabic/RTL support, and new server
+> APIs (invite previews, multi-use links, activity feeds, recaps).
+> See [docs/Wanderlust-Editions.md](./docs/Wanderlust-Editions.md).
 
-* [/server](./server/src/main/kotlin) is for the Ktor server application.
+## Documentation
 
-* [/shared](./shared/src) is for the code that will be shared between all targets in the project.
-  The most important subfolder is [commonMain](./shared/src/commonMain/kotlin). If preferred, you
-  can add code to the platform-specific folders here too.
+| Doc | What it covers |
+|---|---|
+| [docs/Wanderlust-Editions.md](./docs/Wanderlust-Editions.md) | The web redesign: design system, IA, new APIs, decisions, verification |
+| [docs/Actions.md](./docs/Actions.md) | Action items that need a human (credentials, hosting, merges, product calls) |
+| [docs/TASKS.md](./docs/TASKS.md) | Development task tracker across all phases and platforms |
+| [docs/UX_guide.md](./docs/UX_guide.md) | Original MVP UI/UX spec — still current for Android/iOS, superseded for web |
+| [docs/pitch.md](./docs/pitch.md) | Product pitch |
 
-* [/webApp](./webApp) contains web React application. It uses the Kotlin/JS library produced
-  by the [shared](./shared) module.
+## Repository layout
 
-### Build and Run Android Application
+* [`/webApp`](./webApp) — the React + TypeScript web app (Vite, TanStack
+  Router, CSS Modules). Rebuilt as Wanderlust Editions; talks to the server
+  via the shared DTO contract.
+* [`/server`](./server/src/main/kotlin) — the Ktor server (Exposed +
+  PostgreSQL, JWT auth, presigned media uploads, invites, activity, recaps).
+* [`/shared`](./shared/src) — Kotlin Multiplatform shared code; the DTO
+  module is the API contract for all clients (additive-only changes).
+* [`/composeApp`](./composeApp/src) — Compose Multiplatform code for the
+  Android and iOS apps.
+* [`/iosApp`](./iosApp/iosApp) — the iOS entry point / SwiftUI shell.
 
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
+## Build and run
 
-### Build and Run Server
+### Server
 
-To build and run the development version of the server, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :server:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :server:run
-  ```
+```shell
+./gradlew :server:run
+```
 
-### Build and Run Web Application
+Configuration via environment (see `server/src/main/resources/application.yaml`):
+`DATABASE_URL`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`, storage settings.
+`ALLOW_DEV_LOGIN=true` enables a dev-only login backdoor for local testing —
+never set it in production.
 
-To build and run the development version of the web app, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
-1. Install [Node.js](https://nodejs.org/en/download) (which includes `npm`)
-2. Build Kotlin/JS shared code:
-   - on macOS/Linux
-     ```shell
-     ./gradlew :shared:jsBrowserDevelopmentLibraryDistribution
-     ```
-   - on Windows
-     ```shell
-     .\gradlew.bat :shared:jsBrowserDevelopmentLibraryDistribution
-     ```
-3. Build and run the web application
-   ```shell
-   npm install
-   npm run start
-   ```
+### Web app
 
-### Build and Run iOS Application
+```shell
+cd webApp
+npm install
+npm run start      # dev server (proxies /api to localhost:8081)
+npm run build      # production build (typecheck + vite)
+```
 
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+Set `VITE_GOOGLE_CLIENT_ID` for the Google sign-in button to render.
 
-### Production-like local stack (Docker)
+### Android
 
-Brings up Postgres, LocalStack S3, and the Ktor server, all wired together via Docker Compose.
+```shell
+./gradlew :composeApp:assembleDebug
+```
+
+### iOS
+
+Open [`/iosApp`](./iosApp) in Xcode and run, or use the IDE run configuration.
+
+## Tests
+
+```shell
+./gradlew :server:test            # 39 server integration tests (H2 in-memory)
+cd webApp && npx vitest run       # 44 unit tests (chapters, layout, formatting)
+cd webApp && npx tsc --noEmit     # typecheck
+./gradlew :composeApp:testDebugUnitTest   # headless Compose UI tests (Robolectric)
+```
+
+An 18-check Playwright E2E smoke (create trip → upload → invite → join →
+share → RTL) runs against the real stack; see
+[docs/Wanderlust-Editions.md §6](./docs/Wanderlust-Editions.md) for what it
+covers.
+
+> **CI note:** full multiplatform builds need `dl.google.com` reachable
+> (Android Gradle Plugin). Server and web targets build without it.
+
+## Production-like local stack (Docker)
+
+Brings up Postgres, LocalStack S3, and the Ktor server, all wired together
+via Docker Compose.
 
 ```shell
 cp .env.prod.example .env.prod
@@ -82,25 +95,16 @@ cp .env.prod.example .env.prod
 docker compose -f docker-compose.prod.yml --env-file .env.prod up --build
 ```
 
-The server boots on `http://localhost:${SERVER_PORT:-8081}` and writes media to a LocalStack-hosted
-S3 bucket reachable at `http://localhost:4566/thykra-media`. State persists across `up`/`down`
-cycles in named Docker volumes (`thykra_postgres_data`, `thykra_localstack_data`); `docker compose
-down -v` wipes everything.
+The server boots on `http://localhost:${SERVER_PORT:-8081}` and writes media
+to a LocalStack-hosted S3 bucket reachable at
+`http://localhost:4566/thykra-media`. State persists across `up`/`down`
+cycles in named Docker volumes (`thykra_postgres_data`,
+`thykra_localstack_data`); `docker compose down -v` wipes everything.
 
-For real production, swap `STORAGE_TYPE=s3` to point at a real AWS S3 bucket — leave `S3_ENDPOINT`
-unset, drop the `localstack` service, and use the AWS default credential chain (instance role) by
-clearing `S3_ACCESS_KEY`/`S3_SECRET_KEY`.
-
-### Headless Compose UI tests
-
-Compose Multiplatform UI behaviour is verified on the JVM via Robolectric — no Android emulator
-required. Run locally:
-
-```shell
-./gradlew :composeApp:testDebugUnitTest
-```
-
-Tests live under `composeApp/src/androidUnitTest/kotlin/`. CI runs these on every PR.
+For real production, swap `STORAGE_TYPE=s3` to point at a real AWS S3
+bucket — leave `S3_ENDPOINT` unset, drop the `localstack` service, and use
+the AWS default credential chain (instance role) by clearing
+`S3_ACCESS_KEY`/`S3_SECRET_KEY`.
 
 ---
 

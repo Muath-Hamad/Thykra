@@ -1,0 +1,162 @@
+.page {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 0 var(--gutter) var(--sp-16);
+}
+
+/* ── Masthead ── */
+.masthead {
+  display: grid;
+  grid-template-columns: 1.25fr .75fr;
+  gap: var(--sp-8);
+  align-items: start;
+  padding-top: var(--sp-8);
+}
+@media (max-width: 1023px) {
+  .masthead { grid-template-columns: 1fr; gap: var(--sp-4); padding-top: var(--sp-4); }
+  .coverCell { order: -1; }
+}
+
+.microRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.title { margin-top: 8px; outline: none; }
+
+.description {
+  margin-top: 12px;
+  max-width: 46ch;
+  color: var(--text-2);
+}
+
+.mastMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+  align-items: center;
+  margin-top: 18px;
+}
+.peopleGroup { display: flex; align-items: center; gap: 10px; }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: var(--sp-5);
+}
+@media (max-width: 767px) {
+  .actions { display: none; } /* actions live in the ⋯ overflow + FAB pattern */
+}
+
+.coverCell { min-width: 0; }
+
+/* ── Tabs row ── */
+.tabsRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-top: var(--sp-6);
+  position: sticky;
+  top: var(--nav-h);
+  z-index: calc(var(--z-sticky) + 1);
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
+  backdrop-filter: blur(6px);
+}
+@media (max-width: 767px) {
+  .tabsRow { top: 52px; }
+}
+.tabsRow > nav { flex: 1; min-width: 0; }
+.viewToggle { flex: none; align-self: center; }
+@media (max-width: 767px) {
+  .viewToggle { display: none; }
+}
+
+/* ── Welcome band — the only banner allowed on this screen ── */
+.welcome {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  background: var(--warm-soft);
+  border: 1px solid color-mix(in srgb, var(--warm) 30%, transparent);
+  border-radius: var(--r-md);
+  padding: 12px 16px;
+  margin-top: var(--sp-4);
+}
+.welcomeText { flex: 1; min-width: 200px; font-size: 15px; }
+
+/* ── Activity strip ── */
+.strip {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-top: var(--sp-4);
+  padding-block: 2px;
+}
+.strip::-webkit-scrollbar { display: none; }
+
+.stripCard {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  padding: 9px 12px;
+  color: var(--text);
+  text-align: start;
+}
+.stripCardWarm {
+  background: var(--warm-soft);
+  border-color: color-mix(in srgb, var(--warm) 26%, transparent);
+}
+.stripLine { display: block; font-size: 13px; }
+.stripName { font-weight: 600; color: var(--warm-text); }
+.stripMeta { display: block; font-size: 11.5px; color: var(--text-3); }
+.stripThumb { width: 28px; height: 28px; flex: none; object-fit: cover; }
+.stripMore {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding-inline: 4px;
+  font-size: var(--t-meta-size);
+  color: var(--accent-text);
+  font-weight: 500;
+}
+
+.gallerySection { margin-top: var(--sp-8); }
+
+.filterRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-4);
+}
+
+.loadState { display: grid; gap: var(--sp-4); margin-top: var(--sp-8); }
+.loadRows { display: flex; gap: 4px; }
+
+.mobileAdd {
+  position: fixed;
+  inset-inline-end: var(--sp-4);
+  bottom: calc(var(--tabbar-h) + var(--sp-4));
+  z-index: var(--z-sticky);
+  display: none;
+}
+@media (max-width: 767px) {
+  .mobileAdd { display: block; }
+}
+
+.notFound {
+  min-height: 60dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

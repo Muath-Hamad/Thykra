@@ -1,0 +1,59 @@
+.field { display: grid; gap: 5px; }
+
+.label {
+  font-size: var(--t-meta-size);
+  font-weight: 500;
+  color: var(--text-2);
+}
+.labelError { color: var(--bad); }
+.labelDisabled { color: var(--text-3); }
+.optional { color: var(--text-3); font-weight: 400; }
+
+.control {
+  width: 100%;
+  background: var(--bg-sunken);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-sm);
+  font-size: 15px;
+  color: var(--text);
+  padding-inline: 12px;
+  transition: border-color var(--dur-1) var(--ease-out), background-color var(--dur-1) var(--ease-out);
+}
+.control::placeholder { color: var(--text-3); }
+.control:focus-visible { border-color: var(--accent); }
+.control:disabled {
+  background: var(--bg-raised);
+  border-color: var(--rule);
+  color: var(--text-3);
+}
+
+input.control { height: 40px; }
+select.control { height: 40px; }
+textarea.control {
+  min-height: 62px;
+  padding-block: 9px;
+  resize: none;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+/* iOS: 48px tall + ≥16px text below 768 so the viewport never zooms. */
+@media (max-width: 767px) {
+  input.control, select.control { height: 48px; font-size: 16px; }
+  textarea.control { font-size: 16px; }
+}
+
+.controlError {
+  background: var(--bad-soft);
+  border-color: var(--bad);
+}
+
+.help { font-size: var(--t-meta-size); color: var(--text-3); }
+.error { font-size: var(--t-meta-size); color: var(--bad); }
+
+.counterRow {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 11.5px;
+  color: var(--text-3);
+}

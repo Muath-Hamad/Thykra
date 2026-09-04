@@ -32,6 +32,8 @@ export interface InviteLinkDto {
   albumId: string;
   token: string;
   expiresAt: string;
+  /** How many people joined with this link — server addition. */
+  joinCount?: number;
 }
 
 export interface BlockedMemberDto {
@@ -49,65 +51,65 @@ export interface UpdateAlbumRequest {
 }
 
 export async function getAlbums() {
-  return apiClient('/api/albums');
+  return apiClient<AlbumDto[]>('/api/albums');
 }
 
 export async function getAlbum(id: string) {
-  return apiClient(`/api/albums/${id}`);
+  return apiClient<AlbumDto>(`/api/albums/${id}`);
 }
 
 export async function createAlbum(title: string, description?: string) {
-  return apiClient('/api/albums', {
+  return apiClient<AlbumDto>('/api/albums', {
     method: 'POST',
     body: JSON.stringify({ title, description }),
   });
 }
 
 export async function updateAlbum(id: string, data: UpdateAlbumRequest) {
-  return apiClient(`/api/albums/${id}`, {
+  return apiClient<AlbumDto>(`/api/albums/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   });
 }
 
 export async function deleteAlbum(id: string) {
-  return apiClient(`/api/albums/${id}`, { method: 'DELETE' });
+  return apiClient<string>(`/api/albums/${id}`, { method: 'DELETE' });
 }
 
 export async function getMembers(albumId: string) {
-  return apiClient(`/api/albums/${albumId}/members`);
+  return apiClient<AlbumMemberDto[]>(`/api/albums/${albumId}/members`);
 }
 
 export async function addMember(albumId: string, userId: string, role: string) {
-  return apiClient(`/api/albums/${albumId}/members`, {
+  return apiClient<AlbumMemberDto>(`/api/albums/${albumId}/members`, {
     method: 'POST',
     body: JSON.stringify({ userId, role }),
   });
 }
 
 export async function removeMember(albumId: string, userId: string) {
-  return apiClient(`/api/albums/${albumId}/members/${userId}`, { method: 'DELETE' });
+  return apiClient<string>(`/api/albums/${albumId}/members/${userId}`, { method: 'DELETE' });
 }
 
 export async function createInviteLink(albumId: string, expiresInDays?: number) {
-  return apiClient(`/api/albums/${albumId}/invite`, {
+  return apiClient<InviteLinkDto>(`/api/albums/${albumId}/invite`, {
     method: 'POST',
     body: JSON.stringify({ expiresInDays }),
   });
 }
 
 export async function joinByInvite(token: string) {
-  return apiClient(`/api/albums/join/${token}`, { method: 'POST' });
+  return apiClient<AlbumDto>(`/api/albums/join/${token}`, { method: 'POST' });
 }
 
 export async function getBlockedMembers(albumId: string) {
-  return apiClient(`/api/albums/${albumId}/blocks`);
+  return apiClient<BlockedMemberDto[]>(`/api/albums/${albumId}/blocks`);
 }
 
 export async function blockMember(albumId: string, userId: string) {
-  return apiClient(`/api/albums/${albumId}/blocks/${userId}`, { method: 'POST' });
+  return apiClient<string>(`/api/albums/${albumId}/blocks/${userId}`, { method: 'POST' });
 }
 
 export async function unblockMember(albumId: string, userId: string) {
-  return apiClient(`/api/albums/${albumId}/blocks/${userId}`, { method: 'DELETE' });
+  return apiClient<string>(`/api/albums/${albumId}/blocks/${userId}`, { method: 'DELETE' });
 }
