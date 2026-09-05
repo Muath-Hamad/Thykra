@@ -5,6 +5,7 @@ import com.jameeli.thykra.auth.GoogleOAuthVerifier
 import com.jameeli.thykra.auth.JwtService
 import com.jameeli.thykra.db.DatabaseFactory
 import com.jameeli.thykra.plugins.configureCors
+import com.jameeli.thykra.plugins.configureForwardedHeaders
 import com.jameeli.thykra.plugins.configureMonitoring
 import com.jameeli.thykra.plugins.configureRouting
 import com.jameeli.thykra.plugins.configureSecurity
@@ -83,6 +84,9 @@ fun Application.module() {
     val appleVerifier = AppleOAuthVerifier(environment, oauthHttpClient)
     val authService = AuthService(jwtService, userRepository, refreshTokenRepository, googleVerifier, appleVerifier)
 
+    // Must precede CORS: it is what makes request.origin reflect the public
+    // scheme/host, which is how the CORS plugin recognises same-origin traffic.
+    configureForwardedHeaders()
     configureSerialization()
     configureMonitoring()
     configureCors()
