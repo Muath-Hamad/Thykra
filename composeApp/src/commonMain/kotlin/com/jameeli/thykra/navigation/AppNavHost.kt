@@ -46,6 +46,8 @@ import com.jameeli.thykra.ui.trip.TripViewModel
 import com.jameeli.thykra.ui.trips.TripsScreen
 import com.jameeli.thykra.ui.trips.TripsViewModel
 import com.jameeli.thykra.ui.media.MediaViewerScreenContent
+import com.jameeli.thykra.ui.settings.TripSettingsScreen
+import com.jameeli.thykra.ui.settings.TripSettingsViewModel
 import com.jameeli.thykra.ui.media.MediaViewerViewModel
 import com.jameeli.thykra.ui.profile.ProfileScreenContent
 import com.jameeli.thykra.ui.social.MediaCommentsViewModel
@@ -192,11 +194,16 @@ fun AppNavHost(
 
                 composable<TripSettings> { entry ->
                     val route = entry.toRoute<TripSettings>()
-                    // Build step 09 replaces this; until then the trip screen still owns
-                    // its own settings block.
-                    RoutePlaceholder(
-                        title = "Trip settings",
-                        note = "Arrives with build step 09. Trip ${route.albumId}.",
+                    val viewModel = remember(route.albumId) {
+                        TripSettingsViewModel(albumApi, profileApi, networkMonitor)
+                    }
+                    TripSettingsScreen(
+                        albumId = route.albumId,
+                        viewModel = viewModel,
+                        onBack = { navController.popBackStack() },
+                        onLeftOrDeleted = {
+                            navController.navigate(Trips) { popUpTo(0) { inclusive = true } }
+                        },
                     )
                 }
 
