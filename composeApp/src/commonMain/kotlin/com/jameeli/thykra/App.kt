@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import com.jameeli.thykra.api.AlbumApi
+import com.jameeli.thykra.api.NetworkMonitor
 import com.jameeli.thykra.api.CommentApi
 import com.jameeli.thykra.api.MediaApi
 import com.jameeli.thykra.api.ProfileApi
@@ -23,7 +24,8 @@ fun App(
     reactionApi: ReactionApi,
     commentApi: CommentApi,
     profileApi: ProfileApi,
-    uploadQueueManager: UploadQueueManager
+    uploadQueueManager: UploadQueueManager,
+    networkMonitor: NetworkMonitor? = null,
 ) {
     // Read synchronously on first composition so a Darkroom phone never flashes Paper.
     val themeMode by rememberThemeModeState()
@@ -37,6 +39,7 @@ fun App(
                 commentApi = commentApi,
                 profileApi = profileApi,
                 uploadQueueManager = uploadQueueManager,
+                networkMonitor = networkMonitor,
             )
         }
     }

@@ -27,6 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.jameeli.thykra.KitGalleryEnabled
 import com.jameeli.thykra.api.AlbumApi
+import com.jameeli.thykra.api.NetworkMonitor
 import com.jameeli.thykra.api.CommentApi
 import com.jameeli.thykra.api.MediaApi
 import com.jameeli.thykra.api.ProfileApi
@@ -36,11 +37,11 @@ import com.jameeli.thykra.auth.AuthState
 import com.jameeli.thykra.auth.AuthViewModel
 import com.jameeli.thykra.ui.albums.AlbumDetailScreenContent
 import com.jameeli.thykra.ui.albums.AlbumDetailViewModel
-import com.jameeli.thykra.ui.albums.AlbumListScreenContent
-import com.jameeli.thykra.ui.albums.AlbumListViewModel
 import com.jameeli.thykra.ui.kit.RootTab
 import com.jameeli.thykra.ui.kit.gallery.KitGalleryScreen
 import com.jameeli.thykra.ui.landing.LandingScreenContent
+import com.jameeli.thykra.ui.trips.TripsScreen
+import com.jameeli.thykra.ui.trips.TripsViewModel
 import com.jameeli.thykra.ui.media.MediaViewerScreenContent
 import com.jameeli.thykra.ui.media.MediaViewerViewModel
 import com.jameeli.thykra.ui.profile.ProfileScreenContent
@@ -67,6 +68,7 @@ fun AppNavHost(
     commentApi: CommentApi,
     profileApi: ProfileApi,
     uploadQueueManager: UploadQueueManager,
+    networkMonitor: NetworkMonitor? = null,
 ) {
     val authState by authViewModel.authState.collectAsState()
     val navController = rememberNavController()
@@ -115,12 +117,12 @@ fun AppNavHost(
                     enterTransition = { tabEnter(motion, reduced) },
                     exitTransition = { tabExit(motion, reduced) },
                 ) {
-                    val viewModel = remember { AlbumListViewModel(albumApi) }
-                    AlbumListScreenContent(
+                    val viewModel = remember {
+                        TripsViewModel(albumApi, profileApi, networkMonitor)
+                    }
+                    TripsScreen(
                         viewModel = viewModel,
-                        onNavigateToAlbum = { albumId -> navController.navigate(Trip(albumId)) },
-                        onNavigateToProfile = { navController.switchTab(RootTab.Me) },
-                        uploadQueueManager = uploadQueueManager,
+                        onOpenTrip = { albumId -> navController.navigate(Trip(albumId)) },
                     )
                 }
 

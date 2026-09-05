@@ -77,7 +77,8 @@ class MainActivity : ComponentActivity() {
                 reactionApi = reactionApi,
                 commentApi = commentApi,
                 profileApi = profileApi,
-                uploadQueueManager = uploadQueueManager
+                uploadQueueManager = uploadQueueManager,
+                networkMonitor = networkMonitor,
             )
         }
 
