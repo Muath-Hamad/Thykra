@@ -123,6 +123,8 @@ fun AppNavHost(
                     TripsScreen(
                         viewModel = viewModel,
                         onOpenTrip = { albumId -> navController.navigate(Trip(albumId)) },
+                        uploadQueueManager = uploadQueueManager,
+                        networkMonitor = networkMonitor,
                     )
                 }
 

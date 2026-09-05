@@ -30,6 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.jameeli.thykra.api.NetworkMonitor
+import com.jameeli.thykra.api.UploadQueueManager
 import com.jameeli.thykra.model.AlbumDto
 import com.jameeli.thykra.navigation.LocalThykraChrome
 import com.jameeli.thykra.ui.kit.EmptyGlyph
@@ -43,6 +45,7 @@ import com.jameeli.thykra.ui.kit.TripCardSkeleton
 import com.jameeli.thykra.ui.kit.clayPhrase
 import com.jameeli.thykra.ui.kit.toAvatarUser
 import com.jameeli.thykra.ui.theme.ThykraIcons
+import com.jameeli.thykra.ui.upload.UploadDockHost
 import com.jameeli.thykra.ui.theme.thykra
 import com.jameeli.thykra.ui.theme.thykraAnimate
 import kotlinx.datetime.Instant
@@ -61,7 +64,9 @@ import kotlinx.datetime.toLocalDateTime
 fun TripsScreen(
     viewModel: TripsViewModel,
     onOpenTrip: (String) -> Unit,
+    uploadQueueManager: UploadQueueManager,
     modifier: Modifier = Modifier,
+    networkMonitor: NetworkMonitor? = null,
 ) {
     val trips by viewModel.trips.collectAsState()
     val profile by viewModel.profile.collectAsState()
@@ -84,6 +89,15 @@ fun TripsScreen(
         viewModel.load()
         viewModel.loadProfile()
     }
+
+    // The list variant names the trip, because from here it is not obvious which one.
+    UploadDockHost(
+        uploadQueueManager = uploadQueueManager,
+        tripTitleFor = { id -> trips.firstOrNull { it.id == id }?.title.orEmpty() },
+        networkMonitor = networkMonitor,
+        onSeeThem = onOpenTrip,
+        onBatchComplete = { viewModel.load(refresh = true) },
+    )
 
     // The Me tab draws the signed-in person rather than a glyph.
     LaunchedEffect(profile) {

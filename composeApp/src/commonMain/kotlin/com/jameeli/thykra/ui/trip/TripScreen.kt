@@ -78,6 +78,7 @@ import com.jameeli.thykra.ui.kit.TripActionBar
 import com.jameeli.thykra.ui.kit.clayPhrase
 import com.jameeli.thykra.ui.kit.toAvatarUser
 import com.jameeli.thykra.ui.media.rememberMediaPickerLauncher
+import com.jameeli.thykra.ui.upload.UploadDockHost
 import com.jameeli.thykra.ui.theme.HapticKind
 import com.jameeli.thykra.ui.theme.LocalMotion
 import com.jameeli.thykra.ui.theme.PlateShape
@@ -132,6 +133,16 @@ fun TripScreen(
     }
 
     LaunchedEffect(albumId) { viewModel.load(albumId) }
+
+    // The dock is hosted by the shell, not by this screen, so it survives navigation.
+    UploadDockHost(
+        uploadQueueManager = viewModel.uploadQueueManager,
+        tripTitleFor = { album?.title.orEmpty() },
+        albumId = albumId,
+        networkMonitor = viewModel.networkMonitorOrNull,
+        onSeeThem = { viewModel.refreshMedia(albumId) },
+        onBatchComplete = { viewModel.refreshMedia(albumId) },
+    )
 
     LaunchedEffect(error) {
         val message = error

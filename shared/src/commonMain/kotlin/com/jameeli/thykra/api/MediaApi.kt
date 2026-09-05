@@ -13,6 +13,7 @@ import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
+import io.ktor.client.plugins.onUpload
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -38,12 +39,18 @@ class MediaApi(
         }.body()
     }
 
+    /**
+     * @param onProgress bytes sent so far and the total, reported as the body streams.
+     *   The upload dock draws a determinate bar from this; without it the bar could only
+     *   ever be a spinner, which tells someone nothing about a 610 MB batch.
+     */
     suspend fun uploadFile(
         uploadUrl: String,
         method: String,
         headers: Map<String, String>,
         bytes: ByteArray,
-        contentType: String
+        contentType: String,
+        onProgress: ((sent: Long, total: Long) -> Unit)? = null
     ) {
         // Replace localhost with the platform-specific API host so Android emulator
         // (which uses 10.0.2.2) and other platforms work without extra server config.
@@ -53,6 +60,9 @@ class MediaApi(
             headers.forEach { (key, value) -> this.header(key, value) }
             header(HttpHeaders.ContentType, contentType)
             setBody(bytes)
+            if (onProgress != null) {
+                onUpload { sent, total -> onProgress(sent, total ?: bytes.size.toLong()) }
+            }
         }
         if (response.status.value !in 200..299) {
             throw Exception("Upload failed: HTTP ${response.status.value}")

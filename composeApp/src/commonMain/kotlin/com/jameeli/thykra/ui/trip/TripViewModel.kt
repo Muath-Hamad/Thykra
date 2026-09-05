@@ -35,9 +35,12 @@ class TripViewModel(
     private val albumApi: AlbumApi,
     private val mediaApi: MediaApi,
     private val profileApi: ProfileApi,
-    private val uploadQueueManager: UploadQueueManager,
+    val uploadQueueManager: UploadQueueManager,
     private val networkMonitor: NetworkMonitor? = null,
 ) : ViewModel() {
+
+    /** Handed to the dock host, which needs the same connectivity signal this screen uses. */
+    val networkMonitorOrNull: NetworkMonitor? get() = networkMonitor
 
     private val _album = MutableStateFlow<AlbumDto?>(null)
     val album: StateFlow<AlbumDto?> = _album.asStateFlow()
