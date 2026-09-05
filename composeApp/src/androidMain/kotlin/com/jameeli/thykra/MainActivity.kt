@@ -31,6 +31,7 @@ import com.jameeli.thykra.navigation.DeepLinkBus
 import com.jameeli.thykra.navigation.DeepLinkTarget
 import com.jameeli.thykra.navigation.handleDeepLink
 import com.jameeli.thykra.ui.share.SharingHost
+import com.jameeli.thykra.ui.theme.ThemePreference
 import com.jameeli.thykra.widget.WidgetDeepLinks
 
 class MainActivity : ComponentActivity() {
@@ -38,6 +39,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         SharingHost.appContext = applicationContext
+        // Must be set before setContent: the theme reads the preference synchronously.
+        ThemePreference.appContext = applicationContext
         SingletonImageLoader.setSafe { context ->
             ImageLoader.Builder(context)
                 .components { add(VideoFrameDecoder.Factory()) }
