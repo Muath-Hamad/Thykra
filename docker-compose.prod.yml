@@ -74,6 +74,11 @@ services:
       # --- Auth ---
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      # Only for clients served from a DIFFERENT origin than the API. The web
+      # app is proxied under one origin by nginx and the mobile apps send no
+      # Origin header, so neither belongs here — leaving this empty (the
+      # default) correctly allows no cross-origin browser client at all.
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-}
       ALLOW_DEV_LOGIN: ${ALLOW_DEV_LOGIN:-false}
     ports:
       - "${SERVER_PORT:-8081}:8081"
