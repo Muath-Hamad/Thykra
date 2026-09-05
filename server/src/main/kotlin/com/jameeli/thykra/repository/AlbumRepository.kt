@@ -188,6 +188,25 @@ class AlbumRepository(private val storageService: StorageService) {
             }
             ?: this[AlbumsTable.coverUrl]
 
+        // Active media, split by kind, in one grouped pass rather than two counts.
+        val mediaCountExpr = MediaTable.id.count()
+        val countsByType = MediaTable
+            .select(MediaTable.type, mediaCountExpr)
+            .where { (MediaTable.albumId eq albumId) and (MediaTable.status eq MediaStatus.ACTIVE.name) }
+            .groupBy(MediaTable.type)
+            .associate { it[MediaTable.type] to it[mediaCountExpr].toInt() }
+        val mediaCount = countsByType.values.sum()
+        val videoCount = countsByType[MediaType.VIDEO.name] ?: 0
+
+        // The newest upload, which is what "sorted by last activity" means on the list.
+        val lastActivityAt = MediaTable
+            .selectAll()
+            .where { (MediaTable.albumId eq albumId) and (MediaTable.status eq MediaStatus.ACTIVE.name) }
+            .orderBy(MediaTable.uploadedAt, SortOrder.DESC)
+            .limit(1)
+            .singleOrNull()
+            ?.get(MediaTable.uploadedAt)
+
         // First 4 members with avatar info
         val previewMembers = (AlbumMembersTable innerJoin UsersTable)
             .selectAll()
@@ -209,8 +228,11 @@ class AlbumRepository(private val storageService: StorageService) {
             coverUrl = latestCoverUrl,
             visibility = AlbumVisibility.valueOf(this[AlbumsTable.visibility]),
             memberCount = memberCount,
+            mediaCount = mediaCount,
+            videoCount = videoCount,
             previewMembers = previewMembers,
-            createdAt = this[AlbumsTable.createdAt]
+            createdAt = this[AlbumsTable.createdAt],
+            lastActivityAt = lastActivityAt
         )
     }
 }

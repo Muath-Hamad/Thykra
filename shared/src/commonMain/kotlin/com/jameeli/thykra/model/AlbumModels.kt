@@ -27,8 +27,14 @@ data class AlbumDto(
     val coverUrl: String? = null,
     val visibility: AlbumVisibility = AlbumVisibility.PRIVATE,
     val memberCount: Int,
+    // Active media in the trip, split by kind. Default 0 so an older client that never
+    // sends them — and an older server that never sends them back — both keep working.
+    val mediaCount: Int = 0,
+    val videoCount: Int = 0,
     val previewMembers: List<AlbumMemberSummary> = emptyList(),
-    val createdAt: Instant
+    val createdAt: Instant,
+    // Newest activity in the trip, for sorting the list by what moved most recently.
+    val lastActivityAt: Instant? = null
 )
 
 @Serializable
