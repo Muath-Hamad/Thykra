@@ -3,7 +3,9 @@ package com.jameeli.thykra
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import com.jameeli.thykra.api.ActivityFeedApi
 import com.jameeli.thykra.api.AlbumApi
+import com.jameeli.thykra.api.RecapApi
 import com.jameeli.thykra.api.NetworkMonitor
 import com.jameeli.thykra.api.CommentApi
 import com.jameeli.thykra.api.InviteApi
@@ -27,6 +29,8 @@ fun App(
     profileApi: ProfileApi,
     uploadQueueManager: UploadQueueManager,
     inviteApi: InviteApi,
+    activityFeedApi: ActivityFeedApi,
+    recapApi: RecapApi,
     networkMonitor: NetworkMonitor? = null,
 ) {
     // Read synchronously on first composition so a Darkroom phone never flashes Paper.
@@ -42,6 +46,8 @@ fun App(
                 profileApi = profileApi,
                 uploadQueueManager = uploadQueueManager,
                 inviteApi = inviteApi,
+                activityFeedApi = activityFeedApi,
+                recapApi = recapApi,
                 networkMonitor = networkMonitor,
             )
         }

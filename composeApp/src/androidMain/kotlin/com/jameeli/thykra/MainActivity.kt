@@ -14,7 +14,9 @@ import androidx.work.WorkManager
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import coil3.video.VideoFrameDecoder
+import com.jameeli.thykra.api.ActivityFeedApi
 import com.jameeli.thykra.api.AlbumApi
+import com.jameeli.thykra.api.RecapApi
 import com.jameeli.thykra.api.AndroidNetworkMonitor
 import com.jameeli.thykra.api.AndroidUploadPersistence
 import com.jameeli.thykra.api.AuthApi
@@ -57,6 +59,8 @@ class MainActivity : ComponentActivity() {
         val commentApi = CommentApi(httpClient)
         val profileApi = ProfileApi(httpClient)
         val inviteApi = InviteApi(httpClient)
+        val activityFeedApi = ActivityFeedApi(httpClient)
+        val recapApi = RecapApi(httpClient)
         val persistence = AndroidUploadPersistence(applicationContext)
         val networkMonitor = AndroidNetworkMonitor(applicationContext)
         val uploadQueueManager = UploadQueueManager(mediaApi, lifecycleScope, persistence, networkMonitor)
@@ -81,6 +85,8 @@ class MainActivity : ComponentActivity() {
                 profileApi = profileApi,
                 uploadQueueManager = uploadQueueManager,
                 inviteApi = inviteApi,
+                activityFeedApi = activityFeedApi,
+                recapApi = recapApi,
                 networkMonitor = networkMonitor,
             )
         }

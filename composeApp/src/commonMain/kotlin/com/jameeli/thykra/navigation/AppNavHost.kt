@@ -26,7 +26,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.jameeli.thykra.KitGalleryEnabled
+import com.jameeli.thykra.api.ActivityFeedApi
 import com.jameeli.thykra.api.AlbumApi
+import com.jameeli.thykra.api.RecapApi
 import com.jameeli.thykra.api.NetworkMonitor
 import com.jameeli.thykra.api.CommentApi
 import com.jameeli.thykra.api.InviteApi
@@ -38,6 +40,12 @@ import com.jameeli.thykra.auth.AuthState
 import com.jameeli.thykra.auth.AuthViewModel
 import com.jameeli.thykra.ui.kit.RootTab
 import com.jameeli.thykra.ui.kit.gallery.KitGalleryScreen
+import com.jameeli.thykra.ui.activity.ActivityScreen
+import com.jameeli.thykra.ui.activity.ActivityViewModel
+import com.jameeli.thykra.ui.recaps.RecapReaderScreen
+import com.jameeli.thykra.ui.recaps.RecapReaderViewModel
+import com.jameeli.thykra.ui.recaps.RecapsScreen
+import com.jameeli.thykra.ui.recaps.RecapsViewModel
 import com.jameeli.thykra.ui.invite.InviteScreen
 import com.jameeli.thykra.ui.invite.InviteViewModel
 import com.jameeli.thykra.ui.landing.LandingScreenContent
@@ -74,6 +82,8 @@ fun AppNavHost(
     profileApi: ProfileApi,
     uploadQueueManager: UploadQueueManager,
     inviteApi: InviteApi,
+    activityFeedApi: ActivityFeedApi,
+    recapApi: RecapApi,
     networkMonitor: NetworkMonitor? = null,
 ) {
     val authState by authViewModel.authState.collectAsState()
@@ -138,10 +148,13 @@ fun AppNavHost(
                     enterTransition = { tabEnter(motion, reduced) },
                     exitTransition = { tabExit(motion, reduced) },
                 ) {
-                    // Build step 10 replaces this.
-                    RoutePlaceholder(
-                        title = "Activity",
-                        note = "Arrives with build step 10.",
+                    val viewModel = remember { ActivityViewModel(activityFeedApi) }
+                    ActivityScreen(
+                        viewModel = viewModel,
+                        onOpenMedia = { album, mediaId ->
+                            navController.navigate(Viewer(album, mediaId))
+                        },
+                        onOpenTrip = { albumId -> navController.navigate(Trip(albumId)) },
                     )
                 }
 
@@ -149,10 +162,10 @@ fun AppNavHost(
                     enterTransition = { tabEnter(motion, reduced) },
                     exitTransition = { tabExit(motion, reduced) },
                 ) {
-                    // Build step 10 replaces this.
-                    RoutePlaceholder(
-                        title = "Recaps",
-                        note = "Arrives with build step 10.",
+                    val viewModel = remember { RecapsViewModel(recapApi, albumApi) }
+                    RecapsScreen(
+                        viewModel = viewModel,
+                        onOpenRecap = { token -> navController.navigate(RecapReader(token)) },
                     )
                 }
 
@@ -209,17 +222,27 @@ fun AppNavHost(
 
                 composable<TripActivity> { entry ->
                     val route = entry.toRoute<TripActivity>()
-                    RoutePlaceholder(
-                        title = "Trip activity",
-                        note = "Arrives with build step 10. Trip ${route.albumId}.",
+                    val viewModel = remember(route.albumId) {
+                        ActivityViewModel(activityFeedApi, albumId = route.albumId)
+                    }
+                    ActivityScreen(
+                        viewModel = viewModel,
+                        onOpenMedia = { album, mediaId ->
+                            navController.navigate(Viewer(album, mediaId))
+                        },
+                        onOpenTrip = { albumId -> navController.navigate(Trip(albumId)) },
+                        tripTitle = "Trip activity",
+                        onBack = { navController.popBackStack() },
                     )
                 }
 
                 composable<TripRecaps> { entry ->
                     val route = entry.toRoute<TripRecaps>()
-                    RoutePlaceholder(
-                        title = "Trip recaps",
-                        note = "Arrives with build step 10. Trip ${route.albumId}.",
+                    val viewModel = remember(route.albumId) { RecapsViewModel(recapApi, albumApi) }
+                    RecapsScreen(
+                        viewModel = viewModel,
+                        onOpenRecap = { token -> navController.navigate(RecapReader(token)) },
+                        albumId = route.albumId,
                     )
                 }
 
@@ -240,9 +263,11 @@ fun AppNavHost(
 
                 composable<RecapReader> { entry ->
                     val route = entry.toRoute<RecapReader>()
-                    RoutePlaceholder(
-                        title = "Recap",
-                        note = "Arrives with build step 10. Recap ${route.recapId}.",
+                    val viewModel = remember(route.recapId) { RecapReaderViewModel(recapApi) }
+                    RecapReaderScreen(
+                        shareToken = route.recapId,
+                        viewModel = viewModel,
+                        onClose = { navController.popBackStack() },
                     )
                 }
 
