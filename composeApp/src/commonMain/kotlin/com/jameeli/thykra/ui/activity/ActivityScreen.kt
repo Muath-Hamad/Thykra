@@ -44,7 +44,7 @@ import com.jameeli.thykra.ui.social.ReactionEmoji
 import com.jameeli.thykra.ui.theme.ThykraIcons
 import com.jameeli.thykra.ui.theme.thykra
 import com.jameeli.thykra.ui.theme.thykraAnimate
-import kotlinx.datetime.Clock
+import com.jameeli.thykra.nowMillis
 import kotlinx.datetime.Instant
 
 /**
@@ -247,7 +247,7 @@ private fun ActivityEventDto.meta(showTrip: Boolean): String {
 
 /** "2 h", "yesterday", "Tue", "9 Apr" — the shortest thing that is still unambiguous. */
 private fun relativeTime(instant: Instant): String {
-    val nowMs = Clock.System.now().toEpochMilliseconds()
+    val nowMs = nowMillis()
     val minutes = ((nowMs - instant.toEpochMilliseconds()) / 60_000).toInt()
     return when {
         minutes < 1 -> "just now"

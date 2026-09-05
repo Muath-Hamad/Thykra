@@ -58,7 +58,7 @@ import com.jameeli.thykra.ui.kit.toAvatarUser
 import com.jameeli.thykra.ui.share.shareText
 import com.jameeli.thykra.ui.theme.ThykraIcons
 import com.jameeli.thykra.ui.theme.thykra
-import kotlinx.datetime.Clock
+import com.jameeli.thykra.nowMillis
 
 /**
  * Design part 3 §09.
@@ -528,7 +528,7 @@ private fun InviteRow(
     onShare: () -> Unit,
     onRevoke: () -> Unit,
 ) {
-    val nowMs = remember { Clock.System.now().toEpochMilliseconds() }
+    val nowMs = remember { nowMillis() }
     val hoursLeft = ((invite.expiresAt.toEpochMilliseconds() - nowMs) / 3_600_000).toInt()
     val expiringSoon = hoursLeft in 0..48
 

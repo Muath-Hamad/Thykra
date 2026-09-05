@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.jameeli.thykra.model.MediaReactionsDto
 import com.jameeli.thykra.model.ReactionSummaryDto
 import com.jameeli.thykra.model.ReactionType
-import com.jameeli.thykra.ui.theme.ThykraColors
+import com.jameeli.thykra.ui.theme.thykra
 
 /**
  * A horizontally laid-out reaction picker overlay. Shows all 8 reaction types with
@@ -87,7 +87,7 @@ private fun ReactionPickerItem(
             .size(44.dp)
             .clip(CircleShape)
             .then(
-                if (reactedByMe) Modifier.background(ThykraColors.SkyBlue.copy(alpha = 0.85f))
+                if (reactedByMe) Modifier.background(MaterialTheme.colorScheme.primary.copy(alpha = 0.85f))
                 else Modifier
             )
             .then(

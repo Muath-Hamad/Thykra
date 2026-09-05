@@ -21,7 +21,7 @@ import com.jameeli.thykra.ui.theme.HapticKind
 import com.jameeli.thykra.ui.theme.LocalCompactWidth
 import com.jameeli.thykra.ui.theme.rememberHaptics
 import kotlinx.coroutines.delay
-import kotlinx.datetime.Clock
+import com.jameeli.thykra.nowMillis
 
 /** How long the celebration stays before the dock takes itself away. */
 private const val CelebrationMs = 6_000L
@@ -164,7 +164,7 @@ private class UploadRate {
     private val samples = ArrayDeque<Pair<Long, Long>>()
 
     fun sample(uploadedBytes: Long) {
-        val now = Clock.System.now().toEpochMilliseconds()
+        val now = nowMillis()
         samples.addLast(now to uploadedBytes)
         while (samples.size > 10) samples.removeFirst()
     }
