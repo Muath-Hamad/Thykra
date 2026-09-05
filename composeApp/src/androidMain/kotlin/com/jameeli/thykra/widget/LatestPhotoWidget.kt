@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
@@ -36,7 +37,6 @@ import com.jameeli.thykra.MainActivity
 import com.jameeli.thykra.model.MediaDto
 import com.jameeli.thykra.model.MediaStatus
 import com.jameeli.thykra.model.MediaType
-import com.jameeli.thykra.ui.theme.ThykraColors
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsBytes
 import kotlinx.coroutines.Dispatchers
@@ -132,6 +132,11 @@ internal sealed interface LatestPhotoData {
 
 @Composable
 private fun LatestPhotoContent(data: LatestPhotoData) {
+    ThykraGlanceTheme { LatestPhotoBody(data) }
+}
+
+@Composable
+private fun LatestPhotoBody(data: LatestPhotoData) {
     when (data) {
         LatestPhotoData.NotConfigured -> WidgetMessage("Tap to pick an album", albumId = null)
         LatestPhotoData.SignedOut -> WidgetMessage("Sign in to Thykra", albumId = null)
@@ -151,8 +156,8 @@ private fun PhotoCard(data: LatestPhotoData.Photo) {
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
-            .background(ColorProvider(ThykraColors.DeepNavy))
-            .cornerRadius(16.dp)
+            .background(GlanceTheme.colors.surfaceVariant)
+            .cornerRadius(20.dp)
             .clickable(tapAction),
         contentAlignment = Alignment.BottomStart
     ) {
@@ -168,15 +173,17 @@ private fun PhotoCard(data: LatestPhotoData.Photo) {
         Box(
             modifier = GlanceModifier
                 .fillMaxWidth()
-                .background(ColorProvider(ComposeColor(0xCC1A1A2E)))
+                // Glance cannot render a gradient, so the caption sits on a solid
+                // near-opaque panel in the same ink the app uses for its scrims.
+                .background(ColorProvider(ComposeColor(0xE6121114)))
                 .padding(horizontal = 12.dp, vertical = 8.dp)
         ) {
             Column {
                 Text(
                     text = data.albumTitle.ifBlank { "Album" },
                     style = TextStyle(
-                        color = ColorProvider(ThykraColors.WarmWhite),
-                        fontSize = 14.sp,
+                        color = ColorProvider(ComposeColor(0xFFF2EBDF)),
+                        fontSize = WidgetType.TITLE_SP.sp,
                         fontWeight = FontWeight.Bold
                     ),
                     maxLines = 1
@@ -184,8 +191,8 @@ private fun PhotoCard(data: LatestPhotoData.Photo) {
                 Text(
                     text = formatRelative(data.uploadedAt),
                     style = TextStyle(
-                        color = ColorProvider(ThykraColors.Sandy),
-                        fontSize = 11.sp
+                        color = ColorProvider(ComposeColor(0xFFABA3A0)),
+                        fontSize = WidgetType.META_SP.sp
                     ),
                     maxLines = 1
                 )
@@ -207,8 +214,8 @@ private fun WidgetMessage(text: String, albumId: String?) {
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
-            .background(ColorProvider(ThykraColors.WarmWhite))
-            .cornerRadius(16.dp)
+            .background(GlanceTheme.colors.surface)
+            .cornerRadius(20.dp)
             .clickable(tapAction)
             .padding(16.dp),
         contentAlignment = Alignment.Center
@@ -216,8 +223,8 @@ private fun WidgetMessage(text: String, albumId: String?) {
         Text(
             text = text,
             style = TextStyle(
-                color = ColorProvider(ThykraColors.DeepNavy),
-                fontSize = 14.sp,
+                color = GlanceTheme.colors.onSurface,
+                fontSize = WidgetType.TITLE_SP.sp,
                 fontWeight = FontWeight.Medium
             )
         )

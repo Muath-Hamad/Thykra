@@ -7,6 +7,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.GlanceTheme
 import androidx.glance.LocalContext
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
@@ -36,7 +37,6 @@ import com.jameeli.thykra.MainActivity
 import com.jameeli.thykra.model.ActivityItemDto
 import com.jameeli.thykra.model.ActivityType
 import com.jameeli.thykra.model.ReactionType
-import com.jameeli.thykra.ui.theme.ThykraColors
 
 /**
  * Glance widget that shows recent reactions and comments across the user's albums.
@@ -94,8 +94,8 @@ private fun RecentActivityContent(data: RecentActivityData) {
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
-            .background(ColorProvider(ThykraColors.WarmWhite))
-            .cornerRadius(16.dp)
+            .background(GlanceTheme.colors.surface)
+            .cornerRadius(20.dp)
     ) {
         when (data) {
             RecentActivityData.NotConfigured -> CenterMessage("Tap to set up", openAlbum = null)
@@ -116,7 +116,7 @@ private fun ActivityList(items: List<ActivityItemDto>) {
         Text(
             text = "Recent activity",
             style = TextStyle(
-                color = ColorProvider(ThykraColors.DeepNavy),
+                color = GlanceTheme.colors.onSurface,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold
             ),
@@ -154,7 +154,7 @@ private fun ActivityRow(item: ActivityItemDto) {
             Text(
                 text = lineFor(item),
                 style = TextStyle(
-                    color = ColorProvider(ThykraColors.DeepNavy),
+                    color = GlanceTheme.colors.onSurface,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium
                 ),
@@ -163,7 +163,7 @@ private fun ActivityRow(item: ActivityItemDto) {
             Text(
                 text = "in ${item.albumTitle}",
                 style = TextStyle(
-                    color = ColorProvider(ThykraColors.MutedSlate),
+                    color = GlanceTheme.colors.onSurfaceVariant,
                     fontSize = 10.sp
                 ),
                 maxLines = 1
@@ -191,7 +191,7 @@ private fun CenterMessage(text: String, openAlbum: String?) {
         Text(
             text = text,
             style = TextStyle(
-                color = ColorProvider(ThykraColors.DeepNavy),
+                color = GlanceTheme.colors.onSurface,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium
             )
