@@ -26,6 +26,8 @@ import com.jameeli.thykra.ui.media.MediaViewerScreenContent
 import com.jameeli.thykra.ui.media.MediaViewerViewModel
 import com.jameeli.thykra.ui.profile.ProfileScreenContent
 import com.jameeli.thykra.ui.social.MediaCommentsViewModel
+import com.jameeli.thykra.KitGalleryEnabled
+import com.jameeli.thykra.ui.kit.gallery.KitGalleryScreen
 import com.jameeli.thykra.ui.social.MediaReactionsViewModel
 
 @Composable
@@ -117,6 +119,11 @@ fun AppNavHost(
                 commentsViewModelFactory = { MediaCommentsViewModel(commentApi) },
                 onNavigateBack = { navController.popBackStack() }
             )
+        }
+        if (KitGalleryEnabled) {
+            composable<KitGallery> {
+                KitGalleryScreen(onClose = { navController.popBackStack() })
+            }
         }
         composable<ProfileScreen> {
             ProfileScreenContent(
