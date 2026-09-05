@@ -20,10 +20,13 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.contentType
 
-class MediaApi(private val client: HttpClient, isDebug: Boolean = false) {
-
-    // Uses a separate unauthenticated client for raw file uploads (presigned URLs are self-authorising)
-    private val rawClient = createRawHttpClient(isDebug)
+class MediaApi(
+    private val client: HttpClient,
+    isDebug: Boolean = false,
+    // Separate unauthenticated client for raw file uploads (presigned URLs are
+    // self-authorising). Injectable so tests can substitute a mock engine.
+    private val rawClient: HttpClient = createRawHttpClient(isDebug)
+) {
 
     suspend fun requestUploadUrl(
         albumId: String,

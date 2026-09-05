@@ -2,8 +2,14 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'claude/**']
   pull_request:
+  # Manual runs — also the only way to exercise CI on branches pushed by
+  # integrations whose tokens don't emit push events.
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 # Cancel superseded runs on the same ref so PR pushes don't pile up.
 concurrency:
@@ -11,15 +17,38 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Guards the failure class that once took down every job in this workflow:
+  # a tampered wrapper JAR, or gradlew committed without its executable bit
+  # (which fails every `./gradlew` step with "Permission denied", exit 126).
+  wrapper-validation:
+    name: Gradle wrapper validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate Gradle wrapper JAR
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Check gradlew is executable
+        run: |
+          if ! test -x gradlew; then
+            echo "::error::gradlew is not executable. Fix with 'git update-index --chmod=+x gradlew' and commit."
+            exit 1
+          fi
+
   server:
     name: Server (Ktor JVM)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: wrapper-validation
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -52,12 +81,14 @@ jobs:
   shared:
     name: Shared (KMP)
     runs-on: ubuntu-latest
+    timeout-minutes: 40
+    needs: wrapper-validation
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -93,12 +124,14 @@ jobs:
   android:
     name: Android (composeApp assembleDebug)
     runs-on: ubuntu-latest
+    timeout-minutes: 40
+    needs: wrapper-validation
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -150,12 +183,14 @@ jobs:
   ios-kotlin:
     name: iOS Kotlin compile (Linux)
     runs-on: ubuntu-latest
+    timeout-minutes: 40
+    needs: wrapper-validation
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -189,12 +224,14 @@ jobs:
   web:
     name: Web (React + Vite)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: wrapper-validation
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -229,6 +266,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # `npm run build` runs `tsc && vite build`, so this typechecks the app too.
       - name: Build webApp
         run: npm run build --workspace=webApp
 
@@ -243,6 +281,7 @@ jobs:
   docker-build:
     name: Docker (server image)
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -275,3 +314,25 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+  # Single required status for branch protection: green only when every job
+  # above succeeded. `if: always()` keeps it reporting even when jobs fail
+  # or are skipped (a skipped dependency counts as not-green).
+  ci-success:
+    name: CI green
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [wrapper-validation, server, shared, android, ios-kotlin, web, docker-build]
+    if: always()
+    steps:
+      - name: Verify all jobs succeeded
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          echo "$RESULTS"
+          for result in $(echo "$RESULTS" | grep -o '"result": *"[^"]*"' | cut -d'"' -f4); do
+            if [ "$result" != "success" ]; then
+              echo "::error::A required job finished with result: $result"
+              exit 1
+            fi
+          done
