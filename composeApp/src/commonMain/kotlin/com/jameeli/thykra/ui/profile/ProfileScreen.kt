@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jameeli.thykra.auth.AuthViewModel
 import com.jameeli.thykra.ui.theme.ThykraColors
+import com.jameeli.thykra.ui.theme.LegacyIcons
 import com.jameeli.thykra.ui.theme.ThykraIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,7 +66,7 @@ fun ProfileScreenContent(authViewModel: AuthViewModel, onNavigateBack: () -> Uni
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
-                            imageVector = ThykraIcons.ArrowBack,
+                            imageVector = ThykraIcons.Back,
                             contentDescription = "Back",
                             tint = ThykraColors.DeepNavy
                         )
@@ -154,7 +155,7 @@ fun ProfileScreenContent(authViewModel: AuthViewModel, onNavigateBack: () -> Uni
                             )
                         ) {
                             Icon(
-                                imageVector = ThykraIcons.Edit,
+                                imageVector = LegacyIcons.Edit,
                                 contentDescription = null,
                                 modifier = Modifier.size(18.dp)
                             )
@@ -169,7 +170,7 @@ fun ProfileScreenContent(authViewModel: AuthViewModel, onNavigateBack: () -> Uni
 
             // Coming Soon: Your Recaps
             ComingSoonCard(
-                icon = ThykraIcons.CameraAlt,
+                icon = LegacyIcons.CameraAlt,
                 iconTint = ThykraColors.SunriseOrange,
                 title = "Your Recaps",
                 description = "Relive your best travel moments"
@@ -179,7 +180,7 @@ fun ProfileScreenContent(authViewModel: AuthViewModel, onNavigateBack: () -> Uni
 
             // Coming Soon: Trip Activity
             ComingSoonCard(
-                icon = ThykraIcons.Timeline,
+                icon = ThykraIcons.Chapters,
                 iconTint = ThykraColors.SkyBlue,
                 title = "Trip Activity",
                 description = "See what's happening across your trips"
@@ -197,7 +198,7 @@ fun ProfileScreenContent(authViewModel: AuthViewModel, onNavigateBack: () -> Uni
                 )
             ) {
                 Icon(
-                    imageVector = ThykraIcons.Logout,
+                    imageVector = LegacyIcons.Logout,
                     contentDescription = null,
                     modifier = Modifier.size(18.dp)
                 )

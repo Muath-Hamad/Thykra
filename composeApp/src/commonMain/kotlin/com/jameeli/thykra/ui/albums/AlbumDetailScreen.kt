@@ -64,6 +64,7 @@ import com.jameeli.thykra.permissions.AlbumPermissions
 import com.jameeli.thykra.ui.media.rememberMediaPickerLauncher
 import com.jameeli.thykra.ui.share.shareText
 import com.jameeli.thykra.ui.theme.ThykraColors
+import com.jameeli.thykra.ui.theme.LegacyIcons
 import com.jameeli.thykra.ui.theme.ThykraIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -127,7 +128,7 @@ fun AlbumDetailScreenContent(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
-                            imageVector = ThykraIcons.ArrowBack,
+                            imageVector = ThykraIcons.Back,
                             contentDescription = "Back",
                             tint = ThykraColors.DeepNavy
                         )
@@ -147,7 +148,7 @@ fun AlbumDetailScreenContent(
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Icon(
-                    imageVector = ThykraIcons.Add,
+                    imageVector = ThykraIcons.Plus,
                     contentDescription = "Add Photos"
                 )
             }
@@ -234,7 +235,7 @@ fun AlbumDetailScreenContent(
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Icon(
-                                                imageVector = ThykraIcons.PlayArrow,
+                                                imageVector = ThykraIcons.Play,
                                                 contentDescription = null,
                                                 modifier = Modifier.size(28.dp),
                                                 tint = Color.White.copy(alpha = 0.85f)
@@ -406,7 +407,7 @@ fun AlbumDetailScreenContent(
                                     }
                                 ) {
                                     Icon(
-                                        imageVector = ThykraIcons.Block,
+                                        imageVector = LegacyIcons.Block,
                                         contentDescription = "Block ${member.displayName}",
                                         tint = ThykraColors.SoftRed,
                                         modifier = Modifier.size(18.dp)
@@ -450,7 +451,7 @@ fun AlbumDetailScreenContent(
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
                                         Icon(
-                                            imageVector = ThykraIcons.Block,
+                                            imageVector = LegacyIcons.Block,
                                             contentDescription = null,
                                             modifier = Modifier.size(20.dp),
                                             tint = ThykraColors.SoftRed
@@ -649,7 +650,7 @@ private fun VisibilitySection(
     onChangeVisibility: (AlbumVisibility) -> Unit
 ) {
     val isPrivate = currentVisibility == AlbumVisibility.PRIVATE
-    val icon = if (isPrivate) ThykraIcons.Lock else ThykraIcons.Public
+    val icon = if (isPrivate) ThykraIcons.Lock else ThykraIcons.Globe
     val title = if (isPrivate) "Private" else "Anyone with the link"
     val description = if (isPrivate) {
         "Only added members can view this album."
@@ -813,7 +814,7 @@ private fun InviteLinkSection(
                             onClick = { copyToClipboard(url) }
                         ) {
                             Icon(
-                                imageVector = ThykraIcons.ContentCopy,
+                                imageVector = ThykraIcons.Copy,
                                 contentDescription = "Copy invite link",
                                 tint = ThykraColors.SkyBlue,
                                 modifier = Modifier.size(18.dp)

@@ -212,9 +212,9 @@ actual fun VideoPlayer(url: String, isActive: Boolean, modifier: Modifier) {
                 // Centre play / pause / replay button (hidden while loading).
                 if (!isLoading) {
                     val centerIcon = when {
-                        playbackState == Player.STATE_ENDED -> ThykraIcons.Replay
+                        playbackState == Player.STATE_ENDED -> ThykraIcons.Retry
                         isPlaying -> ThykraIcons.Pause
-                        else -> ThykraIcons.PlayArrow
+                        else -> ThykraIcons.Play
                     }
                     Box(
                         modifier = Modifier

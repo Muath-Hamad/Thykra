@@ -1,597 +1,521 @@
 package com.jameeli.thykra.ui.theme
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
+import androidx.compose.ui.graphics.vector.PathBuilder
 import androidx.compose.ui.unit.dp
 
+/**
+ * The whole icon set — thirty-one hand-drawn paths at a 24 dp viewport, 1.75 dp stroke,
+ * round caps and joins, no fills except dots and the three tab glyphs when selected.
+ *
+ * Icons inherit LocalContentColor through the tint that Icon applies, so nothing here
+ * names a colour that survives to the screen. Every Icon call passes a
+ * contentDescription, or null when a label sits beside it.
+ *
+ * Directional icons ([Back], [Chevron]) set autoMirror; nothing else mirrors. [Play],
+ * [Volume], [Video] and the tab glyphs never flip.
+ *
+ * [Alert] does double duty: tinted error it is a failure, tinted warning it is a caution.
+ * One path, two colours — the same rule as the web.
+ *
+ * Deliberately absent: search (there is none in v1), a heart (reactions are the eight
+ * emoji, rendered as text), a bin, a door and a block glyph (delete, leave, remove, block
+ * and sign out are always text labels, never icons), a drag handle (the sheet draws a
+ * 32 x 4 rule itself) and a drop-down caret ([Chevron] rotated 90 degrees).
+ */
 object ThykraIcons {
-    val Lock: ImageVector by lazy {
-        ImageVector.Builder(
-            name = "Lock",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f
-        ).apply {
-            path(fill = SolidColor(Color.Black), pathFillType = PathFillType.EvenOdd) {
-                // Lock body
-                moveTo(6f, 10f)
-                verticalLineTo(8f)
-                curveTo(6f, 4.69f, 8.69f, 2f, 12f, 2f)
-                curveTo(15.31f, 2f, 18f, 4.69f, 18f, 8f)
-                verticalLineTo(10f)
-                horizontalLineTo(19f)
-                curveTo(20.1f, 10f, 21f, 10.9f, 21f, 12f)
-                verticalLineTo(20f)
-                curveTo(21f, 21.1f, 20.1f, 22f, 19f, 22f)
-                horizontalLineTo(5f)
-                curveTo(3.9f, 22f, 3f, 21.1f, 3f, 20f)
-                verticalLineTo(12f)
-                curveTo(3f, 10.9f, 3.9f, 10f, 5f, 10f)
-                close()
-                // Keyhole
-                moveTo(12f, 17f)
-                curveTo(13.1f, 17f, 14f, 16.1f, 14f, 15f)
-                curveTo(14f, 13.9f, 13.1f, 13f, 12f, 13f)
-                curveTo(10.9f, 13f, 10f, 13.9f, 10f, 15f)
-                curveTo(10f, 16.1f, 10.9f, 17f, 12f, 17f)
-                close()
-                // Lock shackle cutout
-                moveTo(8f, 10f)
-                horizontalLineTo(16f)
-                verticalLineTo(8f)
-                curveTo(16f, 5.79f, 14.21f, 4f, 12f, 4f)
-                curveTo(9.79f, 4f, 8f, 5.79f, 8f, 8f)
-                verticalLineTo(10f)
-                close()
+
+    // ── Navigation and chrome ──────────────────────────────────────────────────
+
+    /** Mirrors in RTL. */
+    val Back: ImageVector by lazy {
+        icon("Back", autoMirror = true) {
+            stroke {
+                moveTo(20f, 12f); lineTo(4.5f, 12f)
+                moveTo(11f, 5.5f); lineTo(4.5f, 12f); lineTo(11f, 18.5f)
             }
-        }.build()
+        }
     }
 
-    val Person: ImageVector by lazy {
-        ImageVector.Builder(
-            name = "Person",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(12f, 12f)
-                curveTo(14.21f, 12f, 16f, 10.21f, 16f, 8f)
-                curveTo(16f, 5.79f, 14.21f, 4f, 12f, 4f)
-                curveTo(9.79f, 4f, 8f, 5.79f, 8f, 8f)
-                curveTo(8f, 10.21f, 9.79f, 12f, 12f, 12f)
-                close()
-                moveTo(12f, 14f)
-                curveTo(9.33f, 14f, 4f, 15.34f, 4f, 18f)
-                verticalLineTo(20f)
-                horizontalLineTo(20f)
-                verticalLineTo(18f)
-                curveTo(20f, 15.34f, 14.67f, 14f, 12f, 14f)
-                close()
-            }
-        }.build()
-    }
-
-    val ArrowBack: ImageVector by lazy {
-        ImageVector.Builder(
-            name = "ArrowBack",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(20f, 11f)
-                horizontalLineTo(7.83f)
-                lineTo(13.42f, 5.41f)
-                lineTo(12f, 4f)
-                lineTo(4f, 12f)
-                lineTo(12f, 20f)
-                lineTo(13.41f, 18.59f)
-                lineTo(7.83f, 13f)
-                horizontalLineTo(20f)
-                verticalLineTo(11f)
-                close()
-            }
-        }.build()
-    }
-
-    val Add: ImageVector by lazy {
-        ImageVector.Builder(
-            name = "Add",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(19f, 13f)
-                horizontalLineTo(13f)
-                verticalLineTo(19f)
-                horizontalLineTo(11f)
-                verticalLineTo(13f)
-                horizontalLineTo(5f)
-                verticalLineTo(11f)
-                horizontalLineTo(11f)
-                verticalLineTo(5f)
-                horizontalLineTo(13f)
-                verticalLineTo(11f)
-                horizontalLineTo(19f)
-                verticalLineTo(13f)
-                close()
-            }
-        }.build()
+    /** Mirrors in RTL. Rotated 90 degrees, it is the drop-down caret. */
+    val Chevron: ImageVector by lazy {
+        icon("Chevron", autoMirror = true) {
+            stroke { moveTo(9.5f, 5f); lineTo(16.5f, 12f); lineTo(9.5f, 19f) }
+        }
     }
 
     val Close: ImageVector by lazy {
-        ImageVector.Builder(
-            name = "Close",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(19f, 6.41f)
-                lineTo(17.59f, 5f)
-                lineTo(12f, 10.59f)
-                lineTo(6.41f, 5f)
-                lineTo(5f, 6.41f)
-                lineTo(10.59f, 12f)
-                lineTo(5f, 17.59f)
-                lineTo(6.41f, 19f)
-                lineTo(12f, 13.41f)
-                lineTo(17.59f, 19f)
-                lineTo(19f, 17.59f)
-                lineTo(13.41f, 12f)
-                close()
+        icon("Close") {
+            stroke {
+                moveTo(6f, 6f); lineTo(18f, 18f)
+                moveTo(18f, 6f); lineTo(6f, 18f)
             }
-        }.build()
+        }
     }
 
-    val Edit: ImageVector by lazy {
-        ImageVector.Builder(
-            name = "Edit",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(3f, 17.25f)
-                verticalLineTo(21f)
-                horizontalLineTo(6.75f)
-                lineTo(17.81f, 9.94f)
-                lineTo(14.06f, 6.19f)
-                lineTo(3f, 17.25f)
-                close()
-                moveTo(20.71f, 7.04f)
-                curveTo(21.1f, 6.65f, 21.1f, 6.02f, 20.71f, 5.63f)
-                lineTo(18.37f, 3.29f)
-                curveTo(17.98f, 2.9f, 17.35f, 2.9f, 16.96f, 3.29f)
-                lineTo(15.13f, 5.12f)
-                lineTo(18.88f, 8.87f)
-                lineTo(20.71f, 7.04f)
-                close()
+    /** The overflow sheet trigger. */
+    val More: ImageVector by lazy {
+        icon("More") {
+            solid {
+                circle(5.5f, 12f, 1.5f)
+                circle(12f, 12f, 1.5f)
+                circle(18.5f, 12f, 1.5f)
             }
-        }.build()
+        }
     }
 
-    val CameraAlt: ImageVector by lazy {
-        ImageVector.Builder(
-            name = "CameraAlt",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(12f, 15.2f)
-                curveTo(13.77f, 15.2f, 15.2f, 13.77f, 15.2f, 12f)
-                curveTo(15.2f, 10.23f, 13.77f, 8.8f, 12f, 8.8f)
-                curveTo(10.23f, 8.8f, 8.8f, 10.23f, 8.8f, 12f)
-                curveTo(8.8f, 13.77f, 10.23f, 15.2f, 12f, 15.2f)
-                close()
-                moveTo(9f, 2f)
-                lineTo(7.17f, 4f)
-                horizontalLineTo(4f)
-                curveTo(2.9f, 4f, 2f, 4.9f, 2f, 6f)
-                verticalLineTo(18f)
-                curveTo(2f, 19.1f, 2.9f, 20f, 4f, 20f)
-                horizontalLineTo(20f)
-                curveTo(21.1f, 20f, 22f, 19.1f, 22f, 18f)
-                verticalLineTo(6f)
-                curveTo(22f, 4.9f, 21.1f, 4f, 20f, 4f)
-                horizontalLineTo(16.83f)
-                lineTo(15f, 2f)
-                horizontalLineTo(9f)
-                close()
-                moveTo(12f, 17f)
-                curveTo(9.24f, 17f, 7f, 14.76f, 7f, 12f)
-                curveTo(7f, 9.24f, 9.24f, 7f, 12f, 7f)
-                curveTo(14.76f, 7f, 17f, 9.24f, 17f, 12f)
-                curveTo(17f, 14.76f, 14.76f, 17f, 12f, 17f)
-                close()
+    val Plus: ImageVector by lazy {
+        icon("Plus") {
+            stroke {
+                moveTo(12f, 5f); lineTo(12f, 19f)
+                moveTo(5f, 12f); lineTo(19f, 12f)
             }
-        }.build()
+        }
     }
 
-    val Timeline: ImageVector by lazy {
-        ImageVector.Builder(
-            name = "Timeline",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(23f, 8f)
-                curveTo(23f, 9.1f, 22.1f, 10f, 21f, 10f)
-                curveTo(20.82f, 10f, 20.65f, 9.98f, 20.49f, 9.93f)
-                lineTo(16.93f, 13.48f)
-                curveTo(16.98f, 13.64f, 17f, 13.82f, 17f, 14f)
-                curveTo(17f, 15.1f, 16.1f, 16f, 15f, 16f)
-                curveTo(13.9f, 16f, 13f, 15.1f, 13f, 14f)
-                curveTo(13f, 13.82f, 13.02f, 13.64f, 13.07f, 13.48f)
-                lineTo(10.52f, 10.93f)
-                curveTo(10.36f, 10.98f, 10.18f, 11f, 10f, 11f)
-                curveTo(9.82f, 11f, 9.64f, 10.98f, 9.48f, 10.93f)
-                lineTo(4.93f, 15.49f)
-                curveTo(4.98f, 15.65f, 5f, 15.82f, 5f, 16f)
-                curveTo(5f, 17.1f, 4.1f, 18f, 3f, 18f)
-                curveTo(1.9f, 18f, 1f, 17.1f, 1f, 16f)
-                curveTo(1f, 14.9f, 1.9f, 14f, 3f, 14f)
-                curveTo(3.18f, 14f, 3.35f, 14.02f, 3.51f, 14.07f)
-                lineTo(8.07f, 9.52f)
-                curveTo(8.02f, 9.36f, 8f, 9.18f, 8f, 9f)
-                curveTo(8f, 7.9f, 8.9f, 7f, 10f, 7f)
-                curveTo(11.1f, 7f, 12f, 7.9f, 12f, 9f)
-                curveTo(12f, 9.18f, 11.98f, 9.36f, 11.93f, 9.52f)
-                lineTo(14.48f, 12.07f)
-                curveTo(14.64f, 12.02f, 14.82f, 12f, 15f, 12f)
-                curveTo(15.18f, 12f, 15.36f, 12.02f, 15.52f, 12.07f)
-                lineTo(19.07f, 8.51f)
-                curveTo(19.02f, 8.36f, 19f, 8.18f, 19f, 8f)
-                curveTo(19f, 6.9f, 19.9f, 6f, 21f, 6f)
-                curveTo(22.1f, 6f, 23f, 6.9f, 23f, 8f)
-                close()
-            }
-        }.build()
+    val Check: ImageVector by lazy {
+        icon("Check") {
+            stroke { moveTo(4.5f, 12.5f); lineTo(9.5f, 17.5f); lineTo(19.5f, 6.5f) }
+        }
     }
 
-    val Logout: ImageVector by lazy {
-        ImageVector.Builder(
-            name = "Logout",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(17f, 7f)
-                lineTo(15.59f, 8.41f)
-                lineTo(18.17f, 11f)
-                horizontalLineTo(8f)
-                verticalLineTo(13f)
-                horizontalLineTo(18.17f)
-                lineTo(15.59f, 15.58f)
-                lineTo(17f, 17f)
-                lineTo(22f, 12f)
-                close()
-                moveTo(4f, 5f)
-                horizontalLineTo(12f)
-                verticalLineTo(3f)
-                horizontalLineTo(4f)
-                curveTo(2.9f, 3f, 2f, 3.9f, 2f, 5f)
-                verticalLineTo(19f)
-                curveTo(2f, 20.1f, 2.9f, 21f, 4f, 21f)
-                horizontalLineTo(12f)
-                verticalLineTo(19f)
-                horizontalLineTo(4f)
-                verticalLineTo(5f)
-                close()
+    val Settings: ImageVector by lazy {
+        icon("Settings") {
+            stroke {
+                moveTo(3.5f, 6.5f); lineTo(20.5f, 6.5f)
+                moveTo(3.5f, 12f); lineTo(20.5f, 12f)
+                moveTo(3.5f, 17.5f); lineTo(20.5f, 17.5f)
+                circle(8.8f, 6.5f, 2.1f)
+                circle(15.2f, 12f, 2.1f)
+                circle(8.8f, 17.5f, 2.1f)
             }
-        }.build()
+        }
+    }
+
+    // ── Sharing ────────────────────────────────────────────────────────────────
+
+    val Share: ImageVector by lazy {
+        icon("Share") {
+            stroke {
+                moveTo(12f, 3.2f); lineTo(12f, 14.6f)
+                moveTo(8.2f, 7f); lineTo(12f, 3.2f); lineTo(15.8f, 7f)
+                moveTo(8.6f, 9.6f)
+                lineTo(6.6f, 9.6f)
+                quadTo(4.6f, 9.6f, 4.6f, 11.6f)
+                lineTo(4.6f, 18.6f)
+                quadTo(4.6f, 20.6f, 6.6f, 20.6f)
+                lineTo(17.4f, 20.6f)
+                quadTo(19.4f, 20.6f, 19.4f, 18.6f)
+                lineTo(19.4f, 11.6f)
+                quadTo(19.4f, 9.6f, 17.4f, 9.6f)
+                lineTo(15.4f, 9.6f)
+            }
+        }
     }
 
     val Link: ImageVector by lazy {
-        ImageVector.Builder(
-            name = "Link",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(3.9f, 12f)
-                curveTo(3.9f, 10.29f, 5.29f, 8.9f, 7f, 8.9f)
-                horizontalLineTo(11f)
-                verticalLineTo(7f)
-                horizontalLineTo(7f)
-                curveTo(4.24f, 7f, 2f, 9.24f, 2f, 12f)
-                curveTo(2f, 14.76f, 4.24f, 17f, 7f, 17f)
-                horizontalLineTo(11f)
-                verticalLineTo(15.1f)
-                horizontalLineTo(7f)
-                curveTo(5.29f, 15.1f, 3.9f, 13.71f, 3.9f, 12f)
-                close()
-                moveTo(8f, 13f)
-                horizontalLineTo(16f)
-                verticalLineTo(11f)
-                horizontalLineTo(8f)
-                verticalLineTo(13f)
-                close()
-                moveTo(17f, 7f)
-                horizontalLineTo(13f)
-                verticalLineTo(8.9f)
-                horizontalLineTo(17f)
-                curveTo(18.71f, 8.9f, 20.1f, 10.29f, 20.1f, 12f)
-                curveTo(20.1f, 13.71f, 18.71f, 15.1f, 17f, 15.1f)
-                horizontalLineTo(13f)
-                verticalLineTo(17f)
-                horizontalLineTo(17f)
-                curveTo(19.76f, 17f, 22f, 14.76f, 22f, 12f)
-                curveTo(22f, 9.24f, 19.76f, 7f, 17f, 7f)
-                close()
+        icon("Link") {
+            stroke {
+                moveTo(10f, 13f)
+                arcToRelative(5f, 5f, 0f, false, false, 7.54f, 0.54f)
+                lineToRelative(3f, -3f)
+                arcToRelative(5f, 5f, 0f, false, false, -7.07f, -7.07f)
+                lineToRelative(-1.72f, 1.71f)
+                moveTo(14f, 11f)
+                arcToRelative(5f, 5f, 0f, false, false, -7.54f, -0.54f)
+                lineToRelative(-3f, 3f)
+                arcToRelative(5f, 5f, 0f, false, false, 7.07f, 7.07f)
+                lineToRelative(1.71f, -1.71f)
             }
-        }.build()
+        }
     }
 
-    val Public: ImageVector by lazy {
-        ImageVector.Builder(
-            name = "Public",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(12f, 2f)
-                curveTo(6.48f, 2f, 2f, 6.48f, 2f, 12f)
-                curveTo(2f, 17.52f, 6.48f, 22f, 12f, 22f)
-                curveTo(17.52f, 22f, 22f, 17.52f, 22f, 12f)
-                curveTo(22f, 6.48f, 17.52f, 2f, 12f, 2f)
-                close()
-                moveTo(11f, 19.93f)
-                curveTo(7.05f, 19.44f, 4f, 16.08f, 4f, 12f)
-                curveTo(4f, 11.38f, 4.08f, 10.79f, 4.21f, 10.21f)
-                lineTo(9f, 15f)
-                verticalLineTo(16f)
-                curveTo(9f, 17.1f, 9.9f, 18f, 11f, 18f)
-                verticalLineTo(19.93f)
-                close()
-                moveTo(17.9f, 17.39f)
-                curveTo(17.64f, 16.58f, 16.9f, 16f, 16f, 16f)
-                horizontalLineTo(15f)
-                verticalLineTo(13f)
-                curveTo(15f, 12.45f, 14.55f, 12f, 14f, 12f)
-                horizontalLineTo(8f)
-                verticalLineTo(10f)
-                horizontalLineTo(10f)
-                curveTo(10.55f, 10f, 11f, 9.55f, 11f, 9f)
-                verticalLineTo(7f)
-                horizontalLineTo(13f)
-                curveTo(14.1f, 7f, 15f, 6.1f, 15f, 5f)
-                verticalLineTo(4.59f)
-                curveTo(17.93f, 5.78f, 20f, 8.65f, 20f, 12f)
-                curveTo(20f, 14.08f, 19.2f, 15.97f, 17.9f, 17.39f)
-                close()
+    val Copy: ImageVector by lazy {
+        icon("Copy") {
+            stroke {
+                roundRect(8.5f, 8.5f, 20.5f, 20.5f, 2.2f)
+                moveTo(15.5f, 7.5f)
+                lineTo(15.5f, 5f)
+                quadTo(15.5f, 3.5f, 14f, 3.5f)
+                lineTo(5f, 3.5f)
+                quadTo(3.5f, 3.5f, 3.5f, 5f)
+                lineTo(3.5f, 14f)
+                quadTo(3.5f, 15.5f, 5f, 15.5f)
+                lineTo(7.5f, 15.5f)
             }
-        }.build()
+        }
     }
 
-    val Share: ImageVector by lazy {
-        ImageVector.Builder(
-            name = "Share",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(18f, 16.08f)
-                curveTo(17.24f, 16.08f, 16.56f, 16.38f, 16.04f, 16.85f)
-                lineTo(8.91f, 12.7f)
-                curveTo(8.96f, 12.47f, 9f, 12.24f, 9f, 12f)
-                curveTo(9f, 11.76f, 8.96f, 11.53f, 8.91f, 11.3f)
-                lineTo(15.96f, 7.19f)
-                curveTo(16.5f, 7.69f, 17.21f, 8f, 18f, 8f)
-                curveTo(19.66f, 8f, 21f, 6.66f, 21f, 5f)
-                curveTo(21f, 3.34f, 19.66f, 2f, 18f, 2f)
-                curveTo(16.34f, 2f, 15f, 3.34f, 15f, 5f)
-                curveTo(15f, 5.24f, 15.04f, 5.47f, 15.09f, 5.7f)
-                lineTo(8.04f, 9.81f)
-                curveTo(7.5f, 9.31f, 6.79f, 9f, 6f, 9f)
-                curveTo(4.34f, 9f, 3f, 10.34f, 3f, 12f)
-                curveTo(3f, 13.66f, 4.34f, 15f, 6f, 15f)
-                curveTo(6.79f, 15f, 7.5f, 14.69f, 8.04f, 14.19f)
-                lineTo(15.16f, 18.34f)
-                curveTo(15.11f, 18.55f, 15.08f, 18.77f, 15.08f, 19f)
-                curveTo(15.08f, 20.61f, 16.39f, 21.91f, 18f, 21.91f)
-                curveTo(19.61f, 21.91f, 20.92f, 20.61f, 20.92f, 19f)
-                curveTo(20.92f, 17.39f, 19.61f, 16.08f, 18f, 16.08f)
-                close()
+    // ── People ─────────────────────────────────────────────────────────────────
+
+    val People: ImageVector by lazy {
+        icon("People") {
+            stroke {
+                circle(9f, 9f, 3f)
+                moveTo(3.5f, 20f)
+                quadTo(3.5f, 14.5f, 9f, 14.5f)
+                quadTo(14.5f, 14.5f, 14.5f, 20f)
+                circle(16.6f, 9.6f, 2.4f)
+                moveTo(16.2f, 14.7f)
+                quadTo(20.5f, 15.1f, 20.5f, 20f)
             }
-        }.build()
+        }
     }
 
-    val Block: ImageVector by lazy {
-        ImageVector.Builder(
-            name = "Block",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(12f, 2f)
-                curveTo(6.48f, 2f, 2f, 6.48f, 2f, 12f)
-                curveTo(2f, 17.52f, 6.48f, 22f, 12f, 22f)
-                curveTo(17.52f, 22f, 22f, 17.52f, 22f, 12f)
-                curveTo(22f, 6.48f, 17.52f, 2f, 12f, 2f)
-                close()
-                moveTo(4f, 12f)
-                curveTo(4f, 7.58f, 7.58f, 4f, 12f, 4f)
-                curveTo(13.85f, 4f, 15.55f, 4.63f, 16.9f, 5.69f)
-                lineTo(5.69f, 16.9f)
-                curveTo(4.63f, 15.55f, 4f, 13.85f, 4f, 12f)
-                close()
-                moveTo(12f, 20f)
-                curveTo(10.15f, 20f, 8.45f, 19.37f, 7.1f, 18.31f)
-                lineTo(18.31f, 7.1f)
-                curveTo(19.37f, 8.45f, 20f, 10.15f, 20f, 12f)
-                curveTo(20f, 16.42f, 16.42f, 20f, 12f, 20f)
-                close()
+    val PersonAdd: ImageVector by lazy {
+        icon("PersonAdd") {
+            stroke {
+                circle(9.4f, 8.6f, 3.2f)
+                moveTo(3.4f, 20.2f)
+                quadTo(3.4f, 14.6f, 9.4f, 14.6f)
+                quadTo(13.4f, 14.6f, 14.8f, 16.8f)
+                moveTo(18.6f, 5.6f); lineTo(18.6f, 11.6f)
+                moveTo(15.6f, 8.6f); lineTo(21.6f, 8.6f)
             }
-        }.build()
+        }
     }
 
-    val ContentCopy: ImageVector by lazy {
-        ImageVector.Builder(
-            name = "ContentCopy",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(16f, 1f)
-                horizontalLineTo(4f)
-                curveTo(2.9f, 1f, 2f, 1.9f, 2f, 3f)
-                verticalLineTo(17f)
-                horizontalLineTo(4f)
-                verticalLineTo(3f)
-                horizontalLineTo(16f)
-                verticalLineTo(1f)
-                close()
-                moveTo(19f, 5f)
-                horizontalLineTo(8f)
-                curveTo(6.9f, 5f, 6f, 5.9f, 6f, 7f)
-                verticalLineTo(21f)
-                curveTo(6f, 22.1f, 6.9f, 23f, 8f, 23f)
-                horizontalLineTo(19f)
-                curveTo(20.1f, 23f, 21f, 22.1f, 21f, 21f)
-                verticalLineTo(7f)
-                curveTo(21f, 5.9f, 20.1f, 5f, 19f, 5f)
-                close()
-                moveTo(19f, 21f)
-                horizontalLineTo(8f)
-                verticalLineTo(7f)
-                horizontalLineTo(19f)
-                verticalLineTo(21f)
+    /** The Me tab draws this with a 2 dp ring instead of a fill, so a real avatar can sit there. */
+    val Person: ImageVector by lazy {
+        icon("Person") {
+            stroke {
+                circle(12f, 8.2f, 3.6f)
+                moveTo(4.8f, 20.2f)
+                quadTo(4.8f, 13.8f, 12f, 13.8f)
+                quadTo(19.2f, 13.8f, 19.2f, 20.2f)
+            }
+        }
+    }
+
+    // ── Social ─────────────────────────────────────────────────────────────────
+
+    val Comment: ImageVector by lazy {
+        icon("Comment") {
+            stroke {
+                moveTo(6.5f, 4.5f)
+                lineTo(17.5f, 4.5f)
+                quadTo(20.5f, 4.5f, 20.5f, 7.5f)
+                lineTo(20.5f, 14f)
+                quadTo(20.5f, 17f, 17.5f, 17f)
+                lineTo(12.6f, 17f)
+                lineTo(8f, 20.8f)
+                lineTo(8f, 17f)
+                lineTo(6.5f, 17f)
+                quadTo(3.5f, 17f, 3.5f, 14f)
+                lineTo(3.5f, 7.5f)
+                quadTo(3.5f, 4.5f, 6.5f, 4.5f)
                 close()
             }
-        }.build()
+        }
+    }
+
+    /** Opens the eight-emoji picker. */
+    val React: ImageVector by lazy {
+        icon("React") {
+            stroke {
+                circle(12f, 12f, 8.5f)
+                moveTo(8.2f, 14.4f)
+                quadTo(12f, 17.6f, 15.8f, 14.4f)
+            }
+            solid {
+                circle(9.2f, 10f, 1.15f)
+                circle(14.8f, 10f, 1.15f)
+            }
+        }
+    }
+
+    // ── Status ─────────────────────────────────────────────────────────────────
+
+    val Info: ImageVector by lazy {
+        icon("Info") {
+            stroke {
+                circle(12f, 12f, 8.5f)
+                moveTo(12f, 11f); lineTo(12f, 16.6f)
+            }
+            solid { circle(12f, 7.7f, 1.1f) }
+        }
+    }
+
+    /** Tinted error it is a failure; tinted warning it is a caution. */
+    val Alert: ImageVector by lazy {
+        icon("Alert") {
+            stroke {
+                moveTo(10.6f, 4.3f)
+                quadTo(12f, 3.2f, 13.4f, 4.3f)
+                lineTo(21.4f, 18.6f)
+                quadTo(22.2f, 20.4f, 20.2f, 20.4f)
+                lineTo(3.8f, 20.4f)
+                quadTo(1.8f, 20.4f, 2.6f, 18.6f)
+                close()
+                moveTo(12f, 9.6f); lineTo(12f, 14.2f)
+            }
+            solid { circle(12f, 17.3f, 1.05f) }
+        }
+    }
+
+    val Retry: ImageVector by lazy {
+        icon("Retry") {
+            stroke {
+                moveTo(20.7f, 3.6f); lineTo(20.7f, 9.2f); lineTo(15.1f, 9.2f)
+                moveTo(19.6f, 14.6f)
+                arcToRelative(8.2f, 8.2f, 0f, true, true, -1.9f, -8.5f)
+                lineTo(20.7f, 9.2f)
+            }
+        }
+    }
+
+    /** The connectivity glyph, in the offline banner and its empty state. */
+    val Offline: ImageVector by lazy {
+        icon("Offline") {
+            stroke {
+                moveTo(3f, 9.2f); quadTo(12f, 2.2f, 21f, 9.2f)
+                moveTo(6.4f, 12.8f); quadTo(12f, 8.4f, 17.6f, 12.8f)
+                moveTo(9.6f, 16.2f); quadTo(12f, 14.3f, 14.4f, 16.2f)
+                moveTo(4f, 4f); lineTo(20f, 20f)
+            }
+            solid { circle(12f, 19.4f, 1.15f) }
+        }
+    }
+
+    val Lock: ImageVector by lazy {
+        icon("Lock") {
+            stroke {
+                moveTo(7.5f, 10.5f)
+                lineTo(7.5f, 7.6f)
+                quadTo(7.5f, 3.5f, 12f, 3.5f)
+                quadTo(16.5f, 3.5f, 16.5f, 7.6f)
+                lineTo(16.5f, 10.5f)
+                roundRect(4.5f, 10.5f, 19.5f, 20.5f, 2.5f)
+            }
+        }
+    }
+
+    val Globe: ImageVector by lazy {
+        icon("Globe") {
+            stroke {
+                circle(12f, 12f, 8.6f)
+                moveTo(3.4f, 12f); lineTo(20.6f, 12f)
+                moveTo(12f, 3.4f)
+                quadTo(16.4f, 12f, 12f, 20.6f)
+                quadTo(7.6f, 12f, 12f, 3.4f)
+                close()
+            }
+        }
+    }
+
+    // ── Media ──────────────────────────────────────────────────────────────────
+
+    /** Never mirrors. */
+    val Play: ImageVector by lazy {
+        icon("Play") {
+            stroke { moveTo(8.5f, 5.5f); lineTo(19f, 12f); lineTo(8.5f, 18.5f); close() }
+        }
     }
 
     val Pause: ImageVector by lazy {
-        ImageVector.Builder(
-            name = "Pause",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(6f, 19f)
-                horizontalLineTo(10f)
-                verticalLineTo(5f)
-                horizontalLineTo(6f)
-                close()
-                moveTo(14f, 5f)
-                verticalLineTo(19f)
-                horizontalLineTo(18f)
-                verticalLineTo(5f)
-                horizontalLineTo(14f)
-                close()
+        icon("Pause") {
+            stroke {
+                moveTo(9.5f, 5.5f); lineTo(9.5f, 18.5f)
+                moveTo(14.5f, 5.5f); lineTo(14.5f, 18.5f)
             }
-        }.build()
+        }
     }
 
-    val Replay: ImageVector by lazy {
-        ImageVector.Builder(
-            name = "Replay",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(12f, 5f)
-                verticalLineTo(1f)
-                lineTo(7f, 6f)
-                lineTo(12f, 11f)
-                verticalLineTo(7f)
-                curveTo(15.31f, 7f, 18f, 9.69f, 18f, 13f)
-                curveTo(18f, 16.31f, 15.31f, 19f, 12f, 19f)
-                curveTo(8.69f, 19f, 6f, 16.31f, 6f, 13f)
-                horizontalLineTo(4f)
-                curveTo(4f, 17.42f, 7.58f, 21f, 12f, 21f)
-                curveTo(16.42f, 21f, 20f, 17.42f, 20f, 13f)
-                curveTo(20f, 8.58f, 16.42f, 5f, 12f, 5f)
-                close()
+    /** Never mirrors. */
+    val Volume: ImageVector by lazy {
+        icon("Volume") {
+            stroke {
+                speaker()
+                moveTo(14.8f, 9.2f); quadTo(16.7f, 12f, 14.8f, 14.8f)
+                moveTo(17.6f, 6.6f); quadTo(21f, 12f, 17.6f, 17.4f)
             }
-        }.build()
+        }
     }
 
-    val PlayArrow: ImageVector by lazy {
-        ImageVector.Builder(
-            name = "PlayArrow",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(8f, 5f)
-                verticalLineTo(19f)
-                lineTo(19f, 12f)
-                close()
+    val Mute: ImageVector by lazy {
+        icon("Mute") {
+            stroke {
+                speaker()
+                moveTo(15.4f, 9.4f); lineTo(21f, 15f)
+                moveTo(21f, 9.4f); lineTo(15.4f, 15f)
             }
-        }.build()
+        }
     }
 
-    val PhotoLibrary: ImageVector by lazy {
-        ImageVector.Builder(
-            name = "PhotoLibrary",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveTo(22f, 16f)
-                verticalLineTo(4f)
-                curveTo(22f, 2.9f, 21.1f, 2f, 20f, 2f)
-                horizontalLineTo(8f)
-                curveTo(6.9f, 2f, 6f, 2.9f, 6f, 4f)
-                verticalLineTo(16f)
-                curveTo(6f, 17.1f, 6.9f, 18f, 8f, 18f)
-                horizontalLineTo(20f)
-                curveTo(21.1f, 18f, 22f, 17.1f, 22f, 16f)
-                close()
-                moveTo(11f, 12f)
-                lineTo(13.03f, 14.71f)
-                lineTo(16f, 11f)
-                lineTo(20f, 16f)
-                horizontalLineTo(8f)
-                lineTo(11f, 12f)
-                close()
-                moveTo(2f, 6f)
-                verticalLineTo(20f)
-                curveTo(2f, 21.1f, 2.9f, 22f, 4f, 22f)
-                horizontalLineTo(18f)
-                verticalLineTo(20f)
-                horizontalLineTo(4f)
-                verticalLineTo(6f)
-                horizontalLineTo(2f)
+    /** Never mirrors — the lens always points to the end of the body. */
+    val Video: ImageVector by lazy {
+        icon("Video") {
+            stroke {
+                roundRect(2.5f, 6f, 15.5f, 18f, 2.5f)
+                moveTo(15.5f, 10.8f)
+                lineTo(21.5f, 7.4f)
+                lineTo(21.5f, 16.6f)
+                lineTo(15.5f, 13.2f)
                 close()
             }
-        }.build()
+        }
     }
+
+    /** The contact sheet. */
+    val Grid: ImageVector by lazy {
+        icon("Grid") {
+            stroke {
+                roundRect(3.5f, 3.5f, 10.5f, 10.5f, 1.5f)
+                roundRect(13.5f, 3.5f, 20.5f, 10.5f, 1.5f)
+                roundRect(3.5f, 13.5f, 10.5f, 20.5f, 1.5f)
+                roundRect(13.5f, 13.5f, 20.5f, 20.5f, 1.5f)
+            }
+        }
+    }
+
+    /** Days: the rule, the lead plate and the column beside it. */
+    val Chapters: ImageVector by lazy {
+        icon("Chapters") {
+            stroke {
+                moveTo(3.5f, 6.5f); lineTo(20.5f, 6.5f)
+                roundRect(3.5f, 9.5f, 12.5f, 20.5f, 1.5f)
+                roundRect(14.5f, 9.5f, 20.5f, 20.5f, 1.5f)
+            }
+        }
+    }
+
+    // ── Tabs. Each has a filled twin, used when its tab is selected. ────────────
+
+    val Trips: ImageVector by lazy { icon("Trips") { stroke { mountains() } } }
+    val TripsFilled: ImageVector by lazy { icon("TripsFilled") { solid { mountains() } } }
+
+    val Activity: ImageVector by lazy {
+        icon("Activity") {
+            stroke {
+                bell()
+                moveTo(10.2f, 19.2f); quadTo(12f, 21f, 13.8f, 19.2f)
+            }
+        }
+    }
+    val ActivityFilled: ImageVector by lazy {
+        icon("ActivityFilled") {
+            solid { bell() }
+            stroke { moveTo(10.2f, 19.2f); quadTo(12f, 21f, 13.8f, 19.2f) }
+        }
+    }
+
+    val Recaps: ImageVector by lazy {
+        icon("Recaps") {
+            stroke {
+                storySegments()
+                roundRect(3.5f, 7.5f, 20.5f, 20.2f, 2.5f)
+            }
+        }
+    }
+    val RecapsFilled: ImageVector by lazy {
+        icon("RecapsFilled") {
+            stroke { storySegments() }
+            solid { roundRect(3.5f, 7.5f, 20.5f, 20.2f, 2.5f) }
+        }
+    }
+}
+
+// ── Shared sub-paths, so a glyph and its filled twin are the same drawing ───────
+
+private fun PathBuilder.speaker() {
+    moveTo(11.5f, 4.5f)
+    lineTo(6.6f, 8.8f)
+    lineTo(3f, 8.8f)
+    lineTo(3f, 15.2f)
+    lineTo(6.6f, 15.2f)
+    lineTo(11.5f, 19.5f)
+    close()
+}
+
+private fun PathBuilder.mountains() {
+    moveTo(2.5f, 19.8f)
+    lineTo(8.2f, 11.4f)
+    lineTo(11.6f, 16.4f)
+    lineTo(15.2f, 6.6f)
+    lineTo(21.5f, 19.8f)
+    close()
+}
+
+private fun PathBuilder.bell() {
+    moveTo(5.5f, 16.6f)
+    quadTo(6.6f, 15.4f, 6.6f, 12.6f)
+    lineTo(6.6f, 10.6f)
+    quadTo(6.6f, 5.6f, 12f, 5.6f)
+    quadTo(17.4f, 5.6f, 17.4f, 10.6f)
+    lineTo(17.4f, 12.6f)
+    quadTo(17.4f, 15.4f, 18.5f, 16.6f)
+    close()
+}
+
+private fun PathBuilder.storySegments() {
+    moveTo(4f, 4.6f); lineTo(9f, 4.6f)
+    moveTo(10.2f, 4.6f); lineTo(13.8f, 4.6f)
+    moveTo(15f, 4.6f); lineTo(20f, 4.6f)
+}
+
+// ── Builder plumbing ───────────────────────────────────────────────────────────
+
+private const val StrokeWidth = 1.75f
+
+private fun icon(
+    name: String,
+    autoMirror: Boolean = false,
+    block: ImageVector.Builder.() -> Unit,
+): ImageVector = ImageVector.Builder(
+    name = name,
+    defaultWidth = 24.dp,
+    defaultHeight = 24.dp,
+    viewportWidth = 24f,
+    viewportHeight = 24f,
+    autoMirror = autoMirror,
+).apply(block).build()
+
+/**
+ * The default. The colour is a placeholder: Icon tints the rendered vector, so it never
+ * reaches the screen.
+ */
+private fun ImageVector.Builder.stroke(pathData: PathBuilder.() -> Unit) = path(
+    fill = null,
+    stroke = SolidColor(Color.Black),
+    strokeLineWidth = StrokeWidth,
+    strokeLineCap = StrokeCap.Round,
+    strokeLineJoin = StrokeJoin.Round,
+    pathBuilder = pathData,
+)
+
+/** Dots, and the three tab glyphs when their tab is selected. */
+private fun ImageVector.Builder.solid(pathData: PathBuilder.() -> Unit) = path(
+    fill = SolidColor(Color.Black),
+    pathBuilder = pathData,
+)
+
+/** Four cubic arcs, the usual approximation. */
+private const val CircleControl = 0.5523f
+
+private fun PathBuilder.circle(cx: Float, cy: Float, r: Float) {
+    val k = r * CircleControl
+    moveTo(cx, cy - r)
+    curveTo(cx + k, cy - r, cx + r, cy - k, cx + r, cy)
+    curveTo(cx + r, cy + k, cx + k, cy + r, cx, cy + r)
+    curveTo(cx - k, cy + r, cx - r, cy + k, cx - r, cy)
+    curveTo(cx - r, cy - k, cx - k, cy - r, cx, cy - r)
+    close()
+}
+
+private fun PathBuilder.roundRect(l: Float, t: Float, r: Float, b: Float, radius: Float) {
+    moveTo(l + radius, t)
+    lineTo(r - radius, t)
+    quadTo(r, t, r, t + radius)
+    lineTo(r, b - radius)
+    quadTo(r, b, r - radius, b)
+    lineTo(l + radius, b)
+    quadTo(l, b, l, b - radius)
+    lineTo(l, t + radius)
+    quadTo(l, t, l + radius, t)
+    close()
 }

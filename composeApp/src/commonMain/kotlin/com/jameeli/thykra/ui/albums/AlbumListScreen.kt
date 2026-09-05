@@ -148,7 +148,7 @@ fun AlbumListScreenContent(
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Icon(
-                    imageVector = ThykraIcons.Add,
+                    imageVector = ThykraIcons.Plus,
                     contentDescription = "Create Album"
                 )
             }
@@ -192,7 +192,7 @@ fun AlbumListScreenContent(
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(
-                        imageVector = ThykraIcons.PhotoLibrary,
+                        imageVector = ThykraIcons.Grid,
                         contentDescription = null,
                         modifier = Modifier.size(64.dp),
                         tint = ThykraColors.MutedSlate.copy(alpha = 0.5f)
