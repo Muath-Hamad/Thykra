@@ -6,240 +6,256 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import com.jameeli.thykra.auth.AuthViewModel
 import com.jameeli.thykra.auth.PlatformAppleSignInButton
 import com.jameeli.thykra.auth.PlatformGoogleSignInButton
-import com.jameeli.thykra.ui.theme.ThykraColors
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.landing_plate_1
+import com.jameeli.thykra.resources.landing_plate_2
+import com.jameeli.thykra.resources.landing_plate_3
+import com.jameeli.thykra.resources.landing_plate_4
+import com.jameeli.thykra.resources.landing_plate_5
+import com.jameeli.thykra.resources.landing_plate_6
+import com.jameeli.thykra.resources.landing_plate_7
+import com.jameeli.thykra.resources.landing_plate_8
+import com.jameeli.thykra.ui.kit.Stamp
+import com.jameeli.thykra.ui.kit.clayPhrase
+import com.jameeli.thykra.ui.theme.LocalReducedMotion
+import com.jameeli.thykra.ui.theme.PlateShape
+import com.jameeli.thykra.ui.theme.ThemeMode
+import com.jameeli.thykra.ui.theme.ThykraTheme
+import com.jameeli.thykra.ui.theme.thykra
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
 
-// Curated travel images from the same pool as the web app
-private val columnAImages = listOf(
-    "https://images.unsplash.com/photo-1539635278303-d4002c07eae3?w=600&q=75",
-    "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600&q=75",
-    "https://images.unsplash.com/photo-1517760444937-f6397edcbbcd?w=600&q=75",
-    "https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=600&q=75",
-    "https://images.unsplash.com/photo-1489749798305-4fea3ae63d43?w=600&q=75",
-    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=600&q=75",
-)
-
-private val columnBImages = listOf(
-    "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=75",
-    "https://images.unsplash.com/photo-1533105079780-92b9be482077?w=600&q=75",
-    "https://images.unsplash.com/photo-1518684079-3c830dcef090?w=600&q=75",
-    "https://images.unsplash.com/photo-1504150558240-0b4fd8946624?w=600&q=75",
-    "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=75",
-    "https://images.unsplash.com/photo-1527631746610-bca00a040d60?w=600&q=75",
-)
-
-private val columnCImages = listOf(
-    "https://images.unsplash.com/photo-1528543606781-2f6e6857f318?w=600&q=75",
-    "https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=600&q=75",
-    "https://images.unsplash.com/photo-1536940385103-c729049165e6?w=600&q=75",
-    "https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=600&q=75",
-    "https://images.unsplash.com/photo-1454391304352-2bf4678b1a7a?w=600&q=75",
-    "https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?w=600&q=75",
-)
-
+/**
+ * Design part 3 §08. The unauthenticated entry.
+ *
+ * Paper only, by rule: it is a first impression, not a working surface, so it keeps its
+ * fixed art direction whatever the system theme says.
+ *
+ * The wall is eight bundled JPEGs at 276 KB, not Unsplash at runtime. J8 says no blank
+ * screens, and this is the one screen guaranteed to be shown to someone who has never
+ * had a session — which means it has to render on a plane.
+ */
 @Composable
 fun LandingScreenContent(authViewModel: AuthViewModel) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        // Animated image background
-        AnimatedImageColumns()
+    // Paper only, whatever the preference or the system says.
+    ThykraTheme(mode = ThemeMode.Paper) {
+        val scheme = MaterialTheme.colorScheme
+        val extended = MaterialTheme.thykra
 
-        // Gradient overlays for readability
-        // Top gradient: warm white fading down
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.35f)
-                .align(Alignment.TopCenter)
-                .background(
-                    Brush.verticalGradient(
-                        0f to ThykraColors.WarmWhite,
-                        0.3f to ThykraColors.WarmWhite.copy(alpha = 0.9f),
-                        1f to Color.Transparent
-                    )
-                )
-        )
-
-        // Bottom gradient: warm white fading up
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.50f)
-                .align(Alignment.BottomCenter)
-                .background(
-                    Brush.verticalGradient(
-                        0f to Color.Transparent,
-                        0.3f to ThykraColors.WarmWhite.copy(alpha = 0.85f),
-                        0.6f to ThykraColors.WarmWhite.copy(alpha = 0.95f),
-                        1f to ThykraColors.WarmWhite
-                    )
-                )
-        )
-
-        // Content overlay
-        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .background(scheme.surface),
         ) {
-            // Top branding
-            Spacer(modifier = Modifier.weight(0.12f))
-            Text(
-                text = "Thykra",
-                style = MaterialTheme.typography.displayLarge,
-                color = ThykraColors.SkyBlue
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "Travel Together.\nRemember Forever.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = ThykraColors.MutedSlate,
-                textAlign = TextAlign.Center
+            PlateWall()
+
+            // Bone from 15% down to opaque at 68%, so the type below always holds.
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            0f to scheme.surface.copy(alpha = 0.15f),
+                            0.40f to scheme.surface.copy(alpha = 0.72f),
+                            0.68f to scheme.surface,
+                            1f to scheme.surface,
+                        ),
+                    ),
             )
 
-            // Spacer to push sign-in to bottom
-            Spacer(modifier = Modifier.weight(1f))
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .safeDrawingPadding()
+                    .padding(horizontal = 24.dp),
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Stamp(eyebrow = "Thykra", name = "ذكرى")
 
-            // Sign-in buttons at the bottom
-            PlatformGoogleSignInButton(
-                onIdToken = { idToken -> authViewModel.loginWithGoogle(idToken) },
-                onError = { /* TODO: show error */ }
+                Spacer(Modifier.height(24.dp))
+
+                Text(
+                    text = clayPhrase("Travel together. ", "Remember forever."),
+                    style = MaterialTheme.typography.displayLarge,
+                    color = scheme.onSurface,
+                    textAlign = TextAlign.Center,
+                )
+
+                Spacer(Modifier.height(12.dp))
+
+                Text(
+                    text = "One trip, everyone's photos, told by day.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = extended.textMeta,
+                    textAlign = TextAlign.Center,
+                )
+
+                Spacer(Modifier.height(28.dp))
+
+                SignInButtons(authViewModel)
+
+                Spacer(Modifier.height(16.dp))
+
+                Text(
+                    text = "By continuing you agree to the Terms and Privacy Policy.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = extended.textMeta,
+                    textAlign = TextAlign.Center,
+                )
+
+                Spacer(Modifier.height(32.dp))
+            }
+        }
+    }
+}
+
+/**
+ * Google then Apple on Android; the platform decides the order, because Apple's own
+ * guidance puts Sign in with Apple first on iOS and nowhere else.
+ */
+@Composable
+private fun SignInButtons(authViewModel: AuthViewModel) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        PlatformGoogleSignInButton(
+            onIdToken = { token -> authViewModel.loginWithGoogle(token) },
+            onError = { },
+        )
+        PlatformAppleSignInButton(
+            onIdToken = { token -> authViewModel.loginWithApple(token) },
+            onError = { },
+        )
+    }
+}
+
+private val WallPlates: List<DrawableResource> = listOf(
+    Res.drawable.landing_plate_1,
+    Res.drawable.landing_plate_2,
+    Res.drawable.landing_plate_3,
+    Res.drawable.landing_plate_4,
+    Res.drawable.landing_plate_5,
+    Res.drawable.landing_plate_6,
+    Res.drawable.landing_plate_7,
+    Res.drawable.landing_plate_8,
+)
+
+/** 12 dp/s, alternating direction. Still under reduced motion. */
+private const val DriftDpPerSecond = 12f
+
+@Composable
+private fun PlateWall() {
+    val reduced = LocalReducedMotion.current
+    val density = LocalDensity.current
+
+    // Each column shows a rotation of the set, so the three never line up.
+    val columns = remember {
+        listOf(
+            WallPlates,
+            WallPlates.drop(3) + WallPlates.take(3),
+            WallPlates.drop(5) + WallPlates.take(5),
+        )
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            // The wall decorates a screen that already names the product.
+            .clearAndSetSemantics { },
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        columns.forEachIndexed { index, plates ->
+            PlateColumn(
+                plates = plates,
+                // Alternating direction, and a slightly different speed per column so the
+                // wall never reads as one sheet sliding.
+                upwards = index % 2 == 0,
+                speedScale = 1f + index * 0.15f,
+                reduced = reduced,
+                densityScale = density.density,
+                modifier = Modifier.weight(1f),
             )
-            Spacer(modifier = Modifier.height(12.dp))
-            PlatformAppleSignInButton(
-                onIdToken = { idToken -> authViewModel.loginWithApple(idToken) },
-                onError = { /* TODO: show error */ }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Your password is never shared with Thykra",
-                style = MaterialTheme.typography.labelSmall,
-                color = ThykraColors.MutedSlate,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(40.dp))
         }
     }
 }
 
 @Composable
-private fun AnimatedImageColumns() {
-    val infiniteTransition = rememberInfiniteTransition(label = "imageScroll")
-
-    // Each column scrolls at a different speed and direction
-    // Column height: 6 images * (imageHeight + gap). We scroll through one full set then loop.
-    // Image height ~200dp, gap 8dp => total ~1248dp per set
-    val totalScrollPx = 1248f
-
-    val offsetA by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = -totalScrollPx,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 25000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "columnA"
-    )
-
-    val offsetB by infiniteTransition.animateFloat(
-        initialValue = -totalScrollPx,
-        targetValue = 0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 30000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "columnB"
-    )
-
-    val offsetC by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = -totalScrollPx,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 22000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "columnC"
-    )
-
-    Row(
-        modifier = Modifier.fillMaxSize(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        // Three columns, each scrolling in different directions/speeds
-        ImageColumn(
-            images = columnAImages,
-            scrollOffset = offsetA,
-            modifier = Modifier.weight(1f)
-        )
-        ImageColumn(
-            images = columnBImages,
-            scrollOffset = offsetB,
-            modifier = Modifier.weight(1f)
-        )
-        ImageColumn(
-            images = columnCImages,
-            scrollOffset = offsetC,
-            modifier = Modifier.weight(1f)
-        )
-    }
-}
-
-@Composable
-private fun ImageColumn(
-    images: List<String>,
-    scrollOffset: Float,
-    modifier: Modifier = Modifier
+private fun PlateColumn(
+    plates: List<DrawableResource>,
+    upwards: Boolean,
+    speedScale: Float,
+    reduced: Boolean,
+    densityScale: Float,
+    modifier: Modifier = Modifier,
 ) {
-    // Double the images for seamless looping
-    val doubledImages = remember(images) { images + images }
+    // One plate is 4:3 at a third of the width; doubling the list makes the loop seamless.
+    val doubled = remember(plates) { plates + plates }
+    val plateHeightDp = 150f
+    val gapDp = 6f
+    val setHeightDp = plates.size * (plateHeightDp + gapDp)
+    val durationMs = ((setHeightDp / (DriftDpPerSecond * speedScale)) * 1000).toInt()
+
+    val transition = rememberInfiniteTransition(label = "plateWall")
+    val progress by transition.animateFloat(
+        initialValue = if (upwards) 0f else 1f,
+        targetValue = if (upwards) 1f else 0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMs, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart,
+        ),
+        label = "plateDrift",
+    )
+
+    val offsetPx = if (reduced) 0f else -progress * setHeightDp * densityScale
 
     Box(modifier = modifier.fillMaxHeight()) {
         Column(
-            modifier = Modifier
-                .offset { IntOffset(0, scrollOffset.toInt()) },
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.offset { IntOffset(0, offsetPx.toInt()) },
+            verticalArrangement = Arrangement.spacedBy(gapDp.dp),
         ) {
-            doubledImages.forEach { url ->
-                AsyncImage(
-                    model = url,
+            doubled.forEach { plate ->
+                Image(
+                    painter = painterResource(plate),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .width(200.dp)
-                        .height(200.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(ThykraColors.Sandy)
+                        .fillMaxWidth()
+                        .aspectRatio(3f / 4f)
+                        .background(MaterialTheme.colorScheme.surfaceVariant, PlateShape),
                 )
             }
         }
