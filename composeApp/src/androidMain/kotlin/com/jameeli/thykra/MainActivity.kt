@@ -19,6 +19,7 @@ import com.jameeli.thykra.api.AndroidNetworkMonitor
 import com.jameeli.thykra.api.AndroidUploadPersistence
 import com.jameeli.thykra.api.AuthApi
 import com.jameeli.thykra.api.CommentApi
+import com.jameeli.thykra.api.InviteApi
 import com.jameeli.thykra.api.MediaApi
 import com.jameeli.thykra.api.ProfileApi
 import com.jameeli.thykra.api.ReactionApi
@@ -55,6 +56,7 @@ class MainActivity : ComponentActivity() {
         val reactionApi = ReactionApi(httpClient)
         val commentApi = CommentApi(httpClient)
         val profileApi = ProfileApi(httpClient)
+        val inviteApi = InviteApi(httpClient)
         val persistence = AndroidUploadPersistence(applicationContext)
         val networkMonitor = AndroidNetworkMonitor(applicationContext)
         val uploadQueueManager = UploadQueueManager(mediaApi, lifecycleScope, persistence, networkMonitor)
@@ -78,6 +80,7 @@ class MainActivity : ComponentActivity() {
                 commentApi = commentApi,
                 profileApi = profileApi,
                 uploadQueueManager = uploadQueueManager,
+                inviteApi = inviteApi,
                 networkMonitor = networkMonitor,
             )
         }

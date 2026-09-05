@@ -29,6 +29,7 @@ import com.jameeli.thykra.KitGalleryEnabled
 import com.jameeli.thykra.api.AlbumApi
 import com.jameeli.thykra.api.NetworkMonitor
 import com.jameeli.thykra.api.CommentApi
+import com.jameeli.thykra.api.InviteApi
 import com.jameeli.thykra.api.MediaApi
 import com.jameeli.thykra.api.ProfileApi
 import com.jameeli.thykra.api.ReactionApi
@@ -37,6 +38,8 @@ import com.jameeli.thykra.auth.AuthState
 import com.jameeli.thykra.auth.AuthViewModel
 import com.jameeli.thykra.ui.kit.RootTab
 import com.jameeli.thykra.ui.kit.gallery.KitGalleryScreen
+import com.jameeli.thykra.ui.invite.InviteScreen
+import com.jameeli.thykra.ui.invite.InviteViewModel
 import com.jameeli.thykra.ui.landing.LandingScreenContent
 import com.jameeli.thykra.ui.trip.TripScreen
 import com.jameeli.thykra.ui.trip.TripViewModel
@@ -68,6 +71,7 @@ fun AppNavHost(
     commentApi: CommentApi,
     profileApi: ProfileApi,
     uploadQueueManager: UploadQueueManager,
+    inviteApi: InviteApi,
     networkMonitor: NetworkMonitor? = null,
 ) {
     val authState by authViewModel.authState.collectAsState()
@@ -237,11 +241,26 @@ fun AppNavHost(
 
                 composable<Invite> { entry ->
                     val route = entry.toRoute<Invite>()
-                    // Build step 08 replaces this. It is already reachable signed-out,
-                    // which is the half of the growth loop the shell owns.
-                    RoutePlaceholder(
-                        title = "Invitation",
-                        note = "Arrives with build step 08. Token ${route.token}.",
+                    val viewModel = remember(route.token) { InviteViewModel(inviteApi) }
+                    InviteScreen(
+                        token = route.token,
+                        viewModel = viewModel,
+                        signedIn = authState is AuthState.Authenticated,
+                        onJoined = { albumId ->
+                            navController.navigate(Trip(albumId)) {
+                                popUpTo(Trips) { inclusive = false }
+                            }
+                        },
+                        // The token stays in DeepLinkBus.pending, so sign-in lands back here.
+                        onSignIn = { navController.navigate(Landing) },
+                        onClose = {
+                            if (authState is AuthState.Authenticated) {
+                                navController.navigate(Trips) { popUpTo(0) { inclusive = true } }
+                            } else {
+                                navController.navigate(Landing) { popUpTo(0) { inclusive = true } }
+                            }
+                        },
+                        onOpenTrip = { albumId -> navController.navigate(Trip(albumId)) },
                     )
                 }
 
