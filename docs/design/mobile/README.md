@@ -17,20 +17,36 @@ Open any `.dc.html` file in a browser — `support.js` sits beside them and rend
 Twelve steps, each shippable with the old screens still in place. Each card's
 "Done when" in part 4 is its acceptance criterion.
 
-| # | Step | Section | Status |
-|---|---|---|---|
-| 01 | Tokens + theme | §1 | done |
-| 02 | Component kit + icons | §2 | done |
-| 03 | Chrome + navigation | §7 | todo |
-| 04 | Trips list + Landing + Create trip | §08 | todo |
-| 05 | Trip with day chapters | §06 | todo |
-| 06 | Upload dock + share-to-Thykra | §06 | todo |
-| 07 | Viewer restyle | §07 | todo |
-| 08 | Invite preview + joined | §05 | todo |
-| 09 | Trip settings, owner and member | §09 | todo |
-| 10 | Activity + Recaps + reader | §10 | todo |
-| 11 | Me + widgets restyle | §11, §13 | todo |
-| 12 | Arabic + RTL pass | — | todo |
+| # | Step | Section | Status | Issue |
+|---|---|---|---|---|
+| 01 | Tokens + theme | §1 | done | THY-168 |
+| 02 | Component kit + icons | §2 | done | THY-169 |
+| 03 | Chrome + navigation | §7 | done | THY-170 |
+| 04 | Trips list + Landing + Create trip | §08 | done | THY-171 |
+| 05 | Trip with day chapters | §06 | done | THY-172 |
+| 06 | Upload dock + share-to-Thykra | §06 | **partial** | THY-173 |
+| 07 | Viewer restyle | §07 | done | THY-174 |
+| 08 | Invite preview + joined | §05 | done | THY-175 |
+| 09 | Trip settings, owner and member | §09 | done | THY-176 |
+| 10 | Activity + Recaps + reader | §10 | done | THY-177 |
+| 11 | Me + widgets restyle | §11, §13 | done | THY-178 |
+| 12 | Arabic + RTL pass | — | **partial** | THY-179 |
+
+### What the two partials still need
+
+**Step 06** — the dock is built, hosted by the Scaffold, and driven by a real batch model
+with byte-level progress, retry, skip and the celebration. Still outstanding: the
+share-to-Thykra target and its trip picker, the Android foreground-service notification,
+the local EXIF read that lets a placeholder plate land in the right chapter before the
+server answers, and those placeholder plates themselves.
+
+**Step 12** — the theme half is done and tested: the Arabic type instance, the display
+fallback to Readex, zero tracking, Arabic-Indic chapter numerals, the Stamp sign flip,
+and a clean RTL audit (no hardcoded Left/Right anywhere in `composeApp`). What is missing
+is the string table. Design part 4 assumed steps 01–11 would use one from the start; they
+did not, so every user-facing string is still an inline English literal. Extracting them
+across ~25 files is mechanical, but the Arabic copy needs a translator rather than a
+machine — that is the gate on this step, not the code.
 
 ## Acceptance, repeated on every step
 
@@ -64,7 +80,8 @@ wire, so the video duration pill is live rather than deferred.
 
 None of it blocks a step; each degrades gracefully as specified.
 
-- `AlbumDto.videoCount` and `InvitePreviewDto.videoCount` (steps 4, 8)
+- ~~`AlbumDto.videoCount`~~ — done, along with `mediaCount` and `lastActivityAt` (THY-171)
+- `InvitePreviewDto.videoCount` (step 8) — the preview reads the album's own counts for now
 - Upload size limit in `/api/config` (step 6)
 - A shareable single-media URL (step 7)
 - Soft delete for Undo (step 7)
