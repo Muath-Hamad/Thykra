@@ -1,5 +1,7 @@
 package com.jameeli.thykra.model
 
+import com.jameeli.thykra.chapters.ChapterMedia
+import com.jameeli.thykra.chapters.HasDimensions
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
@@ -102,16 +104,16 @@ data class PublicReactionSummaryDto(
 
 @Serializable
 data class PublicMediaDto(
-    val id: String,
-    val type: MediaType,
+    override val id: String,
+    override val type: MediaType,
     val url: String,
     val thumbnailUrl: String? = null,
-    val width: Int? = null,
-    val height: Int? = null,
-    val takenAt: Instant? = null,
-    val uploadedAt: Instant,
+    override val width: Int? = null,
+    override val height: Int? = null,
+    override val takenAt: Instant? = null,
+    override val uploadedAt: Instant,
     val reactionSummary: List<PublicReactionSummaryDto> = emptyList()
-)
+) : ChapterMedia, HasDimensions
 
 @Serializable
 data class PublicAlbumViewDto(
