@@ -35,11 +35,11 @@ import com.jameeli.thykra.api.ReactionApi
 import com.jameeli.thykra.api.UploadQueueManager
 import com.jameeli.thykra.auth.AuthState
 import com.jameeli.thykra.auth.AuthViewModel
-import com.jameeli.thykra.ui.albums.AlbumDetailScreenContent
-import com.jameeli.thykra.ui.albums.AlbumDetailViewModel
 import com.jameeli.thykra.ui.kit.RootTab
 import com.jameeli.thykra.ui.kit.gallery.KitGalleryScreen
 import com.jameeli.thykra.ui.landing.LandingScreenContent
+import com.jameeli.thykra.ui.trip.TripScreen
+import com.jameeli.thykra.ui.trip.TripViewModel
 import com.jameeli.thykra.ui.trips.TripsScreen
 import com.jameeli.thykra.ui.trips.TripsViewModel
 import com.jameeli.thykra.ui.media.MediaViewerScreenContent
@@ -163,15 +163,24 @@ fun AppNavHost(
                 composable<Trip> { entry ->
                     val route = entry.toRoute<Trip>()
                     val viewModel = remember(route.albumId) {
-                        AlbumDetailViewModel(albumApi, mediaApi, uploadQueueManager, profileApi)
+                        TripViewModel(
+                            albumApi = albumApi,
+                            mediaApi = mediaApi,
+                            profileApi = profileApi,
+                            uploadQueueManager = uploadQueueManager,
+                            networkMonitor = networkMonitor,
+                        )
                     }
-                    AlbumDetailScreenContent(
+                    TripScreen(
                         albumId = route.albumId,
                         viewModel = viewModel,
-                        onNavigateBack = { navController.popBackStack() },
-                        onNavigateToViewer = { mediaId ->
+                        onBack = { navController.popBackStack() },
+                        onOpenViewer = { mediaId ->
                             navController.navigate(Viewer(route.albumId, mediaId))
                         },
+                        onOpenSettings = { navController.navigate(TripSettings(route.albumId)) },
+                        onOpenActivity = { navController.navigate(TripActivity(route.albumId)) },
+                        onOpenRecaps = { navController.navigate(TripRecaps(route.albumId)) },
                     )
                 }
 
