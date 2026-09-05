@@ -111,7 +111,7 @@ class MainActivity : ComponentActivity() {
         val mediaId = intent.getStringExtra(WidgetDeepLinks.EXTRA_MEDIA_ID)
         DeepLinkBus.emit(
             if (mediaId != null) DeepLinkTarget.Media(albumId, mediaId)
-            else DeepLinkTarget.Album(albumId)
+            else DeepLinkTarget.Trip(albumId)
         )
     }
 }
