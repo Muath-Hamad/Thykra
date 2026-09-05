@@ -82,7 +82,9 @@ services:
         condition: service_healthy
       minio-init:
         condition: service_completed_successfully
-    # Lets the container resolve the LAN hostname baked into S3_ENDPOINT.
+    # Maps PUBLIC_HOST to the LAN IP for a tunnel-less deployment, where
+    # S3_PUBLIC_ENDPOINT is the LAN address and containers cannot do mDNS.
+    # With the tunnel in front of MinIO the S3 origin resolves publicly instead.
     extra_hosts:
       - "${PUBLIC_HOST:-tower.local}:${UNRAID_HOST_IP:?UNRAID_HOST_IP is required}"
     environment:
@@ -95,14 +97,23 @@ services:
       STORAGE_TYPE: s3
       S3_BUCKET: ${S3_BUCKET:-thykra-media}
       S3_REGION: ${S3_REGION:-us-east-1}
-      S3_ENDPOINT: http://${PUBLIC_HOST:-tower.local}:${MINIO_API_PORT:-9000}
+      # Public origin, served by Thykra's own tunnel. The SigV4 presigner signs
+      # the Host header, so this must be the exact origin browsers and phones
+      # fetch from — it cannot be rewritten downstream without breaking the
+      # signature. For a LAN-only deployment set it to http://tower.local:9000.
+      S3_ENDPOINT: ${S3_PUBLIC_ENDPOINT:?S3_PUBLIC_ENDPOINT is required}
       S3_ACCESS_KEY: ${S3_ACCESS_KEY}
       S3_SECRET_KEY: ${S3_SECRET_KEY}
       S3_PATH_STYLE_ACCESS: "true"
-      S3_PUBLIC_BASE_URL: http://${PUBLIC_HOST:-tower.local}:${MINIO_API_PORT:-9000}/${S3_BUCKET:-thykra-media}
+      S3_PUBLIC_BASE_URL: ${S3_PUBLIC_ENDPOINT}/${S3_BUCKET:-thykra-media}
       # --- Auth ---
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      # Only for clients served from a DIFFERENT origin than the API. The web
+      # app is proxied under one origin by nginx and the mobile apps send no
+      # Origin header, so neither belongs here — leaving this empty (the
+      # default) correctly allows no cross-origin browser client at all.
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-}
       # Must stay false outside CI — it mints real tokens for any email.
       ALLOW_DEV_LOGIN: "false"
     ports:
@@ -121,4 +132,37 @@ services:
     depends_on:
       - server
     ports:
+      # Host side must never be 80 — that is the Unraid WebGUI's own nginx.
+      # Publishing 80:80 here wins the race at boot and leaves the WebGUI dead
+      # with 'bind() to 0.0.0.0:80 failed (98: Address already in use)'.
+      # 8080 is taken on this host too (StirlingPDF), hence 8088.
+      # The container side stays 80 (webApp/nginx.conf listens there) — that is
+      # inside the container's own netns and collides with nothing.
       - "${WEB_PORT:-8088}:80"
+
+  # Thykra's own Cloudflare tunnel — 95ad6aab-b079-44c9-871d-31ec8f74582c.
+  # Deliberately separate from the media stack tunnel (f9040a85-...) so the two
+  # can be routed, restarted and revoked independently.
+  #
+  # Token mode: ingress lives in the Zero Trust dashboard, not here. Because
+  # this container shares the stack network it targets service names and does
+  # not depend on any published host port:
+  #
+  #   thykra.com      -> http://web:80
+  #   api.thykra.com  -> http://server:8081
+  #   s3.thykra.com   -> http://minio:9000
+  #
+  # Universal SSL covers thykra.com and *.thykra.com, so the apex and these
+  # first-level names need no extra certificate. A deeper name such as
+  # a.b.thykra.com would need Advanced Certificate Manager.
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: thykra-cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:?CLOUDFLARE_TUNNEL_TOKEN is required}
+    depends_on:
+      - web
+      - server
+      - minio

@@ -19,6 +19,7 @@ Web, and a Ktor server.
 | [docs/TASKS.md](./docs/TASKS.md) | Development task tracker across all phases and platforms |
 | [docs/UX_guide.md](./docs/UX_guide.md) | Original MVP UI/UX spec — still current for Android/iOS, superseded for web |
 | [docs/pitch.md](./docs/pitch.md) | Product pitch |
+| [docs/Design-Brief-2026-08.md](./docs/Design-Brief-2026-08.md) | _Archived_ — the brief that commissioned the web redesign, kept for design rationale |
 
 ## Repository layout
 

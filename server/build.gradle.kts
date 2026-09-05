@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.ktor.server.statusPages)
     implementation(libs.ktor.server.callLogging)
     implementation(libs.ktor.server.defaultHeaders)
+    implementation(libs.ktor.server.forwardedHeader)
     implementation(libs.ktor.serialization.json)
 
     // Ktor Client (for OAuth token verification)
