@@ -61,7 +61,7 @@ html[lang="ar"] .title { letter-spacing: 0; font-weight: 700; }
   border-radius: var(--r-sm);
   padding: 9px 12px;
   font-size: 13.5px;
-  color: var(--bad);
+  color: var(--bad-text);
 }
 
 .footer {
@@ -118,7 +118,7 @@ html[lang="ar"] .title { letter-spacing: 0; font-weight: 700; }
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--bad);
+  color: var(--bad-text);
   font-size: 20px;
   font-weight: 700;
 }

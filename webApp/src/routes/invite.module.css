@@ -343,7 +343,7 @@ html[lang="ar"] .heroChip { letter-spacing: 0; font-weight: 700; }
   display: grid;
   place-items: center;
   background: var(--good-soft);
-  color: var(--good);
+  color: var(--good-text);
   border-radius: var(--r-sm);
   font-size: 20px;
   line-height: 1;
