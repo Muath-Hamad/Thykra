@@ -53,14 +53,17 @@ import com.jameeli.thykra.ui.trip.TripScreen
 import com.jameeli.thykra.ui.trip.TripViewModel
 import com.jameeli.thykra.ui.trips.TripsScreen
 import com.jameeli.thykra.ui.trips.TripsViewModel
+import com.jameeli.thykra.ui.me.DevicePreferences
+import com.jameeli.thykra.ui.me.MeScreen
+import com.jameeli.thykra.ui.me.MeViewModel
 import com.jameeli.thykra.ui.media.MediaViewerScreenContent
 import com.jameeli.thykra.ui.settings.TripSettingsScreen
 import com.jameeli.thykra.ui.settings.TripSettingsViewModel
 import com.jameeli.thykra.ui.media.MediaViewerViewModel
-import com.jameeli.thykra.ui.profile.ProfileScreenContent
 import com.jameeli.thykra.ui.social.MediaCommentsViewModel
 import com.jameeli.thykra.ui.social.MediaReactionsViewModel
 import com.jameeli.thykra.ui.theme.LocalMotion
+import com.jameeli.thykra.ui.theme.ThemeMode
 import com.jameeli.thykra.ui.theme.LocalReducedMotion
 import com.jameeli.thykra.ui.theme.ThykraMotion
 import kotlinx.serialization.serializer
@@ -84,6 +87,9 @@ fun AppNavHost(
     inviteApi: InviteApi,
     activityFeedApi: ActivityFeedApi,
     recapApi: RecapApi,
+    devicePreferences: DevicePreferences,
+    themeMode: ThemeMode,
+    onThemeModeChange: (ThemeMode) -> Unit,
     networkMonitor: NetworkMonitor? = null,
 ) {
     val authState by authViewModel.authState.collectAsState()
@@ -173,10 +179,14 @@ fun AppNavHost(
                     enterTransition = { tabEnter(motion, reduced) },
                     exitTransition = { tabExit(motion, reduced) },
                 ) {
-                    // Build step 11 replaces this with the Me screen.
-                    ProfileScreenContent(
-                        authViewModel = authViewModel,
-                        onNavigateBack = { navController.switchTab(RootTab.Trips) },
+                    val viewModel = remember {
+                        MeViewModel(profileApi, albumApi, uploadQueueManager, devicePreferences)
+                    }
+                    MeScreen(
+                        viewModel = viewModel,
+                        themeMode = themeMode,
+                        onThemeModeChange = onThemeModeChange,
+                        onSignOut = { authViewModel.logout() },
                     )
                 }
 

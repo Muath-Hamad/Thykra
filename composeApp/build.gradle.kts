@@ -36,6 +36,9 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.core.ktx)
+            // AppCompatDelegate.setApplicationLocales is the per-app locale switch the
+            // Me screen uses; it lives in appcompat and nowhere else.
+            implementation(libs.androidx.appcompat)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.credentials)
             implementation(libs.androidx.credentials.playServices)

@@ -33,6 +33,7 @@ import com.jameeli.thykra.auth.AuthViewModel
 import com.jameeli.thykra.navigation.DeepLinkBus
 import com.jameeli.thykra.navigation.DeepLinkTarget
 import com.jameeli.thykra.navigation.handleDeepLink
+import com.jameeli.thykra.ui.me.AndroidDevicePreferences
 import com.jameeli.thykra.ui.share.SharingHost
 import com.jameeli.thykra.ui.theme.ThemePreference
 import com.jameeli.thykra.widget.WidgetDeepLinks
@@ -61,6 +62,7 @@ class MainActivity : ComponentActivity() {
         val inviteApi = InviteApi(httpClient)
         val activityFeedApi = ActivityFeedApi(httpClient)
         val recapApi = RecapApi(httpClient)
+        val devicePreferences = AndroidDevicePreferences(applicationContext)
         val persistence = AndroidUploadPersistence(applicationContext)
         val networkMonitor = AndroidNetworkMonitor(applicationContext)
         val uploadQueueManager = UploadQueueManager(mediaApi, lifecycleScope, persistence, networkMonitor)
@@ -87,6 +89,7 @@ class MainActivity : ComponentActivity() {
                 inviteApi = inviteApi,
                 activityFeedApi = activityFeedApi,
                 recapApi = recapApi,
+                devicePreferences = devicePreferences,
                 networkMonitor = networkMonitor,
             )
         }
