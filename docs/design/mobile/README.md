@@ -38,12 +38,33 @@ Both themes · 393 and 360 widths · 100% and 200% font scale · TalkBack pass o
 screen · reduced motion on · airplane mode: no blank screen · no literal colour, size or
 duration outside `ui/theme/` and `ui/kit/` · iOS build compiles and the screen renders.
 
+## Corrections to the boards found while implementing
+
+The design is the source of truth for intent; these are places where a stated
+figure did not survive being executed. In every case the token is right and the
+number in the document is what needs updating.
+
+| Where | Part 1 says | Measures | Effect |
+|---|---|---|---|
+| Paper, white on clay `#AA4324` | 7.1:1 | 5.8:1 | Still clears AA for body text |
+| Darkroom, ink on blue `#5AA6EA` | 8.1:1 | 7.2:1 | Still clears AA |
+| Darkroom, ink on clay `#E4794C` | 6.6:1 | 6.3:1 | Still clears AA |
+
+`ThykraContrastTest` pins the measured values, so a token that drops below AA
+fails the build.
+
+Part 2 calls the icon set "exactly 30" and then names 31 glyphs. All 31 are
+drawn, plus the three filled twins the tab bar needs, for 34 vectors in
+`ThykraIcons`.
+
+`MediaDto.durationMs` — listed as server work for step 05 — already exists on the
+wire, so the video duration pill is live rather than deferred.
+
 ## Open server work
 
 None of it blocks a step; each degrades gracefully as specified.
 
 - `AlbumDto.videoCount` and `InvitePreviewDto.videoCount` (steps 4, 8)
-- `MediaDto.durationMs` (step 5)
 - Upload size limit in `/api/config` (step 6)
 - A shareable single-media URL (step 7)
 - Soft delete for Undo (step 7)
