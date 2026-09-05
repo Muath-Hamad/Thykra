@@ -1,11 +1,13 @@
 name: CI
 
 on:
+  # Only main on push. Feature branches are covered by pull_request, so
+  # listing them here too would run every PR push twice.
   push:
-    branches: [main, 'claude/**']
+    branches: [main]
   pull_request:
   # Manual runs — also the only way to exercise CI on branches pushed by
-  # integrations whose tokens don't emit push events.
+  # integrations whose tokens don't emit push or pull_request events.
   workflow_dispatch:
 
 permissions:
