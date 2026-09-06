@@ -1,0 +1,229 @@
+name: iOS IPA
+
+# Builds a signed .ipa and, for the app-store method, uploads it to TestFlight.
+#
+# This is deliberately manual (and tag-triggered) rather than running on every push:
+# macOS runners are billed at a higher rate, and every run consumes a build number in
+# App Store Connect. Day-to-day iOS validation stays in ci.yml on Linux, and
+# ios-build.yml links the framework on macOS for pushes to main.
+#
+# ── Secrets this needs ────────────────────────────────────────────────────────
+#   APPLE_TEAM_ID                 10-character team id, e.g. A1B2C3D4E5
+#   APPLE_API_KEY_ID              App Store Connect API key id
+#   APPLE_API_ISSUER_ID           App Store Connect issuer id (a UUID)
+#   APPLE_API_PRIVATE_KEY         contents of the AuthKey_XXXX.p8, newlines and all
+#   THYKRA_API_BASE_URL           e.g. https://api.thykra.com — NOT localhost
+#   THYKRA_WEB_BASE_URL           e.g. https://thykra.com
+#
+# The API key needs the "App Manager" role to upload builds. Automatic signing with
+# -allowProvisioningUpdates creates and renews the profiles itself, so no .p12 or
+# .mobileprovision has to be stored here.
+#
+# A free personal Apple team cannot be used: it has no App Store Connect API and no
+# distribution profiles. This workflow needs a paid Apple Developer Program membership.
+
+on:
+  workflow_dispatch:
+    inputs:
+      method:
+        description: 'Export method'
+        required: true
+        default: app-store
+        type: choice
+        options:
+          - app-store    # TestFlight. Any tester you invite, no UDID needed.
+          - ad-hoc       # Direct install, but every device UDID must be registered.
+      upload:
+        description: 'Upload to TestFlight (app-store only)'
+        required: false
+        default: true
+        type: boolean
+  push:
+    tags:
+      - 'v*'
+
+concurrency:
+  group: ios-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  ipa:
+    name: Build signed IPA
+    runs-on: macos-14
+    timeout-minutes: 60
+
+    env:
+      METHOD: ${{ github.event.inputs.method || 'app-store' }}
+      ARCHIVE_PATH: ${{ github.workspace }}/build/Thykra.xcarchive
+      EXPORT_PATH: ${{ github.workspace }}/build/export
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fail early if signing is not configured
+        run: |
+          missing=""
+          [ -z "${{ secrets.APPLE_TEAM_ID }}" ] && missing="$missing APPLE_TEAM_ID"
+          [ -z "${{ secrets.APPLE_API_KEY_ID }}" ] && missing="$missing APPLE_API_KEY_ID"
+          [ -z "${{ secrets.APPLE_API_ISSUER_ID }}" ] && missing="$missing APPLE_API_ISSUER_ID"
+          [ -z "${{ secrets.APPLE_API_PRIVATE_KEY }}" ] && missing="$missing APPLE_API_PRIVATE_KEY"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secrets:$missing"
+            echo "See the comment at the top of .github/workflows/ios-release.yml."
+            exit 1
+          fi
+
+      # A device build that still points at localhost installs fine and then fails
+      # every request, so this is a hard stop rather than a warning.
+      - name: Fail early if the API origin points at the device
+        run: |
+          api="${{ secrets.THYKRA_API_BASE_URL }}"
+          if [ -z "$api" ]; then
+            echo "::error::THYKRA_API_BASE_URL is not set. On a phone, localhost is the phone."
+            exit 1
+          fi
+          case "$api" in
+            *localhost*|*127.0.0.1*|*10.0.2.2*)
+              echo "::error::THYKRA_API_BASE_URL is $api, which no phone can reach."
+              exit 1
+              ;;
+          esac
+          echo "API origin: $api"
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            .gradle
+          key: gradle-ios-release-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'gradle/libs.versions.toml') }}
+          restore-keys: |
+            gradle-ios-release-${{ runner.os }}-
+            gradle-ios-mac-${{ runner.os }}-
+
+      # Config.xcconfig is checked in with these empty so a local simulator build works
+      # without editing anything. CI fills them for the archive and nothing is committed.
+      - name: Write build configuration
+        run: |
+          cat > iosApp/Configuration/Config.xcconfig <<EOF
+          TEAM_ID=${{ secrets.APPLE_TEAM_ID }}
+
+          PRODUCT_NAME=Thykra
+          PRODUCT_BUNDLE_IDENTIFIER=com.jameeli.thykra.Thykra
+
+          CURRENT_PROJECT_VERSION=${{ github.run_number }}
+          MARKETING_VERSION=${{ github.ref_type == 'tag' && github.ref_name || '1.0' }}
+
+          THYKRA_API_BASE_URL=${{ secrets.THYKRA_API_BASE_URL }}
+          THYKRA_WEB_BASE_URL=${{ secrets.THYKRA_WEB_BASE_URL }}
+          EOF
+          echo "--- Config.xcconfig (secrets are masked in logs) ---"
+          cat iosApp/Configuration/Config.xcconfig
+
+      # PRODUCT_BUNDLE_IDENTIFIER normally appends $(TEAM_ID) so several developers can
+      # each run their own build side by side. A distribution build has to use the exact
+      # identifier registered in App Store Connect, which is why it is pinned above.
+      - name: Install the App Store Connect API key
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "${{ secrets.APPLE_API_PRIVATE_KEY }}" \
+            > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8
+          chmod 600 ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8
+
+      - name: Write ExportOptions.plist
+        run: |
+          mkdir -p build
+          cat > build/ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>${METHOD}</string>
+            <key>teamID</key>
+            <string>${{ secrets.APPLE_TEAM_ID }}</string>
+            <key>signingStyle</key>
+            <string>automatic</string>
+            <key>destination</key>
+            <string>export</string>
+            <key>uploadSymbols</key>
+            <true/>
+            <key>manageAppVersionAndBuildNumber</key>
+            <false/>
+          </dict>
+          </plist>
+          EOF
+
+      # Archiving runs the Gradle framework task through the Xcode build phase, so this
+      # single command compiles Kotlin, links the framework and builds the app.
+      - name: Archive
+        run: |
+          xcodebuild archive \
+            -project iosApp/iosApp.xcodeproj \
+            -scheme iosApp \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$ARCHIVE_PATH" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8 \
+            -authenticationKeyID ${{ secrets.APPLE_API_KEY_ID }} \
+            -authenticationKeyIssuerID ${{ secrets.APPLE_API_ISSUER_ID }} \
+            CODE_SIGN_STYLE=Automatic \
+            DEVELOPMENT_TEAM=${{ secrets.APPLE_TEAM_ID }}
+
+      - name: Export IPA
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportOptionsPlist build/ExportOptions.plist \
+            -exportPath "$EXPORT_PATH" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8 \
+            -authenticationKeyID ${{ secrets.APPLE_API_KEY_ID }} \
+            -authenticationKeyIssuerID ${{ secrets.APPLE_API_ISSUER_ID }}
+          ls -la "$EXPORT_PATH"
+
+      # Keep the artifact whichever method was used. For ad-hoc this IS the deliverable:
+      # download it, and install with Apple Configurator or by dropping it on a device
+      # in Xcode's Devices window. Every target device's UDID has to be registered first.
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Thykra-${{ env.METHOD }}-${{ github.run_number }}
+          path: ${{ env.EXPORT_PATH }}/*.ipa
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload to TestFlight
+        if: ${{ env.METHOD == 'app-store' && github.event.inputs.upload != 'false' }}
+        run: |
+          ipa=$(ls "$EXPORT_PATH"/*.ipa | head -1)
+          echo "Uploading $ipa"
+          xcrun altool --upload-app \
+            --type ios \
+            --file "$ipa" \
+            --apiKey ${{ secrets.APPLE_API_KEY_ID }} \
+            --apiIssuer ${{ secrets.APPLE_API_ISSUER_ID }}
+          echo "::notice::Uploaded. TestFlight processing usually takes 5-15 minutes."
+
+      - name: Upload build logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-release-logs-${{ github.run_number }}
+          path: |
+            ~/Library/Logs/gym
+            build/*.xcarchive/Info.plist
+            composeApp/build/reports
+          if-no-files-found: ignore
