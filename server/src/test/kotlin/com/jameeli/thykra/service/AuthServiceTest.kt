@@ -10,7 +10,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.server.config.MapApplicationConfig
 import io.ktor.server.testing.testApplication
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import java.util.UUID
 import kotlin.test.BeforeTest
 import kotlin.test.Test

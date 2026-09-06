@@ -1,10 +1,10 @@
 package com.jameeli.thykra
 
+import org.jetbrains.exposed.v1.jdbc.*
 import com.jameeli.thykra.db.tables.RefreshTokensTable
 import com.jameeli.thykra.db.tables.UsersTable
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
+
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 /**
  * All server tests share ONE named in-memory H2 database. Exposed's default

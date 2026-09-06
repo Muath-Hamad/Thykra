@@ -14,11 +14,14 @@ import androidx.work.WorkManager
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import coil3.video.VideoFrameDecoder
+import com.jameeli.thykra.api.ActivityFeedApi
 import com.jameeli.thykra.api.AlbumApi
+import com.jameeli.thykra.api.RecapApi
 import com.jameeli.thykra.api.AndroidNetworkMonitor
 import com.jameeli.thykra.api.AndroidUploadPersistence
 import com.jameeli.thykra.api.AuthApi
 import com.jameeli.thykra.api.CommentApi
+import com.jameeli.thykra.api.InviteApi
 import com.jameeli.thykra.api.MediaApi
 import com.jameeli.thykra.api.ProfileApi
 import com.jameeli.thykra.api.ReactionApi
@@ -30,7 +33,9 @@ import com.jameeli.thykra.auth.AuthViewModel
 import com.jameeli.thykra.navigation.DeepLinkBus
 import com.jameeli.thykra.navigation.DeepLinkTarget
 import com.jameeli.thykra.navigation.handleDeepLink
+import com.jameeli.thykra.ui.me.AndroidDevicePreferences
 import com.jameeli.thykra.ui.share.SharingHost
+import com.jameeli.thykra.ui.theme.ThemePreference
 import com.jameeli.thykra.widget.WidgetDeepLinks
 
 class MainActivity : ComponentActivity() {
@@ -38,6 +43,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         SharingHost.appContext = applicationContext
+        // Must be set before setContent: the theme reads the preference synchronously.
+        ThemePreference.appContext = applicationContext
         SingletonImageLoader.setSafe { context ->
             ImageLoader.Builder(context)
                 .components { add(VideoFrameDecoder.Factory()) }
@@ -52,6 +59,10 @@ class MainActivity : ComponentActivity() {
         val reactionApi = ReactionApi(httpClient)
         val commentApi = CommentApi(httpClient)
         val profileApi = ProfileApi(httpClient)
+        val inviteApi = InviteApi(httpClient)
+        val activityFeedApi = ActivityFeedApi(httpClient)
+        val recapApi = RecapApi(httpClient)
+        val devicePreferences = AndroidDevicePreferences(applicationContext)
         val persistence = AndroidUploadPersistence(applicationContext)
         val networkMonitor = AndroidNetworkMonitor(applicationContext)
         val uploadQueueManager = UploadQueueManager(mediaApi, lifecycleScope, persistence, networkMonitor)
@@ -74,7 +85,12 @@ class MainActivity : ComponentActivity() {
                 reactionApi = reactionApi,
                 commentApi = commentApi,
                 profileApi = profileApi,
-                uploadQueueManager = uploadQueueManager
+                uploadQueueManager = uploadQueueManager,
+                inviteApi = inviteApi,
+                activityFeedApi = activityFeedApi,
+                recapApi = recapApi,
+                devicePreferences = devicePreferences,
+                networkMonitor = networkMonitor,
             )
         }
 
@@ -108,7 +124,7 @@ class MainActivity : ComponentActivity() {
         val mediaId = intent.getStringExtra(WidgetDeepLinks.EXTRA_MEDIA_ID)
         DeepLinkBus.emit(
             if (mediaId != null) DeepLinkTarget.Media(albumId, mediaId)
-            else DeepLinkTarget.Album(albumId)
+            else DeepLinkTarget.Trip(albumId)
         )
     }
 }

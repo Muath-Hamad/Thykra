@@ -1,8 +1,9 @@
 package com.jameeli.thykra.db.tables
 
-import org.jetbrains.exposed.dao.id.UUIDTable
-import org.jetbrains.exposed.sql.ReferenceOption
-import org.jetbrains.exposed.sql.kotlin.datetime.timestamp
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.core.dao.id.java.UUIDTable
+
+import org.jetbrains.exposed.v1.datetime.timestamp
 
 object AlbumsTable : UUIDTable("albums") {
     val ownerId = reference("owner_id", UsersTable, onDelete = ReferenceOption.CASCADE)

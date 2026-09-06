@@ -93,7 +93,7 @@ html[lang="ar"] .btn { letter-spacing: 0; font-weight: 700; }
 .dangerQuiet {
   background: var(--bad-soft);
   border-color: rgba(195, 58, 50, .35);
-  color: var(--bad);
+  color: var(--bad-text);
 }
 .dangerQuiet:hover:not(:disabled) { filter: brightness(.97); }
 

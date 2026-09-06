@@ -1,6 +1,6 @@
 package com.jameeli.thykra.model
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 
 /**

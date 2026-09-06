@@ -85,4 +85,14 @@ class AlbumApi(private val client: HttpClient) {
     suspend fun joinByInvite(token: String): ApiResponse<AlbumDto> {
         return client.post("$API_BASE_URL/api/albums/join/$token").body()
     }
+
+    /** Every live link for a trip, with its join count and expiry. Owner only. */
+    suspend fun listInviteLinks(albumId: String): ApiResponse<List<InviteLinkDto>> {
+        return client.get("$API_BASE_URL/api/albums/$albumId/invites").body()
+    }
+
+    /** Turns one link off. People who already joined through it stay. */
+    suspend fun revokeInviteLink(albumId: String, token: String): ApiResponse<Unit> {
+        return client.delete("$API_BASE_URL/api/albums/$albumId/invites/$token").body()
+    }
 }

@@ -53,7 +53,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.jameeli.thykra.API_BASE_URL
 import com.jameeli.thykra.model.CommentDto
-import com.jameeli.thykra.ui.theme.ThykraColors
+import com.jameeli.thykra.ui.theme.thykra
 import com.jameeli.thykra.ui.theme.ThykraIcons
 
 /**
@@ -101,7 +101,7 @@ fun CommentsSheet(
                 .fillMaxWidth()
                 .fillMaxHeight(0.85f)
                 .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
-                .background(ThykraColors.WarmWhite)
+                .background(MaterialTheme.colorScheme.surface)
                 .clickable(enabled = false, onClick = {}) // swallow clicks so scrim doesn't dismiss
                 .imePadding()
         ) {
@@ -117,7 +117,7 @@ fun CommentsSheet(
                         .width(36.dp)
                         .height(4.dp)
                         .clip(RoundedCornerShape(2.dp))
-                        .background(ThykraColors.MutedSlate.copy(alpha = 0.4f))
+                        .background(MaterialTheme.thykra.textMeta.copy(alpha = 0.4f))
                 )
             }
 
@@ -130,31 +130,31 @@ fun CommentsSheet(
                 Text(
                     text = "Comments",
                     style = MaterialTheme.typography.titleMedium,
-                    color = ThykraColors.DeepNavy,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f)
                 )
                 Text(
                     text = comments.size.toString(),
                     style = MaterialTheme.typography.labelMedium,
-                    color = ThykraColors.MutedSlate
+                    color = MaterialTheme.thykra.textMeta
                 )
                 Spacer(Modifier.width(8.dp))
                 IconButton(onClick = onDismiss) {
                     Icon(
                         imageVector = ThykraIcons.Close,
                         contentDescription = "Close",
-                        tint = ThykraColors.MutedSlate
+                        tint = MaterialTheme.thykra.textMeta
                     )
                 }
             }
 
-            HorizontalDivider(color = ThykraColors.MutedSlate.copy(alpha = 0.15f))
+            HorizontalDivider(color = MaterialTheme.thykra.textMeta.copy(alpha = 0.15f))
 
             Box(modifier = Modifier.weight(1f)) {
                 when {
                     isLoading && comments.isEmpty() -> {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator(color = ThykraColors.SkyBlue)
+                            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                         }
                     }
                     comments.isEmpty() -> {
@@ -162,7 +162,7 @@ fun CommentsSheet(
                             Text(
                                 text = "No comments yet — be the first.",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = ThykraColors.MutedSlate
+                                color = MaterialTheme.thykra.textMeta
                             )
                         }
                     }
@@ -204,7 +204,7 @@ fun CommentsSheet(
             error?.let { msg ->
                 Text(
                     text = msg,
-                    color = ThykraColors.SoftRed,
+                    color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                 )
@@ -249,9 +249,9 @@ private fun CommentRow(
                     textStyle = MaterialTheme.typography.bodyMedium,
                     maxLines = 6,
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ThykraColors.SkyBlue,
-                        unfocusedBorderColor = ThykraColors.MutedSlate.copy(alpha = 0.3f),
-                        cursorColor = ThykraColors.SkyBlue
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.thykra.textMeta.copy(alpha = 0.3f),
+                        cursorColor = MaterialTheme.colorScheme.primary
                     )
                 )
                 Row(
@@ -262,7 +262,7 @@ private fun CommentRow(
                         editing = false
                         draftBody = comment.body
                     }) {
-                        Text("Cancel", color = ThykraColors.MutedSlate)
+                        Text("Cancel", color = MaterialTheme.thykra.textMeta)
                     }
                     TextButton(
                         onClick = {
@@ -273,7 +273,7 @@ private fun CommentRow(
                             editing = false
                         }
                     ) {
-                        Text("Save", color = ThykraColors.SkyBlue, fontWeight = FontWeight.SemiBold)
+                        Text("Save", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
                     }
                 }
             } else {
@@ -281,13 +281,13 @@ private fun CommentRow(
                     withStyle(
                         SpanStyle(
                             fontWeight = FontWeight.SemiBold,
-                            color = ThykraColors.DeepNavy
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     ) {
                         append(comment.authorDisplayName)
                     }
                     append("  ")
-                    withStyle(SpanStyle(color = ThykraColors.DeepNavy.copy(alpha = 0.85f))) {
+                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f))) {
                         append(comment.body)
                     }
                 }
@@ -296,7 +296,7 @@ private fun CommentRow(
                     Text(
                         text = "edited",
                         style = MaterialTheme.typography.labelSmall,
-                        color = ThykraColors.MutedSlate.copy(alpha = 0.8f)
+                        color = MaterialTheme.thykra.textMeta.copy(alpha = 0.8f)
                     )
                 }
             }
@@ -310,7 +310,7 @@ private fun CommentRow(
                     // Three small dots — render via vertical character to avoid bundling another icon.
                     Text(
                         text = "⋯",
-                        color = ThykraColors.MutedSlate,
+                        color = MaterialTheme.thykra.textMeta,
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
@@ -329,7 +329,7 @@ private fun CommentRow(
                     }
                     if (canDelete) {
                         DropdownMenuItem(
-                            text = { Text("Delete", color = ThykraColors.SoftRed) },
+                            text = { Text("Delete", color = MaterialTheme.colorScheme.error) },
                             onClick = {
                                 menuExpanded = false
                                 onDelete()
@@ -348,7 +348,7 @@ private fun Avatar(url: String?, name: String) {
         modifier = Modifier
             .size(36.dp)
             .clip(CircleShape)
-            .background(ThykraColors.SkyBlue.copy(alpha = 0.15f)),
+            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
         contentAlignment = Alignment.Center
     ) {
         if (!url.isNullOrBlank()) {
@@ -361,7 +361,7 @@ private fun Avatar(url: String?, name: String) {
         } else {
             Text(
                 text = name.firstOrNull()?.uppercase() ?: "?",
-                color = ThykraColors.SkyBlue,
+                color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.SemiBold
             )
         }
@@ -377,7 +377,7 @@ private fun CommentInputBar(
     var draft by remember { mutableStateOf("") }
 
     Column(modifier = modifier.fillMaxWidth()) {
-        HorizontalDivider(color = ThykraColors.MutedSlate.copy(alpha = 0.15f))
+        HorizontalDivider(color = MaterialTheme.thykra.textMeta.copy(alpha = 0.15f))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -388,14 +388,14 @@ private fun CommentInputBar(
                 value = draft,
                 onValueChange = { if (it.length <= 2000) draft = it },
                 modifier = Modifier.weight(1f),
-                placeholder = { Text("Add a comment…", color = ThykraColors.MutedSlate.copy(alpha = 0.7f)) },
+                placeholder = { Text("Add a comment…", color = MaterialTheme.thykra.textMeta.copy(alpha = 0.7f)) },
                 maxLines = 4,
                 shape = RoundedCornerShape(20.dp),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = ThykraColors.SkyBlue,
-                    unfocusedBorderColor = ThykraColors.MutedSlate.copy(alpha = 0.3f),
-                    cursorColor = ThykraColors.SkyBlue
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.thykra.textMeta.copy(alpha = 0.3f),
+                    cursorColor = MaterialTheme.colorScheme.primary
                 )
             )
             Spacer(Modifier.width(8.dp))
@@ -412,13 +412,13 @@ private fun CommentInputBar(
                 if (isSending) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(20.dp),
-                        color = ThykraColors.SkyBlue,
+                        color = MaterialTheme.colorScheme.primary,
                         strokeWidth = 2.dp
                     )
                 } else {
                     Text(
                         text = "→",
-                        color = if (canSend) ThykraColors.SkyBlue else ThykraColors.MutedSlate.copy(alpha = 0.5f),
+                        color = if (canSend) MaterialTheme.colorScheme.primary else MaterialTheme.thykra.textMeta.copy(alpha = 0.5f),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )

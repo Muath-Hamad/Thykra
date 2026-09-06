@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -47,7 +48,8 @@ kotlin {
             implementation(libs.ktor.client.mock)
         }
         androidMain.dependencies {
-            implementation(libs.ktor.client.cio)
+            // OkHttp, not CIO — see HttpClientFactory.android.kt for why.
+            implementation(libs.ktor.client.okhttp)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -61,6 +63,9 @@ kotlin {
     }
 }
 
+/** Kept in step with [com.jameeli.thykra.SERVER_PORT]. */
+val SERVER_PORT = 8081
+
 android {
     namespace = "com.jameeli.thykra.shared"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -70,5 +75,32 @@ android {
     }
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
+
+        // Where this build talks to. 10.0.2.2 is the emulator's loopback to the host;
+        // a device build needs a real origin, so `local.properties` or the environment
+        // can override it without touching source.
+        val localProps = Properties().apply {
+            val file = rootProject.file("local.properties")
+            if (file.exists()) file.inputStream().use { load(it) }
+        }
+        fun setting(key: String, default: String): String =
+            localProps.getProperty(key)
+                ?: System.getenv("THYKRA_$key")
+                ?: default
+
+        buildConfigField(
+            "String",
+            "API_BASE_URL",
+            "\"${setting("API_BASE_URL", "http://10.0.2.2:$SERVER_PORT")}\"",
+        )
+        buildConfigField(
+            "String",
+            "WEB_BASE_URL",
+            "\"${setting("WEB_BASE_URL", "http://10.0.2.2:8080")}\"",
+        )
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 }

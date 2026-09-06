@@ -1,19 +1,16 @@
 package com.jameeli.thykra.repository
 
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.jdbc.*
 import com.jameeli.thykra.db.tables.ReactionsTable
 import com.jameeli.thykra.db.tables.UsersTable
 import com.jameeli.thykra.model.MediaReactionsDto
 import com.jameeli.thykra.model.ReactionDto
 import com.jameeli.thykra.model.ReactionSummaryDto
 import com.jameeli.thykra.model.ReactionType
-import kotlinx.datetime.Clock
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import kotlin.time.Clock
+
+import org.jetbrains.exposed.v1.jdbc.transactions.experimental.newSuspendedTransaction
 import java.util.UUID
 
 class ReactionRepository {

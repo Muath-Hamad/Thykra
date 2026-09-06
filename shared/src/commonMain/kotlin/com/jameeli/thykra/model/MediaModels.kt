@@ -1,6 +1,8 @@
 package com.jameeli.thykra.model
 
-import kotlinx.datetime.Instant
+import com.jameeli.thykra.chapters.ChapterMedia
+import com.jameeli.thykra.chapters.HasDimensions
+import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -11,10 +13,10 @@ enum class MediaStatus { PENDING, ACTIVE }
 
 @Serializable
 data class MediaDto(
-    val id: String,
+    override val id: String,
     val albumId: String,
     val uploaderId: String,
-    val type: MediaType,
+    override val type: MediaType,
     val status: MediaStatus,
     val storageKey: String,
     val url: String,
@@ -22,12 +24,12 @@ data class MediaDto(
     val filename: String,
     val contentType: String,
     val fileSize: Long,
-    val width: Int? = null,
-    val height: Int? = null,
+    override val width: Int? = null,
+    override val height: Int? = null,
     val durationMs: Long? = null,
-    val takenAt: Instant? = null,
-    val uploadedAt: Instant
-)
+    override val takenAt: Instant? = null,
+    override val uploadedAt: Instant
+) : ChapterMedia, HasDimensions
 
 @Serializable
 data class RequestUploadUrlRequest(

@@ -1,5 +1,7 @@
 package com.jameeli.thykra
 
+import com.jameeli.thykra.shared.BuildConfig
+
 import android.os.Build
 
 class AndroidPlatform : Platform {
@@ -8,8 +10,13 @@ class AndroidPlatform : Platform {
 
 actual fun getPlatform(): Platform = AndroidPlatform()
 
-actual val API_HOST: String = "10.0.2.2"
+/**
+ * 10.0.2.2 is the emulator's loopback to the host machine. A build for a real device
+ * overrides this: put `API_BASE_URL=https://…` in `local.properties`, or set
+ * `THYKRA_API_BASE_URL` in the environment.
+ */
+actual val API_BASE_URL: String = BuildConfig.API_BASE_URL
 
 // Emulator loopback; production builds should override via a gradle
 // buildConfigField similar to GOOGLE_CLIENT_ID.
-actual val WEB_BASE_URL: String = "http://10.0.2.2:8080"
+actual val WEB_BASE_URL: String = BuildConfig.WEB_BASE_URL

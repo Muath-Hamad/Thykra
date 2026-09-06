@@ -1,13 +1,13 @@
 package com.jameeli.thykra.repository
 
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.jdbc.*
 import com.jameeli.thykra.db.tables.RefreshTokensTable
-import kotlinx.datetime.Instant
-import kotlinx.datetime.Clock
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import org.jetbrains.exposed.sql.update
+import kotlin.time.Instant
+import kotlin.time.Clock
+
+import org.jetbrains.exposed.v1.jdbc.transactions.experimental.newSuspendedTransaction
+
 import java.security.MessageDigest
 import java.util.UUID
 

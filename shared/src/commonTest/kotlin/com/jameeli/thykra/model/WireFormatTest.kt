@@ -1,7 +1,7 @@
 package com.jameeli.thykra.model
 
 import com.jameeli.thykra.api.PendingUploadRecord
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlin.test.Test

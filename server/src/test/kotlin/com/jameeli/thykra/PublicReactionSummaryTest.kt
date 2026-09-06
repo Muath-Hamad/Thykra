@@ -5,7 +5,7 @@ import com.jameeli.thykra.model.ReactionType
 import io.ktor.client.request.get
 import io.ktor.client.request.put
 import io.ktor.http.HttpStatusCode
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

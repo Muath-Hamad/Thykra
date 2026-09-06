@@ -1,5 +1,7 @@
 package com.jameeli.thykra.repository
 
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.jdbc.*
 import com.jameeli.thykra.db.tables.AlbumMembersTable
 import com.jameeli.thykra.db.tables.AlbumsTable
 import com.jameeli.thykra.db.tables.MediaTable
@@ -17,17 +19,10 @@ import com.jameeli.thykra.model.PublicMediaDto
 import com.jameeli.thykra.model.PublicReactionSummaryDto
 import com.jameeli.thykra.model.ReactionType
 import com.jameeli.thykra.storage.StorageService
-import kotlinx.datetime.Clock
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.count
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import org.jetbrains.exposed.sql.update
+import kotlin.time.Clock
+
+import org.jetbrains.exposed.v1.jdbc.transactions.experimental.newSuspendedTransaction
+
 import java.util.UUID
 
 class AlbumRepository(private val storageService: StorageService) {
@@ -188,6 +183,25 @@ class AlbumRepository(private val storageService: StorageService) {
             }
             ?: this[AlbumsTable.coverUrl]
 
+        // Active media, split by kind, in one grouped pass rather than two counts.
+        val mediaCountExpr = MediaTable.id.count()
+        val countsByType = MediaTable
+            .select(MediaTable.type, mediaCountExpr)
+            .where { (MediaTable.albumId eq albumId) and (MediaTable.status eq MediaStatus.ACTIVE.name) }
+            .groupBy(MediaTable.type)
+            .associate { it[MediaTable.type] to it[mediaCountExpr].toInt() }
+        val mediaCount = countsByType.values.sum()
+        val videoCount = countsByType[MediaType.VIDEO.name] ?: 0
+
+        // The newest upload, which is what "sorted by last activity" means on the list.
+        val lastActivityAt = MediaTable
+            .selectAll()
+            .where { (MediaTable.albumId eq albumId) and (MediaTable.status eq MediaStatus.ACTIVE.name) }
+            .orderBy(MediaTable.uploadedAt, SortOrder.DESC)
+            .limit(1)
+            .singleOrNull()
+            ?.get(MediaTable.uploadedAt)
+
         // First 4 members with avatar info
         val previewMembers = (AlbumMembersTable innerJoin UsersTable)
             .selectAll()
@@ -209,8 +223,11 @@ class AlbumRepository(private val storageService: StorageService) {
             coverUrl = latestCoverUrl,
             visibility = AlbumVisibility.valueOf(this[AlbumsTable.visibility]),
             memberCount = memberCount,
+            mediaCount = mediaCount,
+            videoCount = videoCount,
             previewMembers = previewMembers,
-            createdAt = this[AlbumsTable.createdAt]
+            createdAt = this[AlbumsTable.createdAt],
+            lastActivityAt = lastActivityAt
         )
     }
 }

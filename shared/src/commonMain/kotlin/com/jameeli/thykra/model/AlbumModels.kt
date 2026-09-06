@@ -1,6 +1,8 @@
 package com.jameeli.thykra.model
 
-import kotlinx.datetime.Instant
+import com.jameeli.thykra.chapters.ChapterMedia
+import com.jameeli.thykra.chapters.HasDimensions
+import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -25,8 +27,14 @@ data class AlbumDto(
     val coverUrl: String? = null,
     val visibility: AlbumVisibility = AlbumVisibility.PRIVATE,
     val memberCount: Int,
+    // Active media in the trip, split by kind. Default 0 so an older client that never
+    // sends them — and an older server that never sends them back — both keep working.
+    val mediaCount: Int = 0,
+    val videoCount: Int = 0,
     val previewMembers: List<AlbumMemberSummary> = emptyList(),
-    val createdAt: Instant
+    val createdAt: Instant,
+    // Newest activity in the trip, for sorting the list by what moved most recently.
+    val lastActivityAt: Instant? = null
 )
 
 @Serializable
@@ -102,16 +110,16 @@ data class PublicReactionSummaryDto(
 
 @Serializable
 data class PublicMediaDto(
-    val id: String,
-    val type: MediaType,
+    override val id: String,
+    override val type: MediaType,
     val url: String,
     val thumbnailUrl: String? = null,
-    val width: Int? = null,
-    val height: Int? = null,
-    val takenAt: Instant? = null,
-    val uploadedAt: Instant,
+    override val width: Int? = null,
+    override val height: Int? = null,
+    override val takenAt: Instant? = null,
+    override val uploadedAt: Instant,
     val reactionSummary: List<PublicReactionSummaryDto> = emptyList()
-)
+) : ChapterMedia, HasDimensions
 
 @Serializable
 data class PublicAlbumViewDto(

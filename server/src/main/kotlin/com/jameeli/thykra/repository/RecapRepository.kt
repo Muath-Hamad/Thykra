@@ -1,5 +1,7 @@
 package com.jameeli.thykra.repository
 
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.jdbc.*
 import com.jameeli.thykra.db.tables.AlbumMembersTable
 import com.jameeli.thykra.db.tables.AlbumsTable
 import com.jameeli.thykra.db.tables.CommentsTable
@@ -17,26 +19,16 @@ import com.jameeli.thykra.model.RecapDto
 import com.jameeli.thykra.model.RecapStatus
 import com.jameeli.thykra.model.RecapViewDto
 import com.jameeli.thykra.storage.StorageService
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.Count
-import org.jetbrains.exposed.sql.JoinType
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.count
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.v1.core.dao.id.EntityID
+
+import org.jetbrains.exposed.v1.jdbc.transactions.experimental.newSuspendedTransaction
 import java.util.UUID
 
 class RecapRepository(private val storageService: StorageService) {

@@ -4,6 +4,24 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<!-- Filled from THYKRA_API_BASE_URL / THYKRA_WEB_BASE_URL in Config.xcconfig.
+	     Left empty for a simulator build, which falls back to localhost. A device
+	     build must set them: on a phone, localhost is the phone. -->
+	<key>ThykraApiBaseUrl</key>
+	<string>$(THYKRA_API_BASE_URL)</string>
+	<key>ThykraWebBaseUrl</key>
+	<string>$(THYKRA_WEB_BASE_URL)</string>
+	<!-- Permits plain http to .local names and IP literals so a phone can talk to a
+	     server on the same network during development. Arbitrary http stays blocked,
+	     so anything deployed has to be https. -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<!-- Required from iOS 14 for any request to a device on the local network. -->
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Thykra connects to your Thykra server on this network.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

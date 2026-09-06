@@ -5,7 +5,7 @@ import com.jameeli.thykra.model.MediaType
 import com.jameeli.thykra.model.PresignedUploadDto
 import com.jameeli.thykra.repository.MediaRepository
 import com.jameeli.thykra.storage.StorageService
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import java.util.UUID
 
 class MediaService(

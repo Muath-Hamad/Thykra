@@ -26,6 +26,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -43,7 +44,6 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.lifecycle.lifecycleScope
 import com.jameeli.thykra.model.AlbumDto
-import com.jameeli.thykra.ui.theme.ThykraColors
 import com.jameeli.thykra.ui.theme.ThykraTheme
 import kotlinx.coroutines.launch
 
@@ -175,14 +175,14 @@ private fun ConfigScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(ThykraColors.WarmWhite)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(20.dp)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Text(
                 text = "Pick an album",
                 style = androidx.compose.material3.MaterialTheme.typography.headlineSmall,
-                color = ThykraColors.DeepNavy
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(Modifier.height(12.dp))
 
@@ -205,7 +205,7 @@ private fun ConfigScreen(
                     Text(
                         text = "Refresh interval",
                         style = androidx.compose.material3.MaterialTheme.typography.titleSmall,
-                        color = ThykraColors.DeepNavy
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(Modifier.height(4.dp))
                     IntervalRow(
@@ -227,7 +227,7 @@ private fun ConfigScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TextButton(onClick = onCancel) {
-                    Text("Cancel", color = ThykraColors.MutedSlate)
+                    Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Spacer(Modifier.width(8.dp))
                 Button(
@@ -237,7 +237,7 @@ private fun ConfigScreen(
                     },
                     enabled = selectedAlbumId != null,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = ThykraColors.SkyBlue,
+                        containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = Color.White
                     )
                 ) {
@@ -256,7 +256,8 @@ private fun AlbumRow(album: AlbumDto, selected: Boolean, onSelect: () -> Unit) {
             .padding(vertical = 4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (selected) ThykraColors.Sandy else ThykraColors.WarmWhite
+            containerColor = if (selected) MaterialTheme.colorScheme.secondaryContainer
+            else MaterialTheme.colorScheme.surfaceContainer
         ),
         onClick = onSelect
     ) {
@@ -274,13 +275,13 @@ private fun AlbumRow(album: AlbumDto, selected: Boolean, onSelect: () -> Unit) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = album.title,
-                    color = ThykraColors.DeepNavy,
+                    color = MaterialTheme.colorScheme.onSurface,
                     style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
                     maxLines = 1
                 )
                 Text(
                     text = "${album.memberCount} member${if (album.memberCount == 1) "" else "s"}",
-                    color = ThykraColors.MutedSlate,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = androidx.compose.material3.MaterialTheme.typography.bodySmall
                 )
             }
@@ -302,7 +303,7 @@ private fun IntervalRow(
                     .padding(horizontal = 4.dp),
                 shape = RoundedCornerShape(10.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (ms == selected) ThykraColors.SkyBlue else ThykraColors.Sandy
+                    containerColor = if (ms == selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondaryContainer
                 ),
                 onClick = { onSelect(ms) }
             ) {
@@ -314,7 +315,7 @@ private fun IntervalRow(
                 ) {
                     Text(
                         text = label,
-                        color = if (ms == selected) Color.White else ThykraColors.DeepNavy,
+                        color = if (ms == selected) Color.White else MaterialTheme.colorScheme.onSurface,
                         style = androidx.compose.material3.MaterialTheme.typography.labelLarge
                     )
                 }
@@ -331,7 +332,7 @@ private fun LoadingBlock() {
             .height(160.dp),
         contentAlignment = Alignment.Center
     ) {
-        CircularProgressIndicator(color = ThykraColors.SkyBlue)
+        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
     }
 }
 
@@ -345,7 +346,7 @@ private fun InfoBlock(text: String) {
     ) {
         Text(
             text = text,
-            color = ThykraColors.MutedSlate,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
         )
     }

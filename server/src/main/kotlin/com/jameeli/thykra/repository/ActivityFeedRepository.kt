@@ -1,5 +1,7 @@
 package com.jameeli.thykra.repository
 
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.jdbc.*
 import com.jameeli.thykra.db.tables.ActivitySeenTable
 import com.jameeli.thykra.db.tables.AlbumMembersTable
 import com.jameeli.thykra.db.tables.AlbumsTable
@@ -16,19 +18,10 @@ import com.jameeli.thykra.model.MediaStatus
 import com.jameeli.thykra.model.MemberRole
 import com.jameeli.thykra.model.ReactionType
 import com.jameeli.thykra.storage.StorageService
-import kotlinx.datetime.Instant
-import org.jetbrains.exposed.sql.JoinType
-import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.less
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.neq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import org.jetbrains.exposed.sql.update
+import kotlin.time.Instant
+
+import org.jetbrains.exposed.v1.jdbc.transactions.experimental.newSuspendedTransaction
+
 import java.util.UUID
 import kotlin.time.Duration.Companion.minutes
 

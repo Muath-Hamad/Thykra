@@ -265,6 +265,13 @@ jobs:
           # The npm workspace lockfile lives at the repo root, not in webApp/.
           cache-dependency-path: package-lock.json
 
+      # The root lockfile covers the generated Kotlin/JS workspace too, so its
+      # dependencies are decided by the Gradle side rather than by anything under
+      # webApp/. Bumping Kotlin or Ktor can therefore change what the generated
+      # package.json asks for and desync the lockfile, which fails here and nowhere
+      # else — an upgrade that touches those needs the lockfile regenerated:
+      #   ./gradlew :shared:jsBrowserDevelopmentLibraryDistribution
+      #   npm install --package-lock-only --lockfile-version=2
       - name: Install dependencies
         run: npm ci
 

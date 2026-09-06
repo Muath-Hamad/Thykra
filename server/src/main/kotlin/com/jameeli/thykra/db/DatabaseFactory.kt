@@ -1,5 +1,6 @@
 package com.jameeli.thykra.db
 
+import org.jetbrains.exposed.v1.jdbc.*
 import com.jameeli.thykra.db.tables.ActivitySeenTable
 import com.jameeli.thykra.db.tables.AlbumInvitesTable
 import com.jameeli.thykra.db.tables.AlbumMembersTable
@@ -15,10 +16,9 @@ import com.jameeli.thykra.db.tables.UsersTable
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.server.application.ApplicationEnvironment
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.TransactionManager
-import org.jetbrains.exposed.sql.transactions.transaction
+
+import org.jetbrains.exposed.v1.jdbc.transactions.TransactionManager
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 object DatabaseFactory {
 

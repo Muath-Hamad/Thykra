@@ -10,6 +10,12 @@ plugins {
 }
 
 kotlin {
+    // The theme's platform hooks (haptics, reduced motion, theme preference) are
+    // expect/actual objects, which are still flagged Beta by the compiler.
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
@@ -29,6 +35,10 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
+            implementation(libs.androidx.core.ktx)
+            // AppCompatDelegate.setApplicationLocales is the per-app locale switch the
+            // Me screen uses; it lives in appcompat and nowhere else.
+            implementation(libs.androidx.appcompat)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.credentials)
             implementation(libs.androidx.credentials.playServices)
@@ -71,6 +81,15 @@ kotlin {
             }
         }
     }
+}
+
+// Bundled Wanderlust Editions typefaces live in
+// composeApp/src/commonMain/composeResources/font/. Pin the generated accessor's
+// package so `com.jameeli.thykra.resources.Res.font.*` is stable across module renames.
+compose.resources {
+    publicResClass = false
+    packageOfResClass = "com.jameeli.thykra.resources"
+    generateResClass = auto
 }
 
 android {
