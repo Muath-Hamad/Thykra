@@ -29,7 +29,9 @@ fun Route.mediaRoutes(
     mediaService: MediaService,
     mediaRepository: MediaRepository,
     albumMemberRepository: AlbumMemberRepository,
-    storageService: StorageService
+    storageService: StorageService,
+    /** Published at GET /api/config; enforced here so the limit is real, not advisory. */
+    maxUploadBytes: Long = Long.MAX_VALUE
 ) {
     // Local dev upload and file-serve endpoints (no JWT — upload auth via DB record existence)
     if (storageService is LocalStorageService) {
@@ -77,6 +79,18 @@ fun Route.mediaRoutes(
                     return@post
                 }
                 val request = call.receive<RequestUploadUrlRequest>()
+                if (request.fileSize > maxUploadBytes) {
+                    // Refused before a storage key is minted, so an oversized file never
+                    // leaves a pending row behind for the cleanup to find.
+                    call.respond(
+                        HttpStatusCode.PayloadTooLarge,
+                        ApiResponse<Unit>(
+                            success = false,
+                            error = "That file is larger than the ${maxUploadBytes / 1_048_576} MB limit"
+                        )
+                    )
+                    return@post
+                }
                 val result = mediaService.requestUploadUrl(
                     albumId, UUID.fromString(userId), request.filename, request.contentType, request.fileSize
                 )

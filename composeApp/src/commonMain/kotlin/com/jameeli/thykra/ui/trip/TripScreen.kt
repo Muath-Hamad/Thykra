@@ -54,6 +54,18 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.common_people_count
+import com.jameeli.thykra.resources.common_photos_count
+import com.jameeli.thykra.resources.trips_just_you
+import com.jameeli.thykra.resources.common_try_again
+import com.jameeli.thykra.resources.error_load_body
+import com.jameeli.thykra.resources.trip_offline
+import com.jameeli.thykra.resources.trip_select_all
+import com.jameeli.thykra.resources.trip_selected_count
+import com.jameeli.thykra.resources.trip_settings
+import com.jameeli.thykra.resources.trip_videos_count
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.chapters.Chapter
 import com.jameeli.thykra.model.AlbumDto
 import com.jameeli.thykra.model.MediaDto
@@ -112,6 +124,13 @@ fun TripScreen(
     val members by viewModel.members.collectAsState()
     val chapters by viewModel.chapters.collectAsState()
     val media by viewModel.media.collectAsState()
+    val uploads by viewModel.uploads.collectAsState()
+
+    // Recomputed only when the in-flight set actually changes, not on every byte of
+    // progress — the map decides layout, and re-laying out the grid at 30 Hz would be
+    // both wasteful and visibly unsteady.
+    val inFlight = uploads.inFlightFor(albumId)
+    val pendingByDay = remember(inFlight.map { it.id }) { inFlight.pendingByDay() }
     val loading by viewModel.loading.collectAsState()
     val refreshing by viewModel.refreshing.collectAsState()
     val loaded by viewModel.loaded.collectAsState()
@@ -158,11 +177,14 @@ fun TripScreen(
     }
 
     // The chapter whose header has scrolled past — what the pinned bar shows.
-    val pinnedChapter by remember(chapters) {
+    val pinnedChapter by remember(chapters, pendingByDay) {
         derivedStateOf {
             val firstVisible = gridState.layoutInfo.visibleItemsInfo.firstOrNull()?.index ?: 0
             chapters.lastOrNull { chapter ->
-                (chapter.headerIndex(chapters, hasActivityStrip = false) ?: Int.MAX_VALUE) <= firstVisible
+                // Placeholder plates occupy grid slots too, so the count has to include
+                // them or the pinned bar names the wrong day mid-upload.
+                val header = chapter.headerIndex(chapters, hasActivityStrip = false, pendingByDay = pendingByDay)
+                (header ?: Int.MAX_VALUE) <= firstVisible
             }
         }
     }
@@ -206,10 +228,10 @@ fun TripScreen(
                 ) {
                     EmptyState(
                         headline = clayPhrase("Something ", "slipped."),
-                        body = "We couldn't load this. Try again in a moment.",
+                        body = stringResource(Res.string.error_load_body),
                         glyph = if (connected) EmptyGlyph.Plate else EmptyGlyph.Offline,
                         primary = ThykraButtonSpec(
-                            label = "Try again",
+                            label = stringResource(Res.string.common_try_again),
                             onClick = { viewModel.load(albumId) },
                             variant = ThykraButtonVariant.Outlined,
                             icon = ThykraIcons.Retry,
@@ -227,6 +249,7 @@ fun TripScreen(
                             album = album,
                             members = members,
                             chapters = chapters,
+                            pendingByDay = pendingByDay,
                             layout = layout,
                             selection = selection,
                             state = gridState,
@@ -286,7 +309,7 @@ fun TripScreen(
                 .statusBarsPadding()
                 .padding(top = 56.dp),
         ) {
-            OfflineBanner(visible = !connected, message = "You're offline · showing saved photos")
+            OfflineBanner(visible = !connected, message = stringResource(Res.string.trip_offline))
             AnimatedVisibility(
                 visible = mastheadGone && pinnedChapter != null && selection.isEmpty(),
                 enter = fadeIn(thykraTween(LocalMotion.current.dur1)),
@@ -332,6 +355,8 @@ private fun DaysGrid(
     album: AlbumDto?,
     members: List<com.jameeli.thykra.model.AlbumMemberDto>,
     chapters: List<Chapter<MediaDto>>,
+    /** In-flight uploads, keyed by the day their plate will land on. */
+    pendingByDay: Map<kotlinx.datetime.LocalDate, List<com.jameeli.thykra.api.UploadState>>,
     layout: TripLayout,
     selection: Set<String>,
     state: androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState,
@@ -389,6 +414,18 @@ private fun DaysGrid(
             }
         }
 
+        // A photo from a day this trip has never seen has no chapter to sit in yet. Its
+        // placeholders lead the grid until the upload confirms and the refreshed media
+        // builds the real chapter for that day.
+        val chapterDays = chapters.map { it.date }.toSet()
+        val homeless = pendingByDay.filterKeys { it !in chapterDays }.values.flatten()
+        items(
+            items = homeless,
+            key = { "pending-new:${it.id}" },
+        ) { upload ->
+            PendingPlate(upload = upload, modifier = Modifier.fillMaxWidth())
+        }
+
         chapters.forEach { chapter ->
             item(key = "header:${chapter.key}", span = StaggeredGridItemSpan.FullLine) {
                 ChapterHeader(
@@ -419,6 +456,16 @@ private fun DaysGrid(
                 )
             }
 
+            // The day's arrivals sit at the head of its plates rather than the tail:
+            // they are the newest thing in the chapter, and burying them under thirty
+            // existing photos hides the only part that is changing.
+            items(
+                items = pendingByDay[chapter.date].orEmpty(),
+                key = { "pending:${it.id}" },
+            ) { upload ->
+                PendingPlate(upload = upload, modifier = Modifier.fillMaxWidth())
+            }
+
             items(
                 items = chapter.items.filter { it.id != hero.id },
                 key = { "plate:${it.id}" },
@@ -438,11 +485,16 @@ private fun DaysGrid(
     }
 }
 
-/** A `items` shim, because the staggered grid scope names it differently per version. */
-private fun androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope.items(
-    items: List<MediaDto>,
-    key: (MediaDto) -> Any,
-    itemContent: @Composable (MediaDto) -> Unit,
+/**
+ * A `items` shim, because the staggered grid scope names it differently per version.
+ *
+ * Generic rather than `MediaDto`-only: the grid also lays out placeholder plates for
+ * uploads that have not arrived yet, and those are not media.
+ */
+private fun <T> androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope.items(
+    items: List<T>,
+    key: (T) -> Any,
+    itemContent: @Composable (T) -> Unit,
 ) {
     items.forEach { item ->
         item(key = key(item)) { itemContent(item) }
@@ -576,12 +628,17 @@ private fun TripMasthead(
     }
 }
 
+@Composable
 private fun mastheadMeta(album: AlbumDto?): String {
     if (album == null) return ""
     val parts = mutableListOf<String>()
-    parts += if (album.memberCount == 1) "just you" else "${album.memberCount} people"
-    if (album.mediaCount > 0) parts += "${album.mediaCount} photos"
-    if (album.videoCount > 0) parts += "${album.videoCount} videos"
+    parts += if (album.memberCount == 1) {
+        stringResource(Res.string.trips_just_you)
+    } else {
+        stringResource(Res.string.common_people_count, album.memberCount)
+    }
+    if (album.mediaCount > 0) parts += stringResource(Res.string.common_photos_count, album.mediaCount)
+    if (album.videoCount > 0) parts += stringResource(Res.string.trip_videos_count, album.videoCount)
     return parts.joinToString(" · ")
 }
 
@@ -626,7 +683,7 @@ private fun TripTopBar(
         Box(modifier = Modifier.weight(1f).padding(horizontal = 8.dp)) {
             when {
                 selecting -> Text(
-                    text = "$selectionCount selected",
+                    text = stringResource(Res.string.trip_selected_count, selectionCount),
                     style = MaterialTheme.typography.titleMedium,
                     color = scheme.onPrimaryContainer,
                 )
@@ -643,7 +700,7 @@ private fun TripTopBar(
 
         if (selecting) {
             Text(
-                text = "Select all",
+                text = stringResource(Res.string.trip_select_all),
                 style = MaterialTheme.typography.labelLarge,
                 color = scheme.onPrimaryContainer,
                 modifier = Modifier
@@ -653,7 +710,7 @@ private fun TripTopBar(
         } else {
             ChromeIcon(
                 icon = ThykraIcons.Settings,
-                contentDescription = "Trip settings",
+                contentDescription = stringResource(Res.string.trip_settings),
                 onClick = onSettings,
                 scrimmed = !showTitle,
             )
@@ -784,13 +841,17 @@ private fun Chapter<MediaDto>.contributors(
 private fun Chapter<MediaDto>.headerIndex(
     chapters: List<Chapter<MediaDto>>,
     hasActivityStrip: Boolean,
+    pendingByDay: Map<kotlinx.datetime.LocalDate, List<com.jameeli.thykra.api.UploadState>> = emptyMap(),
 ): Int? {
-    val fixedItemsAbove = if (hasActivityStrip) 3 else 2
-    var index = fixedItemsAbove
+    val chapterDays = chapters.map { it.date }.toSet()
+    // Placeholders for days the trip has no chapter for yet lead the whole grid, so they
+    // push every header down.
+    val homeless = pendingByDay.filterKeys { it !in chapterDays }.values.sumOf { it.size }
+    var index = (if (hasActivityStrip) 3 else 2) + homeless
     for (chapter in chapters) {
         if (chapter.key == key) return index
-        // header + lead + the rest of the day's plates
-        index += 2 + (chapter.items.size - 1)
+        // header + lead + this day's placeholders + the rest of the day's plates
+        index += 2 + pendingByDay[chapter.date].orEmpty().size + (chapter.items.size - 1)
     }
     return null
 }

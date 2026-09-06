@@ -11,6 +11,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.info_added
+import com.jameeli.thykra.resources.info_added_by
+import com.jameeli.thykra.resources.info_length
+import com.jameeli.thykra.resources.info_no_date
+import com.jameeli.thykra.resources.info_size
+import com.jameeli.thykra.resources.info_taken
+import com.jameeli.thykra.resources.info_type
+import com.jameeli.thykra.resources.viewer_photo_info
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.model.MediaDto
 import com.jameeli.thykra.ui.kit.SheetDivider
 import com.jameeli.thykra.ui.kit.ThykraSheet
@@ -34,21 +44,25 @@ fun MediaInfoSheet(
     uploaderName: String?,
     onDismiss: () -> Unit,
 ) {
-    ThykraSheet(onDismiss = onDismiss, title = "Photo info") {
+    ThykraSheet(onDismiss = onDismiss, title = stringResource(Res.string.viewer_photo_info)) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
-            uploaderName?.let { InfoRow("Added by", it) }
-            InfoRow("Taken", media.takenAt?.let { formatTimestamp(it) } ?: "No date")
+            uploaderName?.let { InfoRow(stringResource(Res.string.info_added_by), it) }
+            InfoRow(
+                label = stringResource(Res.string.info_taken),
+                value = media.takenAt?.let { formatTimestamp(it) }
+                    ?: stringResource(Res.string.info_no_date),
+            )
             if (media.width != null && media.height != null) {
-                InfoRow("Size", "${media.width} × ${media.height}")
+                InfoRow(stringResource(Res.string.info_size), "${media.width} × ${media.height}")
             }
-            InfoRow("Type", media.contentType)
-            InfoRow("Added", formatTimestamp(media.uploadedAt))
-            media.durationMs?.let { InfoRow("Length", formatLength(it)) }
+            InfoRow(stringResource(Res.string.info_type), media.contentType)
+            InfoRow(stringResource(Res.string.info_added), formatTimestamp(media.uploadedAt))
+            media.durationMs?.let { InfoRow(stringResource(Res.string.info_length), formatLength(it)) }
         }
         SheetDivider()
     }

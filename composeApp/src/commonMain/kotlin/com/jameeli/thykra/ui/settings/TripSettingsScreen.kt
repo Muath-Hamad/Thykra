@@ -36,6 +36,53 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.common_back
+import com.jameeli.thykra.resources.common_more_options
+import com.jameeli.thykra.resources.common_photo_one
+import com.jameeli.thykra.resources.common_photos_count
+import com.jameeli.thykra.resources.common_remove
+import com.jameeli.thykra.resources.common_video_one
+import com.jameeli.thykra.resources.settings_and
+import com.jameeli.thykra.resources.settings_block
+import com.jameeli.thykra.resources.settings_block_confirm_body
+import com.jameeli.thykra.resources.settings_block_confirm_title
+import com.jameeli.thykra.resources.settings_delete_confirm_title
+import com.jameeli.thykra.resources.settings_delete_gone
+import com.jameeli.thykra.resources.settings_delete_nothing
+import com.jameeli.thykra.resources.settings_delete_trip
+import com.jameeli.thykra.resources.settings_delete_undone
+import com.jameeli.thykra.resources.settings_expired
+import com.jameeli.thykra.resources.settings_expires_days
+import com.jameeli.thykra.resources.settings_expires_hours
+import com.jameeli.thykra.resources.settings_expires_tomorrow
+import com.jameeli.thykra.resources.settings_expiry_days
+import com.jameeli.thykra.resources.settings_joined_many
+import com.jameeli.thykra.resources.settings_joined_none
+import com.jameeli.thykra.resources.settings_joined_one
+import com.jameeli.thykra.resources.settings_keep_it
+import com.jameeli.thykra.resources.settings_leave
+import com.jameeli.thykra.resources.settings_leave_confirm_body
+import com.jameeli.thykra.resources.settings_leave_confirm_title
+import com.jameeli.thykra.resources.settings_leave_note
+import com.jameeli.thykra.resources.settings_leave_trip
+import com.jameeli.thykra.resources.settings_new_link
+import com.jameeli.thykra.resources.settings_remove_confirm_body
+import com.jameeli.thykra.resources.settings_remove_confirm_title
+import com.jameeli.thykra.resources.settings_revoke
+import com.jameeli.thykra.resources.settings_revoke_many
+import com.jameeli.thykra.resources.settings_revoke_none
+import com.jameeli.thykra.resources.settings_revoke_one
+import com.jameeli.thykra.resources.settings_revoke_title
+import com.jameeli.thykra.resources.settings_show_more
+import com.jameeli.thykra.resources.settings_title
+import com.jameeli.thykra.resources.settings_unblock
+import com.jameeli.thykra.resources.trip_invite_friends
+import com.jameeli.thykra.resources.trip_invite_supporting
+import com.jameeli.thykra.resources.trip_link_owner_only
+import com.jameeli.thykra.resources.trip_link_public
+import com.jameeli.thykra.resources.trip_videos_count
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.model.AlbumMemberDto
 import com.jameeli.thykra.model.AlbumVisibility
 import com.jameeli.thykra.model.InviteLinkDto
@@ -105,10 +152,10 @@ fun TripSettingsScreen(
 
     Column(modifier = modifier.fillMaxSize()) {
         TopAppBar(
-            title = { Text("Settings", style = MaterialTheme.typography.headlineSmall) },
+            title = { Text(stringResource(Res.string.settings_title), style = MaterialTheme.typography.headlineSmall) },
             navigationIcon = {
                 IconButton(onClick = onBack) {
-                    Icon(ThykraIcons.Back, contentDescription = "Back")
+                    Icon(ThykraIcons.Back, contentDescription = stringResource(Res.string.common_back))
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(
@@ -171,13 +218,13 @@ fun TripSettingsScreen(
                     Spacer(Modifier.size(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Anyone with the link can view",
+                            text = stringResource(Res.string.trip_link_public),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                         if (!isOwner) {
                             Text(
-                                text = "Only the owner can change this",
+                                text = stringResource(Res.string.trip_link_owner_only),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.thykra.textMeta,
                             )
@@ -214,7 +261,7 @@ fun TripSettingsScreen(
             if (members.size > visibleMembers.size) {
                 item("showMore") {
                     ThykraButton(
-                        label = "Show ${members.size - visibleMembers.size} more",
+                        label = stringResource(Res.string.settings_show_more, members.size - visibleMembers.size),
                         onClick = { showAllMembers = true },
                         variant = ThykraButtonVariant.Text,
                     )
@@ -246,13 +293,13 @@ fun TripSettingsScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         ThykraButton(
-                            label = "New link",
+                            label = stringResource(Res.string.settings_new_link),
                             onClick = { viewModel.createInviteLink(albumId, expiryDays) },
                             variant = ThykraButtonVariant.Tonal,
                             icon = ThykraIcons.Link,
                         )
                         AssistChip(
-                            label = "$expiryDays days",
+                            label = stringResource(Res.string.settings_expiry_days, expiryDays),
                             onClick = {
                                 expiryDays = when (expiryDays) {
                                     1 -> 7
@@ -282,7 +329,7 @@ fun TripSettingsScreen(
                                 modifier = Modifier.weight(1f),
                             )
                             ThykraButton(
-                                label = "Unblock",
+                                label = stringResource(Res.string.settings_unblock),
                                 onClick = {
                                     viewModel.unblockMember(albumId, person.userId, person.displayName)
                                 },
@@ -296,14 +343,14 @@ fun TripSettingsScreen(
                     SectionDivider()
                     SectionHeading("Your link")
                     SheetAction(
-                        label = "Invite friends",
+                        label = stringResource(Res.string.trip_invite_friends),
                         onClick = {
                             viewModel.createInviteLink(albumId, 7) { link ->
                                 shareText("https://thykra.com/invite/${link.token}")
                             }
                         },
                         icon = ThykraIcons.PersonAdd,
-                        supporting = "Creates a 7-day link you can share",
+                        supporting = stringResource(Res.string.trip_invite_supporting),
                     )
                 }
             }
@@ -315,7 +362,7 @@ fun TripSettingsScreen(
                 Spacer(Modifier.height(24.dp))
                 if (isOwner) {
                     ThykraButton(
-                        label = "Delete trip",
+                        label = stringResource(Res.string.settings_delete_trip),
                         onClick = { pendingConfirm = PendingConfirm.DeleteTrip },
                         variant = ThykraButtonVariant.Text,
                         destructive = true,
@@ -328,13 +375,13 @@ fun TripSettingsScreen(
                 } else if (viewModel.role != null) {
                     // Owners see no Leave: the row does not exist rather than being disabled.
                     ThykraButton(
-                        label = "Leave trip",
+                        label = stringResource(Res.string.settings_leave_trip),
                         onClick = { pendingConfirm = PendingConfirm.LeaveTrip },
                         variant = ThykraButtonVariant.Text,
                         destructive = true,
                     )
                     Text(
-                        text = "Your photos stay in the trip.",
+                        text = stringResource(Res.string.settings_leave_note),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.thykra.textMeta,
                     )
@@ -371,11 +418,11 @@ fun TripSettingsScreen(
         val dismiss = { pendingConfirm = null }
         when (confirm) {
             is PendingConfirm.DeleteTrip -> ConfirmDialog(
-                title = "Delete ${album?.title.orEmpty()}?",
+                title = stringResource(Res.string.settings_delete_confirm_title, album?.title.orEmpty()),
                 body = deleteConsequence(album?.mediaCount ?: 0, album?.videoCount ?: 0) +
-                    " This can't be undone.",
-                confirmLabel = "Delete trip",
-                dismissLabel = "Keep it",
+                    stringResource(Res.string.settings_delete_undone),
+                confirmLabel = stringResource(Res.string.settings_delete_trip),
+                dismissLabel = stringResource(Res.string.settings_keep_it),
                 onConfirm = {
                     dismiss()
                     viewModel.deleteTrip(albumId) {
@@ -387,9 +434,9 @@ fun TripSettingsScreen(
             )
 
             is PendingConfirm.LeaveTrip -> ConfirmDialog(
-                title = "Leave ${album?.title.orEmpty()}?",
-                body = "Your photos stay in the trip. You'll need a new link to come back.",
-                confirmLabel = "Leave",
+                title = stringResource(Res.string.settings_leave_confirm_title, album?.title.orEmpty()),
+                body = stringResource(Res.string.settings_leave_confirm_body),
+                confirmLabel = stringResource(Res.string.settings_leave),
                 onConfirm = {
                     dismiss()
                     viewModel.leaveTrip(albumId) {
@@ -401,9 +448,12 @@ fun TripSettingsScreen(
             )
 
             is PendingConfirm.RemoveMember -> ConfirmDialog(
-                title = "Remove ${confirm.member.displayName.substringBefore(' ')}?",
-                body = "${confirm.member.displayName} leaves the trip. Their photos stay.",
-                confirmLabel = "Remove",
+                title = stringResource(
+                    Res.string.settings_remove_confirm_title,
+                    confirm.member.displayName.substringBefore(' '),
+                ),
+                body = stringResource(Res.string.settings_remove_confirm_body, confirm.member.displayName),
+                confirmLabel = stringResource(Res.string.common_remove),
                 onConfirm = {
                     dismiss()
                     viewModel.removeMember(albumId, confirm.member.userId, confirm.member.displayName)
@@ -412,10 +462,15 @@ fun TripSettingsScreen(
             )
 
             is PendingConfirm.BlockMember -> ConfirmDialog(
-                title = "Block ${confirm.member.displayName.substringBefore(' ')}?",
-                body = "${confirm.member.displayName} leaves the trip and can't rejoin with " +
-                    "any link. Their photos stay.",
-                confirmLabel = "Block ${confirm.member.displayName.substringBefore(' ')}",
+                title = stringResource(
+                    Res.string.settings_block_confirm_title,
+                    confirm.member.displayName.substringBefore(' '),
+                ),
+                body = stringResource(Res.string.settings_block_confirm_body, confirm.member.displayName),
+                confirmLabel = stringResource(
+                    Res.string.settings_block,
+                    confirm.member.displayName.substringBefore(' '),
+                ),
                 onConfirm = {
                     dismiss()
                     viewModel.blockMember(albumId, confirm.member.userId, confirm.member.displayName)
@@ -424,9 +479,9 @@ fun TripSettingsScreen(
             )
 
             is PendingConfirm.RevokeLink -> ConfirmDialog(
-                title = "Revoke this link?",
+                title = stringResource(Res.string.settings_revoke_title),
                 body = joinConsequence(confirm.invite.joinCount),
-                confirmLabel = "Revoke",
+                confirmLabel = stringResource(Res.string.settings_revoke),
                 onConfirm = {
                     dismiss()
                     viewModel.revokeInviteLink(albumId, confirm.invite.token)
@@ -516,7 +571,7 @@ private fun MemberRow(
         )
         if (canManage) {
             IconButton(onClick = onMore) {
-                Icon(ThykraIcons.More, contentDescription = "More options")
+                Icon(ThykraIcons.More, contentDescription = stringResource(Res.string.common_more_options))
             }
         }
     }
@@ -558,33 +613,66 @@ private fun InviteRow(
                 color = if (expiringSoon) MaterialTheme.thykra.warning else MaterialTheme.thykra.textMeta,
             )
         }
-        ThykraButton("Revoke", onRevoke, variant = ThykraButtonVariant.Text, destructive = true)
+        ThykraButton(
+            stringResource(Res.string.settings_revoke),
+            onRevoke,
+            variant = ThykraButtonVariant.Text,
+            destructive = true,
+        )
     }
 }
 
+@Composable
 private fun joinLabel(joinCount: Int) = when (joinCount) {
-    0 -> "No one has joined yet"
-    1 -> "1 person joined"
-    else -> "$joinCount joined"
+    0 -> stringResource(Res.string.settings_joined_none)
+    1 -> stringResource(Res.string.settings_joined_one)
+    else -> stringResource(Res.string.settings_joined_many, joinCount)
 }
 
+@Composable
 private fun expiryLabel(hoursLeft: Int) = when {
-    hoursLeft <= 0 -> "Expired"
-    hoursLeft < 24 -> "Expires in $hoursLeft hours"
-    hoursLeft < 48 -> "Expires tomorrow"
-    else -> "Expires in ${hoursLeft / 24} days"
+    hoursLeft <= 0 -> stringResource(Res.string.settings_expired)
+    hoursLeft < 24 -> stringResource(Res.string.settings_expires_hours, hoursLeft)
+    hoursLeft < 48 -> stringResource(Res.string.settings_expires_tomorrow)
+    else -> stringResource(Res.string.settings_expires_days, hoursLeft / 24)
 }
 
+@Composable
 private fun joinConsequence(joinCount: Int) = when (joinCount) {
-    0 -> "No one has joined through it. Nothing else changes."
-    1 -> "1 person already joined through it; they stay."
-    else -> "$joinCount people already joined through it; they stay."
+    0 -> stringResource(Res.string.settings_revoke_none)
+    1 -> stringResource(Res.string.settings_revoke_one)
+    else -> stringResource(Res.string.settings_revoke_many, joinCount)
 }
 
+/**
+ * "84 photos and 3 videos will be gone for everyone."
+ *
+ * The conjunction is a key rather than a literal " and ": joining two phrases is not the
+ * same operation in every language, and singular is a separate string rather than a
+ * count, because "1 photos" is wrong in English and the plural rules differ in Arabic.
+ */
+@Composable
 private fun deleteConsequence(photos: Int, videos: Int): String {
     val parts = mutableListOf<String>()
-    if (photos > 0) parts += "$photos ${if (photos == 1) "photo" else "photos"}"
-    if (videos > 0) parts += "$videos ${if (videos == 1) "video" else "videos"}"
-    if (parts.isEmpty()) return "This trip has nothing in it yet."
-    return "${parts.joinToString(" and ")} will be gone for everyone."
+    if (photos > 0) {
+        parts += if (photos == 1) {
+            stringResource(Res.string.common_photo_one)
+        } else {
+            stringResource(Res.string.common_photos_count, photos)
+        }
+    }
+    if (videos > 0) {
+        parts += if (videos == 1) {
+            stringResource(Res.string.common_video_one)
+        } else {
+            stringResource(Res.string.trip_videos_count, videos)
+        }
+    }
+    if (parts.isEmpty()) return stringResource(Res.string.settings_delete_nothing)
+    val subject = if (parts.size == 2) {
+        stringResource(Res.string.settings_and, parts[0], parts[1])
+    } else {
+        parts[0]
+    }
+    return stringResource(Res.string.settings_delete_gone, subject)
 }

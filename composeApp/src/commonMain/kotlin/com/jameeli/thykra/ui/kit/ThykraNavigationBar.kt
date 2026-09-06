@@ -43,16 +43,24 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.animation.animateColorAsState
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.nav_activity
+import com.jameeli.thykra.resources.nav_activity_unseen
+import com.jameeli.thykra.resources.nav_recaps
+import com.jameeli.thykra.resources.nav_trips
+import com.jameeli.thykra.resources.nav_you
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.ui.theme.DisplayFontScaleCap
 import com.jameeli.thykra.ui.theme.ThykraIcons
 import com.jameeli.thykra.ui.theme.thykraTween
 
 /** The four roots. Nothing else lives on the bar. */
-enum class RootTab(val label: String) {
-    Trips("Trips"),
-    Activity("Activity"),
-    Recaps("Recaps"),
-    Me("Me"),
+enum class RootTab(val label: StringResource) {
+    Trips(Res.string.nav_trips),
+    Activity(Res.string.nav_activity),
+    Recaps(Res.string.nav_recaps),
+    Me(Res.string.nav_you),
 }
 
 @Immutable
@@ -170,6 +178,8 @@ private fun RowScope.NavTab(
 ) {
     val scheme = MaterialTheme.colorScheme
     val interactionSource = remember { MutableInteractionSource() }
+    // Resolved out here: the semantics lambda is not a composable scope.
+    val unseen = stringResource(Res.string.nav_activity_unseen)
 
     val indicator by animateColorAsState(
         targetValue = if (selected) scheme.primaryContainer else Color.Transparent,
@@ -195,7 +205,7 @@ private fun RowScope.NavTab(
             )
             .semantics {
                 if (tab == RootTab.Activity && state.activityDot) {
-                    stateDescription = "new"
+                    stateDescription = unseen
                 }
             }
             .padding(vertical = BarVerticalPadding, horizontal = 2.dp),
@@ -211,7 +221,7 @@ private fun RowScope.NavTab(
         }
         Spacer(Modifier.height(IconLabelGap))
         Text(
-            text = tab.label,
+            text = stringResource(tab.label),
             style = labelStyle,
             // The selected label stays onSurface — only the glyph takes the accent, so a
             // colour-blind reader still has the indicator pill to go on.

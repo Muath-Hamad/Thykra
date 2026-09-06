@@ -42,6 +42,11 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.common_retry_all
+import com.jameeli.thykra.resources.upload_batch_done
+import com.jameeli.thykra.resources.upload_see_them
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.ui.theme.LocalMotion
 import com.jameeli.thykra.ui.theme.LocalReducedMotion
 import com.jameeli.thykra.ui.theme.PlateShape
@@ -237,7 +242,7 @@ private fun DockHeader(
         }
         if (batch.failedCount > 0) {
             ThykraButton(
-                label = "Retry all",
+                label = stringResource(Res.string.common_retry_all),
                 onClick = onRetryAll,
                 variant = ThykraButtonVariant.Text,
                 size = ThykraButtonSize.Compact,
@@ -299,14 +304,18 @@ private fun CelebrationHeader(
         label = "celebrationDisc",
     )
 
+    // Resolved before the semantics lambda, which is not a composable scope.
+    val announcement =
+        "${stringResource(Res.string.upload_batch_done, batch.total)} " +
+            batch.celebrationDetail.orEmpty()
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp)
             .semantics(mergeDescendants = true) {
                 liveRegion = LiveRegionMode.Polite
-                contentDescription =
-                    "${batch.total} photos are in. ${batch.celebrationDetail.orEmpty()}"
+                contentDescription = announcement
             },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -332,7 +341,7 @@ private fun CelebrationHeader(
         }
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "${batch.total} photos are in.",
+                text = stringResource(Res.string.upload_batch_done, batch.total),
                 style = MaterialTheme.typography.titleMedium,
                 color = extended.onSuccessContainer,
             )
@@ -345,7 +354,7 @@ private fun CelebrationHeader(
             }
         }
         ThykraButton(
-            label = "See them",
+            label = stringResource(Res.string.upload_see_them),
             onClick = onSeeThem,
             variant = ThykraButtonVariant.Text,
             size = ThykraButtonSize.Compact,

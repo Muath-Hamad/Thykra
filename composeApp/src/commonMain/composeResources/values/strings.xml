@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Every user-facing string in the mobile app. Flat, no library — the same shape the web
+  uses in webApp/src/i18n/en.ts, and deliberately the same key names with dots swapped for
+  underscores (Res.string accessors cannot carry a dot). Keeping them mechanically
+  parallel is what lets the Arabic in ar.ts be reused rather than re-translated, and lets
+  the two products be diffed for drift.
+
+  Voice rules, from design doc 1 and unchanged here: say "Trip", never "Album"; second
+  person, present tense; errors name the thing and the fix; no exclamation marks except
+  the two celebration moments.
+
+  Animation labels (navIndicator, skeletonSweep, dockChevron and friends) are NOT strings
+  in this sense — they are debug identifiers Compose never shows anyone. They stay inline.
+-->
+<resources>
+
+    <!-- ── Chrome ── -->
+    <string name="nav_trips">Trips</string>
+    <string name="nav_activity">Activity</string>
+    <string name="nav_recaps">Recaps</string>
+    <string name="nav_you">Me</string>
+    <!-- Spoken by TalkBack on the Activity tab when something is unseen. A dot carries
+         no meaning to a screen reader, so it gets a word. -->
+    <string name="nav_activity_unseen">new</string>
+
+    <!-- ── Common ── -->
+    <string name="common_back">Back</string>
+    <string name="common_share">Share</string>
+    <string name="common_retry_all">Retry all</string>
+    <string name="common_more_options">More options</string>
+    <!-- stateDescription while a button is working; not a visible label. -->
+    <string name="common_in_progress">In progress</string>
+    <string name="common_photos_count">%1$d photos</string>
+    <string name="common_people_count">%1$d people</string>
+
+    <!-- ── Trip action bar ── -->
+    <string name="trip_add_photos">Add photos</string>
+    <string name="trip_adding_file">Adding %1$s</string>
+
+    <!-- ── Viewer ── -->
+    <string name="viewer_photo_info">Photo info</string>
+    <string name="viewer_filmstrip">Filmstrip, %1$d of %2$d; swipe to move</string>
+
+    <!-- ── Reactions ── -->
+    <string name="reaction_react">React</string>
+
+    <!-- ── Upload dock ── -->
+    <string name="upload_batch_done">%1$d photos are in.</string>
+    <string name="upload_see_them">See them</string>
+
+    <!-- ── Share into the app ── -->
+    <!-- Sheet title when photos arrive from another app's share sheet. -->
+    <string name="share_pick_trip_title">Add to which trip?</string>
+    <string name="share_pick_trip_one">1 photo is waiting</string>
+    <string name="share_pick_trip_many">%1$d photos are waiting</string>
+    <string name="share_new_trip">New trip</string>
+    <string name="share_no_trips">You have no trips yet. Make one and the photos go straight in.</string>
+    <string name="share_sign_in">Sign in to add these photos.</string>
+    <string name="share_cancel">Not now</string>
+    <string name="share_too_large">%1$s is over the size limit and was left out</string>
+
+    <!-- ── Trips ── -->
+    <string name="trips_new">New trip</string>
+    <string name="trips_greeting">Your trips</string>
+    <string name="trips_greeting_first">Good to see you, %1$s.</string>
+    <string name="trips_empty_head">No trips </string>
+    <string name="trips_empty_tail">yet.</string>
+    <string name="trips_empty_body">Start one and invite the people who were there. Or open an invite link someone sent you.</string>
+    <string name="trips_empty_cta">Start a trip</string>
+    <string name="trips_count">%1$d trips</string>
+    <string name="trips_just_you">just you</string>
+
+    <!-- ── Errors ── -->
+    <string name="error_head">Something </string>
+    <string name="error_tail">slipped.</string>
+    <string name="error_load_body">We couldn't load this. Try again in a moment.</string>
+    <string name="common_try_again">Try again</string>
+
+    <!-- ── Create a trip ── -->
+    <string name="create_trip_title">Start a trip</string>
+    <string name="create_trip_name_label">Trip title</string>
+    <string name="create_trip_name_placeholder">Where did you go?</string>
+    <string name="create_trip_name_helper">Friends will see this</string>
+    <string name="create_trip_desc_label">Description · optional</string>
+    <string name="create_trip_desc_placeholder">A line about where and when</string>
+    <string name="create_trip_submit">Create trip</string>
+    <string name="create_trip_private">Private · only people you invite</string>
+
+    <!-- ── Landing ── -->
+    <string name="landing_headline_head">Travel together. </string>
+    <string name="landing_headline_tail">Remember forever.</string>
+    <string name="landing_tagline">One trip, everyone's photos, told by day.</string>
+    <string name="landing_terms">By continuing you agree to the Terms and Privacy Policy.</string>
+
+    <string-array name="month_short">
+        <item>Jan</item><item>Feb</item><item>Mar</item><item>Apr</item>
+        <item>May</item><item>Jun</item><item>Jul</item><item>Aug</item>
+        <item>Sep</item><item>Oct</item><item>Nov</item><item>Dec</item>
+    </string-array>
+
+    <!-- ── Trip ── -->
+    <string name="trip_offline">You’re offline · showing saved photos</string>
+    <string name="trip_selected_count">%1$d selected</string>
+    <string name="trip_select_all">Select all</string>
+    <string name="trip_settings">Trip settings</string>
+    <string name="trip_videos_count">%1$d videos</string>
+    <string name="trip_share_title">Share %1$s</string>
+    <string name="trip_link_public">Anyone with the link can view</string>
+    <string name="trip_link_owner_only">Only the owner can change this</string>
+    <string name="trip_invite_friends">Invite friends</string>
+    <string name="trip_invite_supporting">Creates a 7-day link you can share</string>
+    <string name="common_remove">Remove</string>
+
+    <!-- ── Edit a trip ── -->
+    <string name="edit_trip_title">Edit trip</string>
+    <string name="edit_trip_name_error">Give the trip a name</string>
+    <string name="common_save">Save</string>
+
+    <!-- ── Trip settings ── -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_show_more">Show %1$d more</string>
+    <string name="settings_new_link">New link</string>
+    <string name="settings_expiry_days">%1$d days</string>
+    <string name="settings_unblock">Unblock</string>
+    <string name="settings_delete_trip">Delete trip</string>
+    <string name="settings_leave_trip">Leave trip</string>
+    <string name="settings_leave_note">Your photos stay in the trip.</string>
+    <string name="settings_delete_confirm_title">Delete %1$s?</string>
+    <string name="settings_delete_undone"> This can’t be undone.</string>
+    <string name="settings_keep_it">Keep it</string>
+    <string name="settings_leave_confirm_title">Leave %1$s?</string>
+    <string name="settings_leave_confirm_body">Your photos stay in the trip. You’ll need a new link to come back.</string>
+    <string name="settings_leave">Leave</string>
+    <string name="settings_remove_confirm_title">Remove %1$s?</string>
+    <string name="settings_remove_confirm_body">%1$s leaves the trip. Their photos stay.</string>
+    <string name="settings_block_confirm_title">Block %1$s?</string>
+    <string name="settings_block_confirm_body">%1$s leaves the trip and can’t rejoin with any link. Their photos stay.</string>
+    <string name="settings_block">Block %1$s</string>
+    <string name="settings_revoke_title">Revoke this link?</string>
+    <string name="settings_revoke">Revoke</string>
+
+    <!-- Invite links -->
+    <string name="settings_joined_none">No one has joined yet</string>
+    <string name="settings_joined_one">1 person joined</string>
+    <string name="settings_joined_many">%1$d joined</string>
+    <string name="settings_expired">Expired</string>
+    <string name="settings_expires_hours">Expires in %1$d hours</string>
+    <string name="settings_expires_tomorrow">Expires tomorrow</string>
+    <string name="settings_expires_days">Expires in %1$d days</string>
+    <string name="settings_revoke_none">No one has joined through it. Nothing else changes.</string>
+    <string name="settings_revoke_one">1 person already joined through it; they stay.</string>
+    <string name="settings_revoke_many">%1$d people already joined through it; they stay.</string>
+
+    <!-- What deleting a trip destroys -->
+    <string name="settings_delete_nothing">This trip has nothing in it yet.</string>
+    <string name="settings_delete_gone">%1$s will be gone for everyone.</string>
+    <string name="settings_and">%1$s and %2$s</string>
+    <string name="common_photo_one">1 photo</string>
+    <string name="common_video_one">1 video</string>
+
+    <!-- ── Me ── -->
+    <string name="me_edit_profile">Edit name and photo</string>
+    <string name="me_language">Language</string>
+    <string name="me_language_choices">English · العربية</string>
+    <string name="me_wifi_only">Upload on Wi-Fi only</string>
+    <string name="me_wifi_only_help">Videos wait for Wi-Fi; photos go anytime</string>
+    <string name="me_clear_cache">Clear saved photos</string>
+    <string name="me_clear">Clear</string>
+    <string name="me_sign_out">Sign out</string>
+    <string name="me_clear_confirm_title">Clear saved photos?</string>
+    <string name="me_clear_confirm_body">%1$s will be removed from this phone. Nothing is deleted from any trip, and photos download again when you open them.</string>
+    <string name="me_sign_out_confirm_title">Sign out?</string>
+    <string name="me_sign_out_confirm_one">1 upload in progress will pause until you’re back.</string>
+    <string name="me_sign_out_confirm_many">%1$d uploads in progress will pause until you’re back.</string>
+    <string name="me_your_name">Your name</string>
+    <string name="me_name_label">Name</string>
+    <string name="me_name_helper">Friends in your trips see this</string>
+    <string name="me_name_error">Give yourself a name</string>
+
+    <!-- ── Comments ── -->
+    <string name="comments_title">Comments</string>
+    <string name="comments_empty">No comments yet — be the first.</string>
+    <string name="comments_placeholder">Add a comment…</string>
+    <string name="comments_edited">edited</string>
+    <string name="common_close">Close</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_edit">Edit</string>
+    <string name="common_delete">Delete</string>
+
+    <!-- ── Viewer ── -->
+    <string name="viewer_loading">Loading…</string>
+    <string name="viewer_pick_reaction">Pick a reaction</string>
+    <string name="info_added_by">Added by</string>
+    <string name="info_taken">Taken</string>
+    <string name="info_no_date">No date</string>
+    <string name="info_size">Size</string>
+    <string name="info_type">Type</string>
+    <string name="info_added">Added</string>
+    <string name="info_length">Length</string>
+
+    <!-- ── Activity ── -->
+    <string name="activity_empty_head">Quiet, </string>
+    <string name="activity_empty_tail">for now.</string>
+    <string name="activity_empty_body">When friends add, react or comment, it shows here.</string>
+    <string name="activity_what_happened">What happened</string>
+    <string name="activity_seen">Seen</string>
+    <string name="activity_end">That’s everything</string>
+
+    <!-- ── Recaps ── -->
+    <string name="recaps_title">Recaps</string>
+    <string name="recaps_intro">Short photo stories, built from a trip. Share them with anyone.</string>
+    <string name="recaps_empty_head">Twelve photos </string>
+    <string name="recaps_empty_tail">first.</string>
+    <string name="recaps_empty_body">Recaps build from trips with %1$d or more photos.</string>
+    <string name="recaps_build">Build</string>
+    <string name="recaps_eyebrow">Recap · %1$d photos</string>
+    <string name="recap_unavailable_head">This recap </string>
+    <string name="recap_unavailable_tail">isn’t available.</string>
+    <string name="recap_position">%1$d of %2$d</string>
+    <string name="recap_share">Share recap</string>
+    <string name="recap_photo_position">Photo %1$d of %2$d</string>
+
+    <!-- ── Invite ── -->
+    <string name="invite_check_failed_head">Couldn’t check </string>
+    <string name="invite_check_failed_tail">this link.</string>
+    <string name="invite_pitch">Everyone’s photos in one place. Join and yours land in the right day on their own.</string>
+    <string name="invite_already_head">You’re </string>
+    <string name="invite_already_tail">already in.</string>
+    <string name="invite_already_body">This trip is already yours to open.</string>
+    <string name="invite_expired_head">Link </string>
+    <string name="invite_expired_tail">expired.</string>
+    <string name="invite_expired_body">This link has run out. Ask %1$s for a fresh one — the trip is still there.</string>
+    <string name="invite_someone">whoever sent it</string>
+    <string name="invite_them">them</string>
+    <string name="invite_dead_head">This link </string>
+    <string name="invite_dead_tail">isn’t available.</string>
+    <string name="invite_dead_body">Ask whoever sent it for a new one.</string>
+    <string name="invite_open_trip">Open the trip</string>
+    <string name="invite_message">Message %1$s</string>
+    <string name="invite_message_text">Could you send me a fresh Thykra link? Thanks, %1$s.</string>
+    <string name="invite_go_to_trips">Go to my trips</string>
+    <string name="invite_joined_head">You’re </string>
+    <string name="invite_joined_tail">in.</string>
+    <string name="invite_add_photos">Add my photos</string>
+
+    <string name="recap_card_description">Recap, %1$s, %2$s</string>
+</resources>

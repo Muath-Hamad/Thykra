@@ -27,6 +27,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.me_clear
+import com.jameeli.thykra.resources.me_clear_cache
+import com.jameeli.thykra.resources.me_clear_confirm_body
+import com.jameeli.thykra.resources.me_clear_confirm_title
+import com.jameeli.thykra.resources.me_edit_profile
+import com.jameeli.thykra.resources.me_language
+import com.jameeli.thykra.resources.me_language_choices
+import com.jameeli.thykra.resources.me_sign_out
+import com.jameeli.thykra.resources.me_sign_out_confirm_many
+import com.jameeli.thykra.resources.me_sign_out_confirm_one
+import com.jameeli.thykra.resources.me_sign_out_confirm_title
+import com.jameeli.thykra.resources.me_wifi_only
+import com.jameeli.thykra.resources.me_wifi_only_help
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.navigation.LocalThykraChrome
 import com.jameeli.thykra.ui.kit.AssistChip
 import com.jameeli.thykra.ui.kit.Avatar
@@ -120,7 +135,7 @@ fun MeScreen(
         )
 
         ThykraButton(
-            label = "Edit name and photo",
+            label = stringResource(Res.string.me_edit_profile),
             onClick = { editOpen = true },
             variant = ThykraButtonVariant.Text,
         )
@@ -157,7 +172,7 @@ fun MeScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
-                text = "English · العربية",
+                text = stringResource(Res.string.me_language_choices),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
@@ -173,14 +188,14 @@ fun MeScreen(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Upload on Wi-Fi only",
+                    text = stringResource(Res.string.me_wifi_only),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
                     // The copy says exactly what the switch does, because "Wi-Fi only"
                     // on its own would read as "nothing uploads on data".
-                    text = "Videos wait for Wi-Fi; photos go anytime",
+                    text = stringResource(Res.string.me_wifi_only_help),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.thykra.textMeta,
                 )
@@ -196,7 +211,7 @@ fun MeScreen(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Clear saved photos",
+                    text = stringResource(Res.string.me_clear_cache),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -206,7 +221,11 @@ fun MeScreen(
                     color = MaterialTheme.thykra.textMeta,
                 )
             }
-            ThykraButton("Clear", { confirmClear = true }, variant = ThykraButtonVariant.Outlined)
+            ThykraButton(
+                stringResource(Res.string.me_clear),
+                { confirmClear = true },
+                variant = ThykraButtonVariant.Outlined,
+            )
         }
 
         Section("About")
@@ -233,7 +252,7 @@ fun MeScreen(
         // 100 dp of nothing, so signing out is never a mis-tap from the tab bar.
         Spacer(Modifier.height(100.dp))
         ThykraButton(
-            label = "Sign out",
+            label = stringResource(Res.string.me_sign_out),
             onClick = { confirmSignOut = true },
             variant = ThykraButtonVariant.Text,
             destructive = true,
@@ -253,7 +272,7 @@ fun MeScreen(
     }
 
     if (languageOpen) {
-        ThykraSheet(onDismiss = { languageOpen = false }, title = "Language") {
+        ThykraSheet(onDismiss = { languageOpen = false }, title = stringResource(Res.string.me_language)) {
             SheetAction("English", {
                 languageOpen = false
                 viewModel.setLanguage("en")
@@ -268,10 +287,9 @@ fun MeScreen(
 
     if (confirmClear) {
         ConfirmDialog(
-            title = "Clear saved photos?",
-            body = "$cacheBytes will be removed from this phone. Nothing is deleted from " +
-                "any trip, and photos download again when you open them.",
-            confirmLabel = "Clear",
+            title = stringResource(Res.string.me_clear_confirm_title),
+            body = stringResource(Res.string.me_clear_confirm_body, cacheBytes),
+            confirmLabel = stringResource(Res.string.me_clear),
             onConfirm = {
                 confirmClear = false
                 viewModel.clearCache()
@@ -284,10 +302,13 @@ fun MeScreen(
         // Only worth a dialog when there is something to lose.
         if (uploadsPending > 0) {
             ConfirmDialog(
-                title = "Sign out?",
-                body = "$uploadsPending ${if (uploadsPending == 1) "upload" else "uploads"} " +
-                    "in progress will pause until you're back.",
-                confirmLabel = "Sign out",
+                title = stringResource(Res.string.me_sign_out_confirm_title),
+                body = if (uploadsPending == 1) {
+                    stringResource(Res.string.me_sign_out_confirm_one)
+                } else {
+                    stringResource(Res.string.me_sign_out_confirm_many, uploadsPending)
+                },
+                confirmLabel = stringResource(Res.string.me_sign_out),
                 onConfirm = {
                     confirmSignOut = false
                     onSignOut()

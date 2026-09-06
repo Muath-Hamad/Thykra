@@ -28,6 +28,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.activity_empty_body
+import com.jameeli.thykra.resources.activity_empty_head
+import com.jameeli.thykra.resources.activity_empty_tail
+import com.jameeli.thykra.resources.activity_end
+import com.jameeli.thykra.resources.activity_seen
+import com.jameeli.thykra.resources.activity_what_happened
+import com.jameeli.thykra.resources.common_back
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.model.ActivityEventDto
 import com.jameeli.thykra.model.ActivityEventType
 import com.jameeli.thykra.navigation.LocalThykraChrome
@@ -91,7 +100,7 @@ fun ActivityScreen(
                 title = { Text(tripTitle.orEmpty(), style = MaterialTheme.typography.headlineSmall) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(ThykraIcons.Back, contentDescription = "Back")
+                        Icon(ThykraIcons.Back, contentDescription = stringResource(Res.string.common_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -115,8 +124,11 @@ fun ActivityScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     EmptyState(
-                        headline = clayPhrase("Quiet, ", "for now."),
-                        body = "When friends add, react or comment, it shows here.",
+                        headline = clayPhrase(
+                            stringResource(Res.string.activity_empty_head),
+                            stringResource(Res.string.activity_empty_tail),
+                        ),
+                        body = stringResource(Res.string.activity_empty_body),
                         glyph = EmptyGlyph.Person,
                     )
                 }
@@ -129,7 +141,7 @@ fun ActivityScreen(
                     if (onBack == null) {
                         item("header") {
                             Text(
-                                text = "What happened",
+                                text = stringResource(Res.string.activity_what_happened),
                                 style = MaterialTheme.typography.displaySmall,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier
@@ -147,7 +159,7 @@ fun ActivityScreen(
                             events.getOrNull(index - 1)?.let { it.createdAt > lastSeenAt!! } == true
                         if (firstSeen) {
                             Text(
-                                text = "Seen",
+                                text = stringResource(Res.string.activity_seen),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.thykra.textMeta,
                                 modifier = Modifier
@@ -180,7 +192,7 @@ fun ActivityScreen(
                     if (endOfList && events.isNotEmpty()) {
                         item("end") {
                             Text(
-                                text = "That's everything",
+                                text = stringResource(Res.string.activity_end),
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.thykra.textMeta,
                                 modifier = Modifier

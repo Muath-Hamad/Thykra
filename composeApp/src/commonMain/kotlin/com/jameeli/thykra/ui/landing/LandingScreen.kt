@@ -42,10 +42,15 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.landing_headline_head
+import com.jameeli.thykra.resources.landing_headline_tail
+import com.jameeli.thykra.resources.landing_tagline
+import com.jameeli.thykra.resources.landing_terms
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.auth.AuthViewModel
 import com.jameeli.thykra.auth.PlatformAppleSignInButton
 import com.jameeli.thykra.auth.PlatformGoogleSignInButton
-import com.jameeli.thykra.resources.Res
 import com.jameeli.thykra.resources.landing_plate_1
 import com.jameeli.thykra.resources.landing_plate_2
 import com.jameeli.thykra.resources.landing_plate_3
@@ -116,7 +121,10 @@ fun LandingScreenContent(authViewModel: AuthViewModel) {
                 Spacer(Modifier.height(24.dp))
 
                 Text(
-                    text = clayPhrase("Travel together. ", "Remember forever."),
+                    text = clayPhrase(
+                        stringResource(Res.string.landing_headline_head),
+                        stringResource(Res.string.landing_headline_tail),
+                    ),
                     style = MaterialTheme.typography.displayLarge,
                     color = scheme.onSurface,
                     textAlign = TextAlign.Center,
@@ -125,7 +133,7 @@ fun LandingScreenContent(authViewModel: AuthViewModel) {
                 Spacer(Modifier.height(12.dp))
 
                 Text(
-                    text = "One trip, everyone's photos, told by day.",
+                    text = stringResource(Res.string.landing_tagline),
                     style = MaterialTheme.typography.bodyLarge,
                     color = extended.textMeta,
                     textAlign = TextAlign.Center,
@@ -142,7 +150,7 @@ fun LandingScreenContent(authViewModel: AuthViewModel) {
                 Spacer(Modifier.height(16.dp))
 
                 Text(
-                    text = "By continuing you agree to the Terms and Privacy Policy.",
+                    text = stringResource(Res.string.landing_terms),
                     style = MaterialTheme.typography.bodySmall,
                     color = extended.textMeta,
                     textAlign = TextAlign.Center,

@@ -38,6 +38,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.common_close
+import com.jameeli.thykra.resources.recap_photo_position
+import com.jameeli.thykra.resources.recap_position
+import com.jameeli.thykra.resources.recap_share
+import com.jameeli.thykra.resources.recap_unavailable_head
+import com.jameeli.thykra.resources.recap_unavailable_tail
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.model.PublicMediaDto
 import com.jameeli.thykra.ui.kit.EmptyGlyph
 import com.jameeli.thykra.ui.kit.EmptyState
@@ -98,7 +106,10 @@ fun RecapReaderScreen(
             when {
                 error != null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     EmptyState(
-                        headline = clayPhrase("This recap ", "isn't available."),
+                        headline = clayPhrase(
+                            stringResource(Res.string.recap_unavailable_head),
+                            stringResource(Res.string.recap_unavailable_tail),
+                        ),
                         body = error.orEmpty(),
                         glyph = EmptyGlyph.Plate,
                     )
@@ -184,7 +195,7 @@ private fun ReaderChrome(
         if (reduced) {
             // No segments to fill when nothing advances on its own.
             Text(
-                text = "${index + 1} of $total",
+                text = stringResource(Res.string.recap_position, index + 1, total),
                 style = MaterialTheme.typography.labelMedium,
                 color = extended.onScrim,
             )
@@ -207,7 +218,7 @@ private fun ReaderChrome(
             ) {
                 Icon(
                     imageVector = ThykraIcons.Close,
-                    contentDescription = "Close",
+                    contentDescription = stringResource(Res.string.common_close),
                     tint = extended.onScrim,
                     modifier = Modifier.size(18.dp),
                 )
@@ -225,7 +236,7 @@ private fun ReaderChrome(
             ) {
                 Icon(
                     imageVector = ThykraIcons.Share,
-                    contentDescription = "Share recap",
+                    contentDescription = stringResource(Res.string.recap_share),
                     tint = extended.onScrim,
                     modifier = Modifier.size(18.dp),
                 )
@@ -269,6 +280,8 @@ private fun ReaderChrome(
 @Composable
 private fun ProgressSegments(index: Int, total: Int) {
     val extended = MaterialTheme.thykra
+    // Resolved here: the semantics lambda is not a composable scope.
+    val photoPosition = stringResource(Res.string.recap_photo_position, index + 1, total)
     val segments = minOf(total, MaxSegments)
     val filledThrough = if (total <= MaxSegments) {
         index
@@ -279,7 +292,7 @@ private fun ProgressSegments(index: Int, total: Int) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .semantics { contentDescription = "Photo ${index + 1} of $total" },
+            .semantics { contentDescription = photoPosition },
         horizontalArrangement = Arrangement.spacedBy(3.dp),
     ) {
         repeat(segments) { i ->

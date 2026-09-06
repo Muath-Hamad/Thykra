@@ -51,6 +51,17 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.comments_edited
+import com.jameeli.thykra.resources.comments_empty
+import com.jameeli.thykra.resources.comments_placeholder
+import com.jameeli.thykra.resources.comments_title
+import com.jameeli.thykra.resources.common_cancel
+import com.jameeli.thykra.resources.common_close
+import com.jameeli.thykra.resources.common_delete
+import com.jameeli.thykra.resources.common_edit
+import com.jameeli.thykra.resources.common_save
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.API_BASE_URL
 import com.jameeli.thykra.model.CommentDto
 import com.jameeli.thykra.ui.theme.thykra
@@ -128,7 +139,7 @@ fun CommentsSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Comments",
+                    text = stringResource(Res.string.comments_title),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f)
@@ -142,7 +153,7 @@ fun CommentsSheet(
                 IconButton(onClick = onDismiss) {
                     Icon(
                         imageVector = ThykraIcons.Close,
-                        contentDescription = "Close",
+                        contentDescription = stringResource(Res.string.common_close),
                         tint = MaterialTheme.thykra.textMeta
                     )
                 }
@@ -160,7 +171,7 @@ fun CommentsSheet(
                     comments.isEmpty() -> {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             Text(
-                                text = "No comments yet — be the first.",
+                                text = stringResource(Res.string.comments_empty),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.thykra.textMeta
                             )
@@ -262,7 +273,7 @@ private fun CommentRow(
                         editing = false
                         draftBody = comment.body
                     }) {
-                        Text("Cancel", color = MaterialTheme.thykra.textMeta)
+                        Text(stringResource(Res.string.common_cancel), color = MaterialTheme.thykra.textMeta)
                     }
                     TextButton(
                         onClick = {
@@ -273,7 +284,11 @@ private fun CommentRow(
                             editing = false
                         }
                     ) {
-                        Text("Save", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
+                        Text(
+                            stringResource(Res.string.common_save),
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.SemiBold,
+                        )
                     }
                 }
             } else {
@@ -294,7 +309,7 @@ private fun CommentRow(
                 Text(text = text, style = MaterialTheme.typography.bodyMedium)
                 if (comment.updatedAt != comment.createdAt) {
                     Text(
-                        text = "edited",
+                        text = stringResource(Res.string.comments_edited),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.thykra.textMeta.copy(alpha = 0.8f)
                     )
@@ -320,7 +335,7 @@ private fun CommentRow(
                 ) {
                     if (canEdit) {
                         DropdownMenuItem(
-                            text = { Text("Edit") },
+                            text = { Text(stringResource(Res.string.common_edit)) },
                             onClick = {
                                 menuExpanded = false
                                 editing = true
@@ -329,7 +344,7 @@ private fun CommentRow(
                     }
                     if (canDelete) {
                         DropdownMenuItem(
-                            text = { Text("Delete", color = MaterialTheme.colorScheme.error) },
+                            text = { Text(stringResource(Res.string.common_delete), color = MaterialTheme.colorScheme.error) },
                             onClick = {
                                 menuExpanded = false
                                 onDelete()
@@ -388,7 +403,12 @@ private fun CommentInputBar(
                 value = draft,
                 onValueChange = { if (it.length <= 2000) draft = it },
                 modifier = Modifier.weight(1f),
-                placeholder = { Text("Add a comment…", color = MaterialTheme.thykra.textMeta.copy(alpha = 0.7f)) },
+                placeholder = {
+                    Text(
+                        stringResource(Res.string.comments_placeholder),
+                        color = MaterialTheme.thykra.textMeta.copy(alpha = 0.7f),
+                    )
+                },
                 maxLines = 4,
                 shape = RoundedCornerShape(20.dp),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default),

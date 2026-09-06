@@ -1,5 +1,6 @@
 package com.jameeli.thykra.plugins
 
+import com.jameeli.thykra.model.ClientConfigDto
 import com.jameeli.thykra.repository.ActivityFeedRepository
 import com.jameeli.thykra.repository.ActivityRepository
 import com.jameeli.thykra.repository.AlbumInviteRepository
@@ -16,6 +17,7 @@ import com.jameeli.thykra.routes.activityRoutes
 import com.jameeli.thykra.routes.albumRoutes
 import com.jameeli.thykra.routes.authRoutes
 import com.jameeli.thykra.routes.commentRoutes
+import com.jameeli.thykra.routes.configRoutes
 import com.jameeli.thykra.routes.inviteRoutes
 import com.jameeli.thykra.routes.mediaRoutes
 import com.jameeli.thykra.routes.profileRoutes
@@ -46,7 +48,8 @@ fun Application.configureRouting(
     activityFeedRepository: ActivityFeedRepository,
     recapRepository: RecapRepository,
     storageService: StorageService,
-    allowDevLogin: Boolean = false
+    allowDevLogin: Boolean = false,
+    clientConfig: ClientConfigDto = ClientConfigDto(maxUploadBytes = Long.MAX_VALUE)
 ) {
     routing {
         get("/") {
@@ -56,10 +59,14 @@ fun Application.configureRouting(
             get("/health") {
                 call.respondText("OK")
             }
+            configRoutes(clientConfig)
             authRoutes(authService, allowDevLogin = allowDevLogin)
             profileRoutes(userRepository)
             albumRoutes(albumRepository, albumMemberRepository, albumInviteRepository, blockedMemberRepository)
-            mediaRoutes(mediaService, mediaRepository, albumMemberRepository, storageService)
+            mediaRoutes(
+                mediaService, mediaRepository, albumMemberRepository, storageService,
+                maxUploadBytes = clientConfig.maxUploadBytes
+            )
             reactionRoutes(reactionRepository, mediaRepository, albumMemberRepository)
             commentRoutes(commentRepository, mediaRepository, albumMemberRepository)
             activityRoutes(activityRepository)

@@ -1,9 +1,16 @@
 package com.jameeli.thykra
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.core.content.ContextCompat
+import androidx.core.content.IntentCompat
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
 import androidx.work.Constraints
@@ -25,6 +32,7 @@ import com.jameeli.thykra.api.InviteApi
 import com.jameeli.thykra.api.MediaApi
 import com.jameeli.thykra.api.ProfileApi
 import com.jameeli.thykra.api.ReactionApi
+import com.jameeli.thykra.api.UploadNotifier
 import com.jameeli.thykra.api.UploadQueueManager
 import com.jameeli.thykra.api.UploadWorker
 import com.jameeli.thykra.api.createApiClient
@@ -33,12 +41,25 @@ import com.jameeli.thykra.auth.AuthViewModel
 import com.jameeli.thykra.navigation.DeepLinkBus
 import com.jameeli.thykra.navigation.DeepLinkTarget
 import com.jameeli.thykra.navigation.handleDeepLink
+import com.jameeli.thykra.ui.media.mediaFileFromUri
 import com.jameeli.thykra.ui.me.AndroidDevicePreferences
+import com.jameeli.thykra.ui.upload.IncomingShareBus
 import com.jameeli.thykra.ui.share.SharingHost
 import com.jameeli.thykra.ui.theme.ThemePreference
 import com.jameeli.thykra.widget.WidgetDeepLinks
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+
+    /**
+     * Registered here because the contract has to exist before the activity starts, but
+     * fired only when the first upload is queued — asking for notification access on the
+     * launch screen, before anyone has done anything, is the prompt everyone denies.
+     */
+    private val requestNotifications =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { /* either way, uploads continue */ }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -68,6 +89,12 @@ class MainActivity : ComponentActivity() {
         val uploadQueueManager = UploadQueueManager(mediaApi, lifecycleScope, persistence, networkMonitor)
         val authViewModel = AuthViewModel(authApi, tokenProvider)
 
+        // Keeps the foreground-service notification in step with the queue, so a batch
+        // survives the app being backgrounded instead of stalling at whatever file was
+        // in flight when the person switched away.
+        UploadNotifier(applicationContext).observe(lifecycleScope, uploadQueueManager.uploads)
+        askForNotificationsOnFirstUpload(uploadQueueManager)
+
         // Schedule background upload worker as a safety net for uploads pending after an app kill
         WorkManager.getInstance(applicationContext).enqueueUniqueWork(
             "upload_queue",
@@ -96,6 +123,27 @@ class MainActivity : ComponentActivity() {
 
         // Handle deep links delivered as part of the launching intent (cold start from widget).
         deliverDeepLinkFrom(intent)
+        deliverSharedMediaFrom(intent)
+    }
+
+    /**
+     * Asks for notification access the first time something is actually queued.
+     *
+     * Denied, the batch still uploads and still survives backgrounding — the foreground
+     * service runs either way, only its notification is suppressed — so this never gates
+     * the upload. It is asked once per launch and not repeated: a person who said no does
+     * not need to be asked again every time they add a photo.
+     */
+    private fun askForNotificationsOnFirstUpload(queue: UploadQueueManager) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+        lifecycleScope.launch {
+            queue.uploads.first { it.isNotEmpty() }
+            val granted = ContextCompat.checkSelfPermission(
+                this@MainActivity,
+                Manifest.permission.POST_NOTIFICATIONS,
+            ) == PackageManager.PERMISSION_GRANTED
+            if (!granted) requestNotifications.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 
     /**
@@ -105,6 +153,38 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         deliverDeepLinkFrom(intent)
+        deliverSharedMediaFrom(intent)
+    }
+
+    /**
+     * Forwards photos shared into the app to [IncomingShareBus], which the shell drains
+     * by asking which trip they belong to.
+     *
+     * Read permission on these URIs is granted to *this activity* and dies with it, so
+     * the files are held as lazy readers and drained while it is alive rather than
+     * copied here — staging every shared video to disk before anyone has said which trip
+     * they are for would be a lot of I/O for a share that may be cancelled.
+     */
+    private fun deliverSharedMediaFrom(intent: Intent?) {
+        if (intent == null) return
+        val uris: List<Uri> = when (intent.action) {
+            Intent.ACTION_SEND ->
+                listOfNotNull(IntentCompat.getParcelableExtra(intent, Intent.EXTRA_STREAM, Uri::class.java))
+
+            Intent.ACTION_SEND_MULTIPLE ->
+                IntentCompat.getParcelableArrayListExtra(intent, Intent.EXTRA_STREAM, Uri::class.java)
+                    .orEmpty()
+
+            else -> return
+        }
+        if (uris.isEmpty()) return
+
+        IncomingShareBus.offer(uris.mapNotNull { mediaFileFromUri(applicationContext, it) })
+
+        // Consumed. Without this a configuration change re-delivers the same intent and
+        // the trip picker reappears over a share that was already dealt with.
+        intent.action = null
+        intent.removeExtra(Intent.EXTRA_STREAM)
     }
 
     /**

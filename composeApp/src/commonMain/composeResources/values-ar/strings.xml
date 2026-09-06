@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Arabic. Copy is lifted from webApp/src/i18n/ar.ts wherever a key has a counterpart
+  there (THY-148 took that table to 403 keys at parity with en.ts), so the two products
+  say the same thing in the same words rather than drifting into two dialects.
+
+  Keys with no web counterpart — the mobile-only ones — are translated here in the same
+  voice: second person, present tense, no exclamation marks.
+-->
+<resources>
+
+    <!-- ── Chrome ── -->
+    <string name="nav_trips">الرحلات</string>
+    <string name="nav_activity">النشاط</string>
+    <string name="nav_recaps">الملخّصات</string>
+    <string name="nav_you">أنت</string>
+    <string name="nav_activity_unseen">جديد</string>
+
+    <!-- ── Common ── -->
+    <string name="common_back">رجوع</string>
+    <string name="common_share">مشاركة</string>
+    <string name="common_retry_all">أعد محاولة الكل</string>
+    <string name="common_more_options">خيارات أخرى</string>
+    <string name="common_in_progress">جارٍ التنفيذ</string>
+    <string name="common_photos_count">%1$d صور</string>
+    <string name="common_people_count">%1$d أشخاص</string>
+
+    <!-- ── Trip action bar ── -->
+    <string name="trip_add_photos">إضافة صور</string>
+    <string name="trip_adding_file">جارٍ إضافة %1$s</string>
+
+    <!-- ── Viewer ── -->
+    <string name="viewer_photo_info">معلومات الصورة</string>
+    <string name="viewer_filmstrip">شريط الصور، %1$d من %2$d؛ اسحب للتنقل</string>
+
+    <!-- ── Reactions ── -->
+    <string name="reaction_react">تفاعل</string>
+
+    <!-- ── Upload dock ── -->
+    <string name="upload_batch_done">أُضيفت %1$d صور.</string>
+    <string name="upload_see_them">شاهدها</string>
+
+    <!-- ── Share into the app ── -->
+    <string name="share_pick_trip_title">أضِفها إلى أي رحلة؟</string>
+    <string name="share_pick_trip_one">صورة واحدة في الانتظار</string>
+    <string name="share_pick_trip_many">%1$d صور في الانتظار</string>
+    <string name="share_new_trip">رحلة جديدة</string>
+    <string name="share_no_trips">لا رحلات لديك بعد. أنشئ واحدة وتذهب الصور إليها مباشرة.</string>
+    <string name="share_sign_in">سجّل الدخول لإضافة هذه الصور.</string>
+    <string name="share_cancel">ليس الآن</string>
+    <string name="share_too_large">%1$s تتجاوز الحد المسموح وتُركت خارجاً</string>
+
+    <!-- ── Trips ── -->
+    <string name="trips_new">رحلة جديدة</string>
+    <string name="trips_greeting">رحلاتك</string>
+    <string name="trips_greeting_first">سعدنا بعودتك يا %1$s.</string>
+    <string name="trips_empty_head">لا رحلات </string>
+    <string name="trips_empty_tail">بعد.</string>
+    <string name="trips_empty_body">ابدأ واحدة وادعُ من كانوا معك. أو افتح رابط دعوة أرسله أحدهم إليك.</string>
+    <string name="trips_empty_cta">ابدأ رحلة</string>
+    <string name="trips_count">%1$d رحلات</string>
+    <string name="trips_just_you">أنت وحدك</string>
+
+    <!-- ── Errors ── -->
+    <string name="error_head">حدث </string>
+    <string name="error_tail">خلل.</string>
+    <string name="error_load_body">تعذّر تحميل هذا. أعد المحاولة بعد قليل.</string>
+    <string name="common_try_again">أعد المحاولة</string>
+
+    <!-- ── Create a trip ── -->
+    <string name="create_trip_title">ابدأ رحلة</string>
+    <string name="create_trip_name_label">اسم الرحلة</string>
+    <string name="create_trip_name_placeholder">إلى أين ذهبتم؟</string>
+    <string name="create_trip_name_helper">سيراه أصدقاؤك</string>
+    <string name="create_trip_desc_label">الوصف · اختياري</string>
+    <string name="create_trip_desc_placeholder">سطر عن المكان والزمان</string>
+    <string name="create_trip_submit">أنشئ الرحلة</string>
+    <string name="create_trip_private">خاصة · من تدعوهم فقط</string>
+
+    <!-- ── Landing ── -->
+    <string name="landing_headline_head">سافروا معاً. </string>
+    <string name="landing_headline_tail">واحفظوها للأبد.</string>
+    <string name="landing_tagline">رحلة واحدة، صور الجميع، مرتّبة بالأيام.</string>
+    <string name="landing_terms">بالمتابعة فإنك توافق على الشروط وسياسة الخصوصية.</string>
+
+    <string-array name="month_short">
+        <item>يناير</item><item>فبراير</item><item>مارس</item><item>أبريل</item>
+        <item>مايو</item><item>يونيو</item><item>يوليو</item><item>أغسطس</item>
+        <item>سبتمبر</item><item>أكتوبر</item><item>نوفمبر</item><item>ديسمبر</item>
+    </string-array>
+
+    <!-- ── Trip ── -->
+    <string name="trip_offline">أنت دون اتصال · نعرض الصور المحفوظة</string>
+    <string name="trip_selected_count">%1$d محدّدة</string>
+    <string name="trip_select_all">حدّد الكل</string>
+    <string name="trip_settings">إعدادات الرحلة</string>
+    <string name="trip_videos_count">%1$d مقاطع</string>
+    <string name="trip_share_title">مشاركة %1$s</string>
+    <string name="trip_link_public">أي شخص لديه الرابط يمكنه العرض</string>
+    <string name="trip_link_owner_only">المالك وحده يمكنه تغيير هذا</string>
+    <string name="trip_invite_friends">ادعُ أصدقاءك</string>
+    <string name="trip_invite_supporting">ينشئ رابطاً صالحاً 7 أيام يمكنك مشاركته</string>
+    <string name="common_remove">إزالة</string>
+
+    <!-- ── Edit a trip ── -->
+    <string name="edit_trip_title">تعديل الرحلة</string>
+    <string name="edit_trip_name_error">أعطِ الرحلة اسماً</string>
+    <string name="common_save">حفظ</string>
+
+    <!-- ── Trip settings ── -->
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_show_more">اعرض %1$d آخرين</string>
+    <string name="settings_new_link">رابط جديد</string>
+    <string name="settings_expiry_days">%1$d أيام</string>
+    <string name="settings_unblock">رفع الحظر</string>
+    <string name="settings_delete_trip">احذف الرحلة</string>
+    <string name="settings_leave_trip">مغادرة الرحلة</string>
+    <string name="settings_leave_note">صورك تبقى في الرحلة.</string>
+    <string name="settings_delete_confirm_title">حذف %1$s؟</string>
+    <string name="settings_delete_undone"> لا يمكن التراجع عن هذا.</string>
+    <string name="settings_keep_it">أبقِها</string>
+    <string name="settings_leave_confirm_title">مغادرة %1$s؟</string>
+    <string name="settings_leave_confirm_body">صورك تبقى في الرحلة. ستحتاج رابطاً جديداً للعودة.</string>
+    <string name="settings_leave">غادر</string>
+    <string name="settings_remove_confirm_title">إزالة %1$s؟</string>
+    <string name="settings_remove_confirm_body">%1$s يغادر الرحلة. صوره تبقى.</string>
+    <string name="settings_block_confirm_title">حظر %1$s؟</string>
+    <string name="settings_block_confirm_body">%1$s يغادر الرحلة ولا يمكنه العودة بأي رابط. صوره تبقى.</string>
+    <string name="settings_block">احظر %1$s</string>
+    <string name="settings_revoke_title">إلغاء هذا الرابط؟</string>
+    <string name="settings_revoke">إلغاء</string>
+
+    <!-- Invite links -->
+    <string name="settings_joined_none">لم ينضم أحد بعد</string>
+    <string name="settings_joined_one">انضم شخص واحد</string>
+    <string name="settings_joined_many">انضم %1$d</string>
+    <string name="settings_expired">منتهٍ</string>
+    <string name="settings_expires_hours">ينتهي بعد %1$d ساعات</string>
+    <string name="settings_expires_tomorrow">ينتهي غداً</string>
+    <string name="settings_expires_days">ينتهي بعد %1$d أيام</string>
+    <string name="settings_revoke_none">لم ينضم أحد عبره. لا شيء آخر يتغيّر.</string>
+    <string name="settings_revoke_one">انضم شخص واحد عبره؛ يبقى في الرحلة.</string>
+    <string name="settings_revoke_many">انضم %1$d أشخاص عبره؛ يبقون في الرحلة.</string>
+
+    <!-- What deleting a trip destroys -->
+    <string name="settings_delete_nothing">لا شيء في هذه الرحلة بعد.</string>
+    <string name="settings_delete_gone">%1$s ستختفي عن الجميع.</string>
+    <string name="settings_and">%1$s و%2$s</string>
+    <string name="common_photo_one">صورة واحدة</string>
+    <string name="common_video_one">مقطع واحد</string>
+
+    <!-- ── Me ── -->
+    <string name="me_edit_profile">تعديل الاسم والصورة</string>
+    <string name="me_language">اللغة</string>
+    <string name="me_language_choices">English · العربية</string>
+    <string name="me_wifi_only">الرفع عبر الواي فاي فقط</string>
+    <string name="me_wifi_only_help">المقاطع تنتظر الواي فاي؛ والصور ترتفع دائماً</string>
+    <string name="me_clear_cache">امسح الصور المحفوظة</string>
+    <string name="me_clear">امسح</string>
+    <string name="me_sign_out">تسجيل الخروج</string>
+    <string name="me_clear_confirm_title">مسح الصور المحفوظة؟</string>
+    <string name="me_clear_confirm_body">سيُزال %1$s من هذا الهاتف. لا يُحذف شيء من أي رحلة، والصور تُنزّل مجدداً عند فتحها.</string>
+    <string name="me_sign_out_confirm_title">تسجيل الخروج؟</string>
+    <string name="me_sign_out_confirm_one">عملية رفع واحدة جارية ستتوقف حتى تعود.</string>
+    <string name="me_sign_out_confirm_many">%1$d عمليات رفع جارية ستتوقف حتى تعود.</string>
+    <string name="me_your_name">اسمك</string>
+    <string name="me_name_label">الاسم</string>
+    <string name="me_name_helper">يراه أصدقاؤك في رحلاتك</string>
+    <string name="me_name_error">أعطِ نفسك اسماً</string>
+
+    <!-- ── Comments ── -->
+    <string name="comments_title">التعليقات</string>
+    <string name="comments_empty">لا تعليقات بعد — كن أول من يكتب.</string>
+    <string name="comments_placeholder">أضف تعليقاً…</string>
+    <string name="comments_edited">مُعدّل</string>
+    <string name="common_close">إغلاق</string>
+    <string name="common_cancel">إلغاء</string>
+    <string name="common_edit">تعديل</string>
+    <string name="common_delete">حذف</string>
+
+    <!-- ── Viewer ── -->
+    <string name="viewer_loading">جارٍ التحميل…</string>
+    <string name="viewer_pick_reaction">اختر تفاعلاً</string>
+    <string name="info_added_by">أضافها</string>
+    <string name="info_taken">التُقطت</string>
+    <string name="info_no_date">بلا تاريخ</string>
+    <string name="info_size">المقاس</string>
+    <string name="info_type">النوع</string>
+    <string name="info_added">أُضيفت</string>
+    <string name="info_length">المدة</string>
+
+    <!-- ── Activity ── -->
+    <string name="activity_empty_head">هدوء، </string>
+    <string name="activity_empty_tail">في الوقت الحالي.</string>
+    <string name="activity_empty_body">عندما يضيف أصدقاؤك أو يتفاعلون أو يعلقون، يظهر ذلك هنا.</string>
+    <string name="activity_what_happened">ما الذي حدث</string>
+    <string name="activity_seen">مقروء</string>
+    <string name="activity_end">هذا كل شيء</string>
+
+    <!-- ── Recaps ── -->
+    <string name="recaps_title">الملخّصات</string>
+    <string name="recaps_intro">قصص مصورة قصيرة، تُبنى من رحلة. شاركها مع من تشاء.</string>
+    <string name="recaps_empty_head">اثنتا عشرة صورة </string>
+    <string name="recaps_empty_tail">أولاً.</string>
+    <string name="recaps_empty_body">تُبنى الملخّصات من الرحلات التي فيها %1$d صورة أو أكثر.</string>
+    <string name="recaps_build">ابنِ</string>
+    <string name="recaps_eyebrow">ملخّص · %1$d صور</string>
+    <string name="recap_unavailable_head">هذا الملخّص </string>
+    <string name="recap_unavailable_tail">غير متاح.</string>
+    <string name="recap_position">%1$d من %2$d</string>
+    <string name="recap_share">مشاركة الملخّص</string>
+    <string name="recap_photo_position">صورة %1$d من %2$d</string>
+
+    <!-- ── Invite ── -->
+    <string name="invite_check_failed_head">تعذّر التحقق من </string>
+    <string name="invite_check_failed_tail">هذا الرابط.</string>
+    <string name="invite_pitch">صور الجميع في مكان واحد. انضم، وصورك تستقرّ في يومها وحدها.</string>
+    <string name="invite_already_head">أنت </string>
+    <string name="invite_already_tail">منضمّ بالفعل.</string>
+    <string name="invite_already_body">هذه الرحلة متاحة لك أصلاً.</string>
+    <string name="invite_expired_head">الرابط </string>
+    <string name="invite_expired_tail">منتهٍ.</string>
+    <string name="invite_expired_body">انتهت صلاحية هذا الرابط. اطلب من %1$s رابطاً جديداً — الرحلة ما زالت هناك.</string>
+    <string name="invite_someone">من أرسله</string>
+    <string name="invite_them">هم</string>
+    <string name="invite_dead_head">هذا الرابط </string>
+    <string name="invite_dead_tail">غير متاح.</string>
+    <string name="invite_dead_body">اطلب من أرسله رابطاً جديداً.</string>
+    <string name="invite_open_trip">افتح الرحلة</string>
+    <string name="invite_message">راسل %1$s</string>
+    <string name="invite_message_text">هل يمكنك إرسال رابط ثيكرا جديد؟ شكراً، %1$s.</string>
+    <string name="invite_go_to_trips">اذهب إلى رحلاتي</string>
+    <string name="invite_joined_head">أنت </string>
+    <string name="invite_joined_tail">معنا.</string>
+    <string name="invite_add_photos">أضف صوري</string>
+
+    <string name="recap_card_description">ملخّص، %1$s، %2$s</string>
+</resources>

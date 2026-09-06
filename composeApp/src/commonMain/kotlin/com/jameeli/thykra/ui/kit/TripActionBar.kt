@@ -22,6 +22,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.common_more_options
+import com.jameeli.thykra.resources.common_share
+import com.jameeli.thykra.resources.trip_add_photos
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.model.MemberRole
 import com.jameeli.thykra.ui.theme.LocalCompactWidth
 import com.jameeli.thykra.ui.theme.ThykraIcons
@@ -71,7 +76,7 @@ fun TripActionBar(
         ) {
             if (canAdd) {
                 ThykraButton(
-                    label = "Add photos",
+                    label = stringResource(Res.string.trip_add_photos),
                     onClick = onAddPhotos,
                     variant = ThykraButtonVariant.Filled,
                     icon = ThykraIcons.Plus,
@@ -82,14 +87,14 @@ fun TripActionBar(
                 if (compact) {
                     ActionIconButton(
                         icon = ThykraIcons.Share,
-                        contentDescription = "Share",
+                        contentDescription = stringResource(Res.string.common_share),
                         onClick = onShare,
                         container = scheme.primaryContainer,
                         content = scheme.onPrimaryContainer,
                     )
                 } else {
                     ThykraButton(
-                        label = "Share",
+                        label = stringResource(Res.string.common_share),
                         onClick = onShare,
                         variant = ThykraButtonVariant.Tonal,
                         icon = ThykraIcons.Share,
@@ -98,7 +103,7 @@ fun TripActionBar(
                 }
             } else {
                 ThykraButton(
-                    label = "Share",
+                    label = stringResource(Res.string.common_share),
                     onClick = onShare,
                     variant = ThykraButtonVariant.Tonal,
                     icon = ThykraIcons.Share,
@@ -110,7 +115,7 @@ fun TripActionBar(
 
             ActionIconButton(
                 icon = ThykraIcons.More,
-                contentDescription = "More options",
+                contentDescription = stringResource(Res.string.common_more_options),
                 onClick = onMore,
                 container = scheme.surface,
                 content = scheme.onSurface,

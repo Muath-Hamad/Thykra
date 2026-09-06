@@ -30,3 +30,9 @@ CLAUDE.md
 .claude/
 data/
 kotlin-js-store/
+
+# Device screenshots — a running history kept locally, not a build input.
+# The folder and its README are tracked so the KEEP- convention survives a
+# fresh clone; the captures themselves are large and change constantly.
+screenshots/*
+!screenshots/README.md
