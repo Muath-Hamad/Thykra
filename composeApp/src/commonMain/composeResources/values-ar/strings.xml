@@ -27,6 +27,7 @@
 
     <!-- ── Trip action bar ── -->
     <string name="trip_add_photos">إضافة صور</string>
+    <string name="trip_adding_file">جارٍ إضافة %1$s</string>
 
     <!-- ── Viewer ── -->
     <string name="viewer_photo_info">معلومات الصورة</string>

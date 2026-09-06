@@ -112,6 +112,13 @@ fun TripScreen(
     val members by viewModel.members.collectAsState()
     val chapters by viewModel.chapters.collectAsState()
     val media by viewModel.media.collectAsState()
+    val uploads by viewModel.uploads.collectAsState()
+
+    // Recomputed only when the in-flight set actually changes, not on every byte of
+    // progress — the map decides layout, and re-laying out the grid at 30 Hz would be
+    // both wasteful and visibly unsteady.
+    val inFlight = uploads.inFlightFor(albumId)
+    val pendingByDay = remember(inFlight.map { it.id }) { inFlight.pendingByDay() }
     val loading by viewModel.loading.collectAsState()
     val refreshing by viewModel.refreshing.collectAsState()
     val loaded by viewModel.loaded.collectAsState()
@@ -158,11 +165,14 @@ fun TripScreen(
     }
 
     // The chapter whose header has scrolled past — what the pinned bar shows.
-    val pinnedChapter by remember(chapters) {
+    val pinnedChapter by remember(chapters, pendingByDay) {
         derivedStateOf {
             val firstVisible = gridState.layoutInfo.visibleItemsInfo.firstOrNull()?.index ?: 0
             chapters.lastOrNull { chapter ->
-                (chapter.headerIndex(chapters, hasActivityStrip = false) ?: Int.MAX_VALUE) <= firstVisible
+                // Placeholder plates occupy grid slots too, so the count has to include
+                // them or the pinned bar names the wrong day mid-upload.
+                val header = chapter.headerIndex(chapters, hasActivityStrip = false, pendingByDay = pendingByDay)
+                (header ?: Int.MAX_VALUE) <= firstVisible
             }
         }
     }
@@ -227,6 +237,7 @@ fun TripScreen(
                             album = album,
                             members = members,
                             chapters = chapters,
+                            pendingByDay = pendingByDay,
                             layout = layout,
                             selection = selection,
                             state = gridState,
@@ -332,6 +343,8 @@ private fun DaysGrid(
     album: AlbumDto?,
     members: List<com.jameeli.thykra.model.AlbumMemberDto>,
     chapters: List<Chapter<MediaDto>>,
+    /** In-flight uploads, keyed by the day their plate will land on. */
+    pendingByDay: Map<kotlinx.datetime.LocalDate, List<com.jameeli.thykra.api.UploadState>>,
     layout: TripLayout,
     selection: Set<String>,
     state: androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState,
@@ -389,6 +402,18 @@ private fun DaysGrid(
             }
         }
 
+        // A photo from a day this trip has never seen has no chapter to sit in yet. Its
+        // placeholders lead the grid until the upload confirms and the refreshed media
+        // builds the real chapter for that day.
+        val chapterDays = chapters.map { it.date }.toSet()
+        val homeless = pendingByDay.filterKeys { it !in chapterDays }.values.flatten()
+        items(
+            items = homeless,
+            key = { "pending-new:${it.id}" },
+        ) { upload ->
+            PendingPlate(upload = upload, modifier = Modifier.fillMaxWidth())
+        }
+
         chapters.forEach { chapter ->
             item(key = "header:${chapter.key}", span = StaggeredGridItemSpan.FullLine) {
                 ChapterHeader(
@@ -419,6 +444,16 @@ private fun DaysGrid(
                 )
             }
 
+            // The day's arrivals sit at the head of its plates rather than the tail:
+            // they are the newest thing in the chapter, and burying them under thirty
+            // existing photos hides the only part that is changing.
+            items(
+                items = pendingByDay[chapter.date].orEmpty(),
+                key = { "pending:${it.id}" },
+            ) { upload ->
+                PendingPlate(upload = upload, modifier = Modifier.fillMaxWidth())
+            }
+
             items(
                 items = chapter.items.filter { it.id != hero.id },
                 key = { "plate:${it.id}" },
@@ -438,11 +473,16 @@ private fun DaysGrid(
     }
 }
 
-/** A `items` shim, because the staggered grid scope names it differently per version. */
-private fun androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope.items(
-    items: List<MediaDto>,
-    key: (MediaDto) -> Any,
-    itemContent: @Composable (MediaDto) -> Unit,
+/**
+ * A `items` shim, because the staggered grid scope names it differently per version.
+ *
+ * Generic rather than `MediaDto`-only: the grid also lays out placeholder plates for
+ * uploads that have not arrived yet, and those are not media.
+ */
+private fun <T> androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope.items(
+    items: List<T>,
+    key: (T) -> Any,
+    itemContent: @Composable (T) -> Unit,
 ) {
     items.forEach { item ->
         item(key = key(item)) { itemContent(item) }
@@ -784,13 +824,17 @@ private fun Chapter<MediaDto>.contributors(
 private fun Chapter<MediaDto>.headerIndex(
     chapters: List<Chapter<MediaDto>>,
     hasActivityStrip: Boolean,
+    pendingByDay: Map<kotlinx.datetime.LocalDate, List<com.jameeli.thykra.api.UploadState>> = emptyMap(),
 ): Int? {
-    val fixedItemsAbove = if (hasActivityStrip) 3 else 2
-    var index = fixedItemsAbove
+    val chapterDays = chapters.map { it.date }.toSet()
+    // Placeholders for days the trip has no chapter for yet lead the whole grid, so they
+    // push every header down.
+    val homeless = pendingByDay.filterKeys { it !in chapterDays }.values.sumOf { it.size }
+    var index = (if (hasActivityStrip) 3 else 2) + homeless
     for (chapter in chapters) {
         if (chapter.key == key) return index
-        // header + lead + the rest of the day's plates
-        index += 2 + (chapter.items.size - 1)
+        // header + lead + this day's placeholders + the rest of the day's plates
+        index += 2 + pendingByDay[chapter.date].orEmpty().size + (chapter.items.size - 1)
     }
     return null
 }

@@ -36,6 +36,7 @@
 
     <!-- ── Trip action bar ── -->
     <string name="trip_add_photos">Add photos</string>
+    <string name="trip_adding_file">Adding %1$s</string>
 
     <!-- ── Viewer ── -->
     <string name="viewer_photo_info">Photo info</string>

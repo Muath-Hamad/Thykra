@@ -30,6 +30,12 @@ data class UploadState(
      * per batch rather than once per file.
      */
     val batchId: String = "",
+    /**
+     * The file's own capture date, read locally at pick time. Lets the trip grid stand a
+     * placeholder in the day the photo actually belongs to while it uploads, instead of
+     * parking it under today and letting it jump when the server answers.
+     */
+    val takenAt: Instant? = null,
     val contentType: String = "",
     val totalBytes: Long = 0,
     val bytesUploaded: Long = 0,
@@ -93,6 +99,7 @@ class UploadQueueManager(
             filename = request.filename,
             status = UploadStatus.QUEUED,
             batchId = batchIdFor(request.albumId, now),
+            takenAt = request.takenAt,
             contentType = request.contentType,
             totalBytes = request.fileSize,
             enqueuedAtMs = now,
