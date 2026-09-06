@@ -17,6 +17,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.common_remove
+import com.jameeli.thykra.resources.trip_invite_friends
+import com.jameeli.thykra.resources.trip_invite_supporting
+import com.jameeli.thykra.resources.trip_link_owner_only
+import com.jameeli.thykra.resources.trip_link_public
+import com.jameeli.thykra.resources.trip_share_title
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.model.AlbumDto
 import com.jameeli.thykra.model.AlbumVisibility
 import com.jameeli.thykra.ui.kit.SheetAction
@@ -70,7 +78,7 @@ fun ShareTripSheet(
     val extended = MaterialTheme.thykra
     val linkShared = album.visibility == AlbumVisibility.LINK_SHARED
 
-    ThykraSheet(onDismiss = onDismiss, title = "Share ${album.title}") {
+    ThykraSheet(onDismiss = onDismiss, title = stringResource(Res.string.trip_share_title, album.title)) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -79,13 +87,13 @@ fun ShareTripSheet(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Anyone with the link can view",
+                    text = stringResource(Res.string.trip_link_public),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 if (!isOwner) {
                     Text(
-                        text = "Only the owner can change this",
+                        text = stringResource(Res.string.trip_link_owner_only),
                         style = MaterialTheme.typography.bodySmall,
                         color = extended.textMeta,
                     )
@@ -121,10 +129,10 @@ fun ShareTripSheet(
         SheetDivider()
 
         SheetAction(
-            label = "Invite friends",
+            label = stringResource(Res.string.trip_invite_friends),
             onClick = { onEnsureLink { url -> shareText(url) } },
             icon = ThykraIcons.PersonAdd,
-            supporting = "Creates a 7-day link you can share",
+            supporting = stringResource(Res.string.trip_invite_supporting),
         )
     }
 }
@@ -166,7 +174,7 @@ fun SelectionActionBar(
             )
             if (canRemove) {
                 ThykraButton(
-                    label = "Remove",
+                    label = stringResource(Res.string.common_remove),
                     onClick = onRemove,
                     variant = ThykraButtonVariant.Text,
                     destructive = true,

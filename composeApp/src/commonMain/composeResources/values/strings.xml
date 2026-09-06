@@ -99,4 +99,64 @@
         <item>Sep</item><item>Oct</item><item>Nov</item><item>Dec</item>
     </string-array>
 
+    <!-- ── Trip ── -->
+    <string name="trip_offline">You’re offline · showing saved photos</string>
+    <string name="trip_selected_count">%1$d selected</string>
+    <string name="trip_select_all">Select all</string>
+    <string name="trip_settings">Trip settings</string>
+    <string name="trip_videos_count">%1$d videos</string>
+    <string name="trip_share_title">Share %1$s</string>
+    <string name="trip_link_public">Anyone with the link can view</string>
+    <string name="trip_link_owner_only">Only the owner can change this</string>
+    <string name="trip_invite_friends">Invite friends</string>
+    <string name="trip_invite_supporting">Creates a 7-day link you can share</string>
+    <string name="common_remove">Remove</string>
+
+    <!-- ── Edit a trip ── -->
+    <string name="edit_trip_title">Edit trip</string>
+    <string name="edit_trip_name_error">Give the trip a name</string>
+    <string name="common_save">Save</string>
+
+    <!-- ── Trip settings ── -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_show_more">Show %1$d more</string>
+    <string name="settings_new_link">New link</string>
+    <string name="settings_expiry_days">%1$d days</string>
+    <string name="settings_unblock">Unblock</string>
+    <string name="settings_delete_trip">Delete trip</string>
+    <string name="settings_leave_trip">Leave trip</string>
+    <string name="settings_leave_note">Your photos stay in the trip.</string>
+    <string name="settings_delete_confirm_title">Delete %1$s?</string>
+    <string name="settings_delete_undone"> This can’t be undone.</string>
+    <string name="settings_keep_it">Keep it</string>
+    <string name="settings_leave_confirm_title">Leave %1$s?</string>
+    <string name="settings_leave_confirm_body">Your photos stay in the trip. You’ll need a new link to come back.</string>
+    <string name="settings_leave">Leave</string>
+    <string name="settings_remove_confirm_title">Remove %1$s?</string>
+    <string name="settings_remove_confirm_body">%1$s leaves the trip. Their photos stay.</string>
+    <string name="settings_block_confirm_title">Block %1$s?</string>
+    <string name="settings_block_confirm_body">%1$s leaves the trip and can’t rejoin with any link. Their photos stay.</string>
+    <string name="settings_block">Block %1$s</string>
+    <string name="settings_revoke_title">Revoke this link?</string>
+    <string name="settings_revoke">Revoke</string>
+
+    <!-- Invite links -->
+    <string name="settings_joined_none">No one has joined yet</string>
+    <string name="settings_joined_one">1 person joined</string>
+    <string name="settings_joined_many">%1$d joined</string>
+    <string name="settings_expired">Expired</string>
+    <string name="settings_expires_hours">Expires in %1$d hours</string>
+    <string name="settings_expires_tomorrow">Expires tomorrow</string>
+    <string name="settings_expires_days">Expires in %1$d days</string>
+    <string name="settings_revoke_none">No one has joined through it. Nothing else changes.</string>
+    <string name="settings_revoke_one">1 person already joined through it; they stay.</string>
+    <string name="settings_revoke_many">%1$d people already joined through it; they stay.</string>
+
+    <!-- What deleting a trip destroys -->
+    <string name="settings_delete_nothing">This trip has nothing in it yet.</string>
+    <string name="settings_delete_gone">%1$s will be gone for everyone.</string>
+    <string name="settings_and">%1$s and %2$s</string>
+    <string name="common_photo_one">1 photo</string>
+    <string name="common_video_one">1 video</string>
+
 </resources>

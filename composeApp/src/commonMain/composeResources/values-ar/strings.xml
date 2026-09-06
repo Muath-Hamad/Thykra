@@ -89,4 +89,64 @@
         <item>سبتمبر</item><item>أكتوبر</item><item>نوفمبر</item><item>ديسمبر</item>
     </string-array>
 
+    <!-- ── Trip ── -->
+    <string name="trip_offline">أنت دون اتصال · نعرض الصور المحفوظة</string>
+    <string name="trip_selected_count">%1$d محدّدة</string>
+    <string name="trip_select_all">حدّد الكل</string>
+    <string name="trip_settings">إعدادات الرحلة</string>
+    <string name="trip_videos_count">%1$d مقاطع</string>
+    <string name="trip_share_title">مشاركة %1$s</string>
+    <string name="trip_link_public">أي شخص لديه الرابط يمكنه العرض</string>
+    <string name="trip_link_owner_only">المالك وحده يمكنه تغيير هذا</string>
+    <string name="trip_invite_friends">ادعُ أصدقاءك</string>
+    <string name="trip_invite_supporting">ينشئ رابطاً صالحاً 7 أيام يمكنك مشاركته</string>
+    <string name="common_remove">إزالة</string>
+
+    <!-- ── Edit a trip ── -->
+    <string name="edit_trip_title">تعديل الرحلة</string>
+    <string name="edit_trip_name_error">أعطِ الرحلة اسماً</string>
+    <string name="common_save">حفظ</string>
+
+    <!-- ── Trip settings ── -->
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_show_more">اعرض %1$d آخرين</string>
+    <string name="settings_new_link">رابط جديد</string>
+    <string name="settings_expiry_days">%1$d أيام</string>
+    <string name="settings_unblock">رفع الحظر</string>
+    <string name="settings_delete_trip">احذف الرحلة</string>
+    <string name="settings_leave_trip">مغادرة الرحلة</string>
+    <string name="settings_leave_note">صورك تبقى في الرحلة.</string>
+    <string name="settings_delete_confirm_title">حذف %1$s؟</string>
+    <string name="settings_delete_undone"> لا يمكن التراجع عن هذا.</string>
+    <string name="settings_keep_it">أبقِها</string>
+    <string name="settings_leave_confirm_title">مغادرة %1$s؟</string>
+    <string name="settings_leave_confirm_body">صورك تبقى في الرحلة. ستحتاج رابطاً جديداً للعودة.</string>
+    <string name="settings_leave">غادر</string>
+    <string name="settings_remove_confirm_title">إزالة %1$s؟</string>
+    <string name="settings_remove_confirm_body">%1$s يغادر الرحلة. صوره تبقى.</string>
+    <string name="settings_block_confirm_title">حظر %1$s؟</string>
+    <string name="settings_block_confirm_body">%1$s يغادر الرحلة ولا يمكنه العودة بأي رابط. صوره تبقى.</string>
+    <string name="settings_block">احظر %1$s</string>
+    <string name="settings_revoke_title">إلغاء هذا الرابط؟</string>
+    <string name="settings_revoke">إلغاء</string>
+
+    <!-- Invite links -->
+    <string name="settings_joined_none">لم ينضم أحد بعد</string>
+    <string name="settings_joined_one">انضم شخص واحد</string>
+    <string name="settings_joined_many">انضم %1$d</string>
+    <string name="settings_expired">منتهٍ</string>
+    <string name="settings_expires_hours">ينتهي بعد %1$d ساعات</string>
+    <string name="settings_expires_tomorrow">ينتهي غداً</string>
+    <string name="settings_expires_days">ينتهي بعد %1$d أيام</string>
+    <string name="settings_revoke_none">لم ينضم أحد عبره. لا شيء آخر يتغيّر.</string>
+    <string name="settings_revoke_one">انضم شخص واحد عبره؛ يبقى في الرحلة.</string>
+    <string name="settings_revoke_many">انضم %1$d أشخاص عبره؛ يبقون في الرحلة.</string>
+
+    <!-- What deleting a trip destroys -->
+    <string name="settings_delete_nothing">لا شيء في هذه الرحلة بعد.</string>
+    <string name="settings_delete_gone">%1$s ستختفي عن الجميع.</string>
+    <string name="settings_and">%1$s و%2$s</string>
+    <string name="common_photo_one">صورة واحدة</string>
+    <string name="common_video_one">مقطع واحد</string>
+
 </resources>
