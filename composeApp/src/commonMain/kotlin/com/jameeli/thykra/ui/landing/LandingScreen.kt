@@ -6,6 +6,9 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +24,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -49,6 +56,7 @@ import com.jameeli.thykra.resources.landing_plate_7
 import com.jameeli.thykra.resources.landing_plate_8
 import com.jameeli.thykra.ui.kit.Stamp
 import com.jameeli.thykra.ui.kit.clayPhrase
+import com.jameeli.thykra.ui.theme.ThykraIcons
 import com.jameeli.thykra.ui.theme.LocalReducedMotion
 import com.jameeli.thykra.ui.theme.PlateShape
 import com.jameeli.thykra.ui.theme.ThemeMode
@@ -125,7 +133,11 @@ fun LandingScreenContent(authViewModel: AuthViewModel) {
 
                 Spacer(Modifier.height(28.dp))
 
-                SignInButtons(authViewModel)
+                var signInError by remember { mutableStateOf<String?>(null) }
+
+                SignInError(signInError)
+
+                SignInButtons(authViewModel, onError = { signInError = it })
 
                 Spacer(Modifier.height(16.dp))
 
@@ -147,19 +159,57 @@ fun LandingScreenContent(authViewModel: AuthViewModel) {
  * guidance puts Sign in with Apple first on iOS and nowhere else.
  */
 @Composable
-private fun SignInButtons(authViewModel: AuthViewModel) {
+private fun SignInButtons(authViewModel: AuthViewModel, onError: (String) -> Unit) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         PlatformGoogleSignInButton(
             onIdToken = { token -> authViewModel.loginWithGoogle(token) },
-            onError = { },
+            onError = onError,
         )
         PlatformAppleSignInButton(
             onIdToken = { token -> authViewModel.loginWithApple(token) },
-            onError = { },
+            onError = onError,
         )
+    }
+}
+
+/**
+ * The same strip the web landing shows, for the same reason: this screen is outside the
+ * shell, so it has no toast host, and a sign-in that fails silently leaves someone
+ * tapping a button that appears to do nothing.
+ */
+@Composable
+private fun SignInError(message: String?) {
+    val scheme = MaterialTheme.colorScheme
+    AnimatedVisibility(
+        visible = message != null,
+        enter = fadeIn(),
+        exit = fadeOut(),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 12.dp)
+                .background(scheme.errorContainer, MaterialTheme.shapes.small)
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Icon(
+                imageVector = ThykraIcons.Alert,
+                contentDescription = null,
+                tint = scheme.onErrorContainer,
+                modifier = Modifier.size(18.dp),
+            )
+            Text(
+                text = message.orEmpty(),
+                style = MaterialTheme.typography.bodySmall,
+                color = scheme.onErrorContainer,
+                textAlign = TextAlign.Start,
+            )
+        }
     }
 }
 
