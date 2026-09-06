@@ -7,6 +7,7 @@ import com.jameeli.thykra.db.DatabaseFactory
 import com.jameeli.thykra.plugins.configureCors
 import com.jameeli.thykra.plugins.configureForwardedHeaders
 import com.jameeli.thykra.plugins.configureMonitoring
+import com.jameeli.thykra.model.ClientConfigDto
 import com.jameeli.thykra.plugins.configureRouting
 import com.jameeli.thykra.plugins.configureSecurity
 import com.jameeli.thykra.plugins.configureSerialization
@@ -93,10 +94,18 @@ fun Application.module() {
     configureStatusPages()
     configureSecurity(jwtService)
     val allowDevLogin = environment.config.propertyOrNull("auth.allowDevLogin")?.getString()?.toBoolean() ?: false
+    val clientConfig = ClientConfigDto(
+        maxUploadBytes = environment.config.propertyOrNull("upload.maxBytes")
+            ?.getString()?.toLongOrNull() ?: DefaultMaxUploadBytes,
+    )
 
     configureRouting(
         authService, userRepository, albumRepository, albumMemberRepository, albumInviteRepository,
         blockedMemberRepository, mediaService, mediaRepository, reactionRepository, commentRepository,
-        activityRepository, activityFeedRepository, recapRepository, storageService, allowDevLogin
+        activityRepository, activityFeedRepository, recapRepository, storageService, allowDevLogin,
+        clientConfig
     )
 }
+
+/** Mirrors `upload.maxBytes` in application.conf, for a config that fails to parse. */
+private const val DefaultMaxUploadBytes = 104_857_600L
