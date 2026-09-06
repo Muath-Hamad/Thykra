@@ -35,6 +35,11 @@ import com.jameeli.thykra.ui.theme.ThykraIcons
  * A VIEWER sees Share full-width and no Add: the bar shows what you can do, rather than
  * showing what you cannot and greying it out.
  */
+private val ActionHeight = 44.dp
+
+/** 44 dp of button in a 60 dp bar, per the board — with room to grow for large text. */
+private val BarHeight = 60.dp
+
 @Composable
 fun TripActionBar(
     role: MemberRole,
@@ -55,8 +60,11 @@ fun TripActionBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(scheme.surface)
-                .height(60.dp)
+                // The inset goes outside the height so it is added below the bar, not
+                // taken out of it. The other order leaves a gesture-nav device around
+                // 36 dp of bar to seat 44 dp buttons in, and they clip.
                 .navigationBarsPadding()
+                .height(BarHeight)
                 .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -69,7 +77,7 @@ fun TripActionBar(
                     icon = ThykraIcons.Plus,
                     modifier = Modifier
                         .weight(1f)
-                        .height(44.dp),
+                        .height(ActionHeight),
                 )
                 if (compact) {
                     ActionIconButton(
@@ -85,7 +93,7 @@ fun TripActionBar(
                         onClick = onShare,
                         variant = ThykraButtonVariant.Tonal,
                         icon = ThykraIcons.Share,
-                        modifier = Modifier.height(44.dp),
+                        modifier = Modifier.height(ActionHeight),
                     )
                 }
             } else {
@@ -96,7 +104,7 @@ fun TripActionBar(
                     icon = ThykraIcons.Share,
                     modifier = Modifier
                         .weight(1f)
-                        .height(44.dp),
+                        .height(ActionHeight),
                 )
             }
 
