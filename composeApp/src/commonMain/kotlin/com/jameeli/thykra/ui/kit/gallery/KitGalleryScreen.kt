@@ -85,7 +85,7 @@ import com.jameeli.thykra.ui.theme.ThemeMode
 import com.jameeli.thykra.ui.theme.ThykraIcons
 import com.jameeli.thykra.ui.theme.ThykraTheme
 import com.jameeli.thykra.ui.theme.thykra
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 /**
  * The kit gallery — build step 02's own acceptance test, and the checklist the design's

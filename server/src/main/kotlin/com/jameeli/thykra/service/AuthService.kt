@@ -7,7 +7,7 @@ import com.jameeli.thykra.model.AuthResponse
 import com.jameeli.thykra.model.TokenResponse
 import com.jameeli.thykra.repository.RefreshTokenRepository
 import com.jameeli.thykra.repository.UserRepository
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 

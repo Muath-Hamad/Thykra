@@ -1,5 +1,7 @@
 package com.jameeli.thykra.repository
 
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.jdbc.*
 import com.jameeli.thykra.db.tables.AlbumMembersTable
 import com.jameeli.thykra.db.tables.AlbumsTable
 import com.jameeli.thykra.db.tables.MediaTable
@@ -17,17 +19,10 @@ import com.jameeli.thykra.model.PublicMediaDto
 import com.jameeli.thykra.model.PublicReactionSummaryDto
 import com.jameeli.thykra.model.ReactionType
 import com.jameeli.thykra.storage.StorageService
-import kotlinx.datetime.Clock
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.count
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import org.jetbrains.exposed.sql.update
+import kotlin.time.Clock
+
+import org.jetbrains.exposed.v1.jdbc.transactions.experimental.newSuspendedTransaction
+
 import java.util.UUID
 
 class AlbumRepository(private val storageService: StorageService) {

@@ -2,7 +2,7 @@ package com.jameeli.thykra.model
 
 import com.jameeli.thykra.chapters.ChapterMedia
 import com.jameeli.thykra.chapters.HasDimensions
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable

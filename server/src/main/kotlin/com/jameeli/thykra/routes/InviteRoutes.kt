@@ -16,7 +16,7 @@ import io.ktor.server.auth.principal
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import java.util.UUID
 
 /**

@@ -22,7 +22,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import io.ktor.server.routing.route
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import java.util.UUID
 import kotlin.time.Duration.Companion.days
 

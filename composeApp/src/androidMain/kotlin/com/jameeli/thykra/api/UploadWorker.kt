@@ -6,8 +6,8 @@ import androidx.work.WorkerParameters
 import com.jameeli.thykra.auth.AndroidTokenStorage
 import com.jameeli.thykra.model.ConfirmUploadRequest
 import com.jameeli.thykra.model.RequestUploadUrlRequest
-import kotlinx.datetime.Instant
-import kotlinx.datetime.Instant.Companion.fromEpochMilliseconds
+import kotlin.time.Instant
+import kotlin.time.Instant.Companion.fromEpochMilliseconds
 
 class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 

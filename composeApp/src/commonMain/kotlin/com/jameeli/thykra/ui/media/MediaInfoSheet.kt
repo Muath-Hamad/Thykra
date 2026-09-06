@@ -16,7 +16,7 @@ import com.jameeli.thykra.ui.kit.SheetDivider
 import com.jameeli.thykra.ui.kit.ThykraSheet
 import com.jameeli.thykra.ui.kit.formatChapterDate
 import com.jameeli.thykra.ui.theme.thykra
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 

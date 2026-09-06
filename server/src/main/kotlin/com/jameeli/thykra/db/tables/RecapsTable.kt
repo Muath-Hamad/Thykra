@@ -1,14 +1,16 @@
 package com.jameeli.thykra.db.tables
 
-import org.jetbrains.exposed.dao.id.UUIDTable
-import org.jetbrains.exposed.sql.ReferenceOption
-import org.jetbrains.exposed.sql.kotlin.datetime.timestamp
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.core.dao.id.java.UUIDTable
+import org.jetbrains.exposed.v1.core.java.javaUUID
+
+import org.jetbrains.exposed.v1.datetime.timestamp
 
 object RecapsTable : UUIDTable("recaps") {
     val albumId = reference("album_id", AlbumsTable, onDelete = ReferenceOption.CASCADE)
     val requestedBy = reference("requested_by", UsersTable, onDelete = ReferenceOption.CASCADE)
     val title = varchar("title", 255)
-    val coverMediaId = uuid("cover_media_id").nullable()
+    val coverMediaId = javaUUID("cover_media_id").nullable()
 
     // JSON array of media UUID strings, in edition (chronological) order.
     val mediaIds = text("media_ids")

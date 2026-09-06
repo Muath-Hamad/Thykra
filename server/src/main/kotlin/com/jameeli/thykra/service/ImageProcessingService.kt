@@ -5,7 +5,7 @@ import com.drew.metadata.exif.ExifSubIFDDirectory
 import com.jameeli.thykra.storage.StorageService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import net.coobird.thumbnailator.Thumbnails
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream

@@ -4,8 +4,7 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.server.application.ApplicationEnvironment
-import kotlinx.datetime.Clock
-import kotlinx.datetime.toJavaInstant
+import kotlin.time.Clock
 import java.util.Date
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
@@ -34,8 +33,8 @@ class JwtService(environment: ApplicationEnvironment) {
             .withAudience(audience)
             .withSubject(userId)
             .withClaim("email", email)
-            .withIssuedAt(Date.from(now.toJavaInstant()))
-            .withExpiresAt(Date.from(expiry.toJavaInstant()))
+            .withIssuedAt(Date(now.toEpochMilliseconds()))
+            .withExpiresAt(Date(expiry.toEpochMilliseconds()))
             .sign(algorithm)
     }
 

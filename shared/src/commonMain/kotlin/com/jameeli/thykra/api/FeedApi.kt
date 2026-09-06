@@ -42,7 +42,7 @@ class ActivityFeedApi(private val client: HttpClient) {
      * The read marker. Posted when the Activity tab is left rather than when it is
      * opened, so a glance at the top of the list does not mark the bottom of it seen.
      */
-    suspend fun markSeen(seenAt: kotlinx.datetime.Instant? = null): ApiResponse<ActivitySeenDto> =
+    suspend fun markSeen(seenAt: kotlin.time.Instant? = null): ApiResponse<ActivitySeenDto> =
         client.post("$API_BASE_URL/api/activity/seen") {
             contentType(ContentType.Application.Json)
             setBody(MarkActivitySeenRequest(seenAt))

@@ -48,7 +48,7 @@ import com.jameeli.thykra.ui.theme.ThykraIcons
 import com.jameeli.thykra.ui.upload.UploadDockHost
 import com.jameeli.thykra.ui.theme.thykra
 import com.jameeli.thykra.ui.theme.thykraAnimate
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 

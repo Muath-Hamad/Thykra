@@ -43,7 +43,7 @@ import com.jameeli.thykra.ui.theme.LightStatusBarIcons
 import com.jameeli.thykra.ui.theme.ThykraTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 

@@ -11,13 +11,13 @@ androidx-espresso = "3.7.0"
 androidx-lifecycle = "2.11.0"
 androidx-testExt = "1.3.0"
 composeMultiplatform = "1.12.0"
-exposed = "0.61.0"
+exposed = "1.5.0"
 googleid = "1.2.0"
 hikariCp = "7.1.0"
 junit = "4.13.2"
 kotlin = "2.4.10"
 kotlinxCoroutines = "1.11.0"
-kotlinxDatetime = "0.6.2"
+kotlinxDatetime = "0.8.0"
 kotlinxSerialization = "1.11.0"
 ktor = "3.5.2"
 logback = "1.6.3"
@@ -34,6 +34,7 @@ glance = "1.2.0"
 awsSdk = "2.54.13"
 robolectric = "4.16.1"
 androidxTestCore = "1.7.0"
+androidxCompose = "1.12.0"
 
 [libraries]
 # Kotlin
@@ -124,8 +125,8 @@ aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "awsSdk" }
 # Headless UI testing (Robolectric + Compose UI test, JVM-only — no emulator required)
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidxTestCore" }
-androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4-android", version.ref = "composeMultiplatform" }
-androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "composeMultiplatform" }
+androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4-android", version.ref = "androidxCompose" }
+androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidxCompose" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

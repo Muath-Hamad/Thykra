@@ -45,7 +45,7 @@ import com.jameeli.thykra.ui.theme.ThykraIcons
 import com.jameeli.thykra.ui.theme.thykra
 import com.jameeli.thykra.ui.theme.thykraAnimate
 import com.jameeli.thykra.nowMillis
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 /**
  * Design part 3 §10. What happened, in sentences.

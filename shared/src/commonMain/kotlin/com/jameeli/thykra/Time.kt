@@ -1,7 +1,7 @@
 package com.jameeli.thykra
 
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 /**
  * The current time, from the one module that already depends on kotlinx-datetime.

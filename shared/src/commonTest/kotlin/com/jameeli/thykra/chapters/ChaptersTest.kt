@@ -1,7 +1,7 @@
 package com.jameeli.thykra.chapters
 
 import com.jameeli.thykra.model.MediaType
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlin.test.Test
