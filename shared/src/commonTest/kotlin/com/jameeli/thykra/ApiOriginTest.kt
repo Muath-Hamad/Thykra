@@ -46,7 +46,7 @@ class ApiOriginTest {
     }
 
     @Test
-    fun `the api origin carries a scheme, so it survives https`() {
+    fun `the api origin carries a scheme so it survives https`() {
         // The old shape was host-only with a hardcoded http:// and :8081, which could
         // not express a deployed server on 443. This is the regression guard for that.
         assertEquals(true, API_BASE_URL.startsWith("http://") || API_BASE_URL.startsWith("https://"))

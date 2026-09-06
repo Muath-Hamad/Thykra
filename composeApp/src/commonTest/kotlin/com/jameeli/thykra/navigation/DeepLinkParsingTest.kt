@@ -52,7 +52,7 @@ class DeepLinkParsingTest {
     }
 
     @Test
-    fun `query strings, fragments and trailing slashes are ignored`() {
+    fun `query strings and fragments and trailing slashes are all ignored`() {
         assertEquals(
             DeepLinkTarget.Invite("tok"),
             parseDeepLink("https://thykra.com/invite/tok?utm_source=whatsapp"),
