@@ -29,6 +29,34 @@ import com.jameeli.thykra.ui.theme.ThykraIcons
 import kotlinx.coroutines.launch
 
 /**
+ * Turns Credential Manager's failure into something a person can act on.
+ *
+ * Google reports a misconfigured project as an opaque bracketed code inside the exception
+ * message rather than as a distinct exception type, so the message has to be read.
+ */
+private fun explain(type: String, message: String?): String {
+    val detail = message.orEmpty()
+    return when {
+        detail.contains("28444") || detail.contains("Developer console is not set up") ->
+            "Google doesn't recognise this build. Register the app's package and signing " +
+                "SHA-1 as an Android OAuth client in the same Cloud project as the client id."
+
+        detail.contains("10:") || detail.contains("DEVELOPER_ERROR") ->
+            "The Google client id and this build don't match. Check the package name and " +
+                "signing SHA-1 against the Cloud project."
+
+        detail.contains("network", ignoreCase = true) ->
+            "Couldn't reach Google. Check the connection and try again."
+
+        else -> debugDetail("Couldn't sign in with Google.", "$type $detail")
+    }
+}
+
+/** A debug build shows the raw cause; a release build never does. */
+private fun debugDetail(headline: String, detail: String?): String =
+    if (BuildConfig.DEBUG && !detail.isNullOrBlank()) "$headline ($detail)" else headline
+
+/**
  * Sign in with Google, through Credential Manager.
  *
  * Uses [GetSignInWithGoogleOption] rather than `GetGoogleIdOption`. The two look
@@ -86,11 +114,14 @@ actual fun PlatformGoogleSignInButton(
                             "as the client id.",
                     )
                 } catch (e: GetCredentialException) {
-                    Log.e("GoogleSignIn", "Credential Manager failed", e)
-                    onError("Couldn't sign in with Google. Try again in a moment.")
+                    // The framework only logs "error returned from framework"; the useful
+                    // part is in the exception message, which carries Google's own console
+                    // codes — [28444] is a package/SHA-1 that no OAuth client matches.
+                    Log.e("GoogleSignIn", "Credential Manager failed: ${e.type} ${e.message}", e)
+                    onError(explain(e.type, e.message))
                 } catch (e: Exception) {
-                    Log.e("GoogleSignIn", "Sign-in failed", e)
-                    onError("Couldn't sign in. Try again in a moment.")
+                    Log.e("GoogleSignIn", "Sign-in failed: ${e.message}", e)
+                    onError(debugDetail("Couldn't sign in.", e.message))
                 }
             }
         },
