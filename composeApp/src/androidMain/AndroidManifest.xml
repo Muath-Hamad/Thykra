@@ -3,6 +3,19 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!--
+        An upload batch has to survive the app being backgrounded; without a foreground
+        service Android is free to freeze the process mid-batch. dataSync is the type that
+        describes "finishing a transfer the user asked for".
+
+        POST_NOTIFICATIONS is runtime-granted from API 33. Denied, the service still runs
+        and the batch still finishes — only the progress notification is suppressed — so
+        the app does not block an upload on it.
+    -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -77,6 +90,11 @@
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name="com.jameeli.thykra.api.UploadForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
 
         <receiver
             android:name="com.jameeli.thykra.widget.LatestPhotoWidgetReceiver"

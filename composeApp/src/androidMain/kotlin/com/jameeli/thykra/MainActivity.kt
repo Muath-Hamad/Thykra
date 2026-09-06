@@ -1,11 +1,16 @@
 package com.jameeli.thykra
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.core.content.ContextCompat
 import androidx.core.content.IntentCompat
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
 import androidx.work.Constraints
@@ -27,6 +32,7 @@ import com.jameeli.thykra.api.InviteApi
 import com.jameeli.thykra.api.MediaApi
 import com.jameeli.thykra.api.ProfileApi
 import com.jameeli.thykra.api.ReactionApi
+import com.jameeli.thykra.api.UploadNotifier
 import com.jameeli.thykra.api.UploadQueueManager
 import com.jameeli.thykra.api.UploadWorker
 import com.jameeli.thykra.api.createApiClient
@@ -41,8 +47,19 @@ import com.jameeli.thykra.ui.upload.IncomingShareBus
 import com.jameeli.thykra.ui.share.SharingHost
 import com.jameeli.thykra.ui.theme.ThemePreference
 import com.jameeli.thykra.widget.WidgetDeepLinks
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+
+    /**
+     * Registered here because the contract has to exist before the activity starts, but
+     * fired only when the first upload is queued — asking for notification access on the
+     * launch screen, before anyone has done anything, is the prompt everyone denies.
+     */
+    private val requestNotifications =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { /* either way, uploads continue */ }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -71,6 +88,12 @@ class MainActivity : ComponentActivity() {
         val networkMonitor = AndroidNetworkMonitor(applicationContext)
         val uploadQueueManager = UploadQueueManager(mediaApi, lifecycleScope, persistence, networkMonitor)
         val authViewModel = AuthViewModel(authApi, tokenProvider)
+
+        // Keeps the foreground-service notification in step with the queue, so a batch
+        // survives the app being backgrounded instead of stalling at whatever file was
+        // in flight when the person switched away.
+        UploadNotifier(applicationContext).observe(lifecycleScope, uploadQueueManager.uploads)
+        askForNotificationsOnFirstUpload(uploadQueueManager)
 
         // Schedule background upload worker as a safety net for uploads pending after an app kill
         WorkManager.getInstance(applicationContext).enqueueUniqueWork(
@@ -101,6 +124,26 @@ class MainActivity : ComponentActivity() {
         // Handle deep links delivered as part of the launching intent (cold start from widget).
         deliverDeepLinkFrom(intent)
         deliverSharedMediaFrom(intent)
+    }
+
+    /**
+     * Asks for notification access the first time something is actually queued.
+     *
+     * Denied, the batch still uploads and still survives backgrounding — the foreground
+     * service runs either way, only its notification is suppressed — so this never gates
+     * the upload. It is asked once per launch and not repeated: a person who said no does
+     * not need to be asked again every time they add a photo.
+     */
+    private fun askForNotificationsOnFirstUpload(queue: UploadQueueManager) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+        lifecycleScope.launch {
+            queue.uploads.first { it.isNotEmpty() }
+            val granted = ContextCompat.checkSelfPermission(
+                this@MainActivity,
+                Manifest.permission.POST_NOTIFICATIONS,
+            ) == PackageManager.PERMISSION_GRANTED
+            if (!granted) requestNotifications.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 
     /**

@@ -17,4 +17,8 @@
     <string name="widget_no_activity">No recent activity</string>
     <string name="widget_signed_out">Sign in to view</string>
     <string name="widget_album_not_set">Tap to configure</string>
+    <string name="upload_channel_name">Uploads</string>
+    <string name="upload_channel_description">Shows progress while photos are being added to a trip.</string>
+    <string name="upload_notification_title">Adding photos</string>
+    <string name="upload_notification_progress">%1$d of %2$d</string>
 </resources>
