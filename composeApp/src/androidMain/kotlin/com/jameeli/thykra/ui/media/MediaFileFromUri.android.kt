@@ -38,6 +38,10 @@ fun mediaFileFromUri(context: Context, uri: Uri): PlatformMediaFile? {
         }
     }
 
+    // Read once, here, rather than at each call site: the picker and the share target
+    // both want a photo placed in the right day chapter the moment it is queued.
+    val metadata = readLocalMetadata(resolver, uri, mimeType)
+
     return PlatformMediaFile(
         name = name,
         contentType = mimeType,
@@ -45,5 +49,9 @@ fun mediaFileFromUri(context: Context, uri: Uri): PlatformMediaFile? {
         readBytes = {
             resolver.openInputStream(uri)?.use { it.readBytes() } ?: ByteArray(0)
         },
+        width = metadata.width,
+        height = metadata.height,
+        takenAt = metadata.takenAt,
+        durationMs = metadata.durationMs,
     )
 }

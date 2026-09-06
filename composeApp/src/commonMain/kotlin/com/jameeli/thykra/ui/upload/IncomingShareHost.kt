@@ -56,6 +56,8 @@ fun IncomingShareHost(
                         readBytes = file.readBytes,
                         width = file.width,
                         height = file.height,
+                        takenAt = file.takenAt,
+                        durationMs = file.durationMs,
                     ),
                 )
             }

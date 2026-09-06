@@ -44,6 +44,9 @@ kotlin {
             implementation(libs.androidx.credentials.playServices)
             implementation(libs.googleid)
             implementation(libs.androidx.work.runtime)
+            // Reads a photo's own capture date, so a queued upload lands in the
+            // right day chapter before the server has seen it.
+            implementation(libs.androidx.exifinterface)
             implementation(libs.coil.video)
             implementation(libs.androidx.media3.exoplayer)
             implementation(libs.androidx.media3.ui)
