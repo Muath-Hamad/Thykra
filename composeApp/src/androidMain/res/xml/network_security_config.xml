@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!-- Allow cleartext HTTP to the emulator host (dev only) -->
+    <!--
+      Cleartext is permitted only for the development origins this app is ever pointed at,
+      never globally: the emulator's loopback to the host, and the Unraid box on the LAN.
+      A build aimed at https://api.thykra.com needs none of this.
+
+      Listed by IP rather than tower.local because Android's mDNS resolution is unreliable
+      and a name that fails to resolve looks identical to a server that is down.
+    -->
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="false">10.0.2.2</domain>
+        <domain includeSubdomains="false">192.168.1.5</domain>
+        <domain includeSubdomains="false">tower.local</domain>
     </domain-config>
 </network-security-config>
