@@ -27,6 +27,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.recap_card_description
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.ui.theme.PlateShape
 import com.jameeli.thykra.ui.theme.ScrimPillAlpha
 import com.jameeli.thykra.ui.theme.ThykraIcons
@@ -57,6 +60,8 @@ fun RecapCard(
         MaterialTheme.colorScheme.inverseSurface
     }
     val shape = MaterialTheme.shapes.medium
+    // Resolved here: the semantics lambda is not a composable scope.
+    val description = stringResource(Res.string.recap_card_description, title, eyebrow)
     // The card is dark whatever the app theme is, so its ink comes from Darkroom.
     val onCover = darkroomExtended.onScrim
     val eyebrowColor = darkroomScheme.tertiary
@@ -68,7 +73,7 @@ fun RecapCard(
             .background(container)
             .clickable(role = Role.Button, onClick = onClick)
             .semantics(mergeDescendants = true) {
-                contentDescription = "Recap, $title, $eyebrow"
+                contentDescription = description
             },
     ) {
         Box(

@@ -27,6 +27,10 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.viewer_loading
+import com.jameeli.thykra.resources.viewer_pick_reaction
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.API_BASE_URL
 import com.jameeli.thykra.chapters.Chapter
 import com.jameeli.thykra.chapters.chapterOfMedia
@@ -114,6 +118,8 @@ private fun ViewerBody(
 
     val isLandscape = rememberIsLandscape()
     val filmstripState = rememberLazyListState()
+    // Resolved here: the semantics lambda is not a composable scope.
+    val pickReaction = stringResource(Res.string.viewer_pick_reaction)
     val scope = rememberCoroutineScope()
 
     // Grouped so the position pill can say "14 / 31 · Sat 12 Apr" — the index within the
@@ -161,7 +167,7 @@ private fun ViewerBody(
     ) {
         if (media.isEmpty()) {
             Text(
-                text = "Loading…",
+                text = stringResource(Res.string.viewer_loading),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.align(Alignment.Center),
@@ -235,7 +241,7 @@ private fun ViewerBody(
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .semantics { contentDescription = "Pick a reaction" },
+                    .semantics { contentDescription = pickReaction },
             )
         }
 

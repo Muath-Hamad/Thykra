@@ -23,6 +23,15 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.recaps_build
+import com.jameeli.thykra.resources.recaps_empty_body
+import com.jameeli.thykra.resources.recaps_empty_head
+import com.jameeli.thykra.resources.recaps_empty_tail
+import com.jameeli.thykra.resources.recaps_eyebrow
+import com.jameeli.thykra.resources.recaps_intro
+import com.jameeli.thykra.resources.recaps_title
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.model.AlbumDto
 import com.jameeli.thykra.model.RecapDto
 import com.jameeli.thykra.model.RecapStatus
@@ -93,8 +102,11 @@ fun RecapsScreen(
     if (recaps.isEmpty() && without.isEmpty() && loaded) {
         Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             EmptyState(
-                headline = clayPhrase("Twelve photos ", "first."),
-                body = "Recaps build from trips with $RecapMinimumPhotos or more photos.",
+                headline = clayPhrase(
+                    stringResource(Res.string.recaps_empty_head),
+                    stringResource(Res.string.recaps_empty_tail),
+                ),
+                body = stringResource(Res.string.recaps_empty_body, RecapMinimumPhotos),
                 glyph = EmptyGlyph.Plate,
             )
         }
@@ -110,13 +122,13 @@ fun RecapsScreen(
             item("header") {
                 Column {
                     Text(
-                        text = "Recaps",
+                        text = stringResource(Res.string.recaps_title),
                         style = MaterialTheme.typography.displaySmall,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.semantics { heading() },
                     )
                     Text(
-                        text = "Short photo stories, built from a trip. Share them with anyone.",
+                        text = stringResource(Res.string.recaps_intro),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.thykra.textMeta,
                         modifier = Modifier.padding(top = 6.dp),
@@ -136,7 +148,7 @@ fun RecapsScreen(
             } else {
                 RecapCard(
                     title = recap.title,
-                    eyebrow = "Recap · ${recap.mediaIds.size} photos",
+                    eyebrow = stringResource(Res.string.recaps_eyebrow, recap.mediaIds.size),
                     coverUrl = recap.coverUrl,
                     onClick = { recap.shareToken?.let(onOpenRecap) },
                     modifier = Modifier.thykraAnimate(),
@@ -194,7 +206,7 @@ private fun BuildRow(
         }
         if (eligible) {
             ThykraButton(
-                label = "Build",
+                label = stringResource(Res.string.recaps_build),
                 onClick = onBuild,
                 variant = ThykraButtonVariant.Tonal,
                 size = ThykraButtonSize.Compact,

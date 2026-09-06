@@ -159,4 +159,90 @@
     <string name="common_photo_one">1 photo</string>
     <string name="common_video_one">1 video</string>
 
+    <!-- ── Me ── -->
+    <string name="me_edit_profile">Edit name and photo</string>
+    <string name="me_language">Language</string>
+    <string name="me_language_choices">English · العربية</string>
+    <string name="me_wifi_only">Upload on Wi-Fi only</string>
+    <string name="me_wifi_only_help">Videos wait for Wi-Fi; photos go anytime</string>
+    <string name="me_clear_cache">Clear saved photos</string>
+    <string name="me_clear">Clear</string>
+    <string name="me_sign_out">Sign out</string>
+    <string name="me_clear_confirm_title">Clear saved photos?</string>
+    <string name="me_clear_confirm_body">%1$s will be removed from this phone. Nothing is deleted from any trip, and photos download again when you open them.</string>
+    <string name="me_sign_out_confirm_title">Sign out?</string>
+    <string name="me_sign_out_confirm_one">1 upload in progress will pause until you’re back.</string>
+    <string name="me_sign_out_confirm_many">%1$d uploads in progress will pause until you’re back.</string>
+    <string name="me_your_name">Your name</string>
+    <string name="me_name_label">Name</string>
+    <string name="me_name_helper">Friends in your trips see this</string>
+    <string name="me_name_error">Give yourself a name</string>
+
+    <!-- ── Comments ── -->
+    <string name="comments_title">Comments</string>
+    <string name="comments_empty">No comments yet — be the first.</string>
+    <string name="comments_placeholder">Add a comment…</string>
+    <string name="comments_edited">edited</string>
+    <string name="common_close">Close</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_edit">Edit</string>
+    <string name="common_delete">Delete</string>
+
+    <!-- ── Viewer ── -->
+    <string name="viewer_loading">Loading…</string>
+    <string name="viewer_pick_reaction">Pick a reaction</string>
+    <string name="info_added_by">Added by</string>
+    <string name="info_taken">Taken</string>
+    <string name="info_no_date">No date</string>
+    <string name="info_size">Size</string>
+    <string name="info_type">Type</string>
+    <string name="info_added">Added</string>
+    <string name="info_length">Length</string>
+
+    <!-- ── Activity ── -->
+    <string name="activity_empty_head">Quiet, </string>
+    <string name="activity_empty_tail">for now.</string>
+    <string name="activity_empty_body">When friends add, react or comment, it shows here.</string>
+    <string name="activity_what_happened">What happened</string>
+    <string name="activity_seen">Seen</string>
+    <string name="activity_end">That’s everything</string>
+
+    <!-- ── Recaps ── -->
+    <string name="recaps_title">Recaps</string>
+    <string name="recaps_intro">Short photo stories, built from a trip. Share them with anyone.</string>
+    <string name="recaps_empty_head">Twelve photos </string>
+    <string name="recaps_empty_tail">first.</string>
+    <string name="recaps_empty_body">Recaps build from trips with %1$d or more photos.</string>
+    <string name="recaps_build">Build</string>
+    <string name="recaps_eyebrow">Recap · %1$d photos</string>
+    <string name="recap_unavailable_head">This recap </string>
+    <string name="recap_unavailable_tail">isn’t available.</string>
+    <string name="recap_position">%1$d of %2$d</string>
+    <string name="recap_share">Share recap</string>
+    <string name="recap_photo_position">Photo %1$d of %2$d</string>
+
+    <!-- ── Invite ── -->
+    <string name="invite_check_failed_head">Couldn’t check </string>
+    <string name="invite_check_failed_tail">this link.</string>
+    <string name="invite_pitch">Everyone’s photos in one place. Join and yours land in the right day on their own.</string>
+    <string name="invite_already_head">You’re </string>
+    <string name="invite_already_tail">already in.</string>
+    <string name="invite_already_body">This trip is already yours to open.</string>
+    <string name="invite_expired_head">Link </string>
+    <string name="invite_expired_tail">expired.</string>
+    <string name="invite_expired_body">This link has run out. Ask %1$s for a fresh one — the trip is still there.</string>
+    <string name="invite_someone">whoever sent it</string>
+    <string name="invite_them">them</string>
+    <string name="invite_dead_head">This link </string>
+    <string name="invite_dead_tail">isn’t available.</string>
+    <string name="invite_dead_body">Ask whoever sent it for a new one.</string>
+    <string name="invite_open_trip">Open the trip</string>
+    <string name="invite_message">Message %1$s</string>
+    <string name="invite_message_text">Could you send me a fresh Thykra link? Thanks, %1$s.</string>
+    <string name="invite_go_to_trips">Go to my trips</string>
+    <string name="invite_joined_head">You’re </string>
+    <string name="invite_joined_tail">in.</string>
+    <string name="invite_add_photos">Add my photos</string>
+
+    <string name="recap_card_description">Recap, %1$s, %2$s</string>
 </resources>

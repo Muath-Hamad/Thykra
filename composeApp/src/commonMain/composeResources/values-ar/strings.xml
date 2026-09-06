@@ -149,4 +149,90 @@
     <string name="common_photo_one">صورة واحدة</string>
     <string name="common_video_one">مقطع واحد</string>
 
+    <!-- ── Me ── -->
+    <string name="me_edit_profile">تعديل الاسم والصورة</string>
+    <string name="me_language">اللغة</string>
+    <string name="me_language_choices">English · العربية</string>
+    <string name="me_wifi_only">الرفع عبر الواي فاي فقط</string>
+    <string name="me_wifi_only_help">المقاطع تنتظر الواي فاي؛ والصور ترتفع دائماً</string>
+    <string name="me_clear_cache">امسح الصور المحفوظة</string>
+    <string name="me_clear">امسح</string>
+    <string name="me_sign_out">تسجيل الخروج</string>
+    <string name="me_clear_confirm_title">مسح الصور المحفوظة؟</string>
+    <string name="me_clear_confirm_body">سيُزال %1$s من هذا الهاتف. لا يُحذف شيء من أي رحلة، والصور تُنزّل مجدداً عند فتحها.</string>
+    <string name="me_sign_out_confirm_title">تسجيل الخروج؟</string>
+    <string name="me_sign_out_confirm_one">عملية رفع واحدة جارية ستتوقف حتى تعود.</string>
+    <string name="me_sign_out_confirm_many">%1$d عمليات رفع جارية ستتوقف حتى تعود.</string>
+    <string name="me_your_name">اسمك</string>
+    <string name="me_name_label">الاسم</string>
+    <string name="me_name_helper">يراه أصدقاؤك في رحلاتك</string>
+    <string name="me_name_error">أعطِ نفسك اسماً</string>
+
+    <!-- ── Comments ── -->
+    <string name="comments_title">التعليقات</string>
+    <string name="comments_empty">لا تعليقات بعد — كن أول من يكتب.</string>
+    <string name="comments_placeholder">أضف تعليقاً…</string>
+    <string name="comments_edited">مُعدّل</string>
+    <string name="common_close">إغلاق</string>
+    <string name="common_cancel">إلغاء</string>
+    <string name="common_edit">تعديل</string>
+    <string name="common_delete">حذف</string>
+
+    <!-- ── Viewer ── -->
+    <string name="viewer_loading">جارٍ التحميل…</string>
+    <string name="viewer_pick_reaction">اختر تفاعلاً</string>
+    <string name="info_added_by">أضافها</string>
+    <string name="info_taken">التُقطت</string>
+    <string name="info_no_date">بلا تاريخ</string>
+    <string name="info_size">المقاس</string>
+    <string name="info_type">النوع</string>
+    <string name="info_added">أُضيفت</string>
+    <string name="info_length">المدة</string>
+
+    <!-- ── Activity ── -->
+    <string name="activity_empty_head">هدوء، </string>
+    <string name="activity_empty_tail">في الوقت الحالي.</string>
+    <string name="activity_empty_body">عندما يضيف أصدقاؤك أو يتفاعلون أو يعلقون، يظهر ذلك هنا.</string>
+    <string name="activity_what_happened">ما الذي حدث</string>
+    <string name="activity_seen">مقروء</string>
+    <string name="activity_end">هذا كل شيء</string>
+
+    <!-- ── Recaps ── -->
+    <string name="recaps_title">الملخّصات</string>
+    <string name="recaps_intro">قصص مصورة قصيرة، تُبنى من رحلة. شاركها مع من تشاء.</string>
+    <string name="recaps_empty_head">اثنتا عشرة صورة </string>
+    <string name="recaps_empty_tail">أولاً.</string>
+    <string name="recaps_empty_body">تُبنى الملخّصات من الرحلات التي فيها %1$d صورة أو أكثر.</string>
+    <string name="recaps_build">ابنِ</string>
+    <string name="recaps_eyebrow">ملخّص · %1$d صور</string>
+    <string name="recap_unavailable_head">هذا الملخّص </string>
+    <string name="recap_unavailable_tail">غير متاح.</string>
+    <string name="recap_position">%1$d من %2$d</string>
+    <string name="recap_share">مشاركة الملخّص</string>
+    <string name="recap_photo_position">صورة %1$d من %2$d</string>
+
+    <!-- ── Invite ── -->
+    <string name="invite_check_failed_head">تعذّر التحقق من </string>
+    <string name="invite_check_failed_tail">هذا الرابط.</string>
+    <string name="invite_pitch">صور الجميع في مكان واحد. انضم، وصورك تستقرّ في يومها وحدها.</string>
+    <string name="invite_already_head">أنت </string>
+    <string name="invite_already_tail">منضمّ بالفعل.</string>
+    <string name="invite_already_body">هذه الرحلة متاحة لك أصلاً.</string>
+    <string name="invite_expired_head">الرابط </string>
+    <string name="invite_expired_tail">منتهٍ.</string>
+    <string name="invite_expired_body">انتهت صلاحية هذا الرابط. اطلب من %1$s رابطاً جديداً — الرحلة ما زالت هناك.</string>
+    <string name="invite_someone">من أرسله</string>
+    <string name="invite_them">هم</string>
+    <string name="invite_dead_head">هذا الرابط </string>
+    <string name="invite_dead_tail">غير متاح.</string>
+    <string name="invite_dead_body">اطلب من أرسله رابطاً جديداً.</string>
+    <string name="invite_open_trip">افتح الرحلة</string>
+    <string name="invite_message">راسل %1$s</string>
+    <string name="invite_message_text">هل يمكنك إرسال رابط ثيكرا جديد؟ شكراً، %1$s.</string>
+    <string name="invite_go_to_trips">اذهب إلى رحلاتي</string>
+    <string name="invite_joined_head">أنت </string>
+    <string name="invite_joined_tail">معنا.</string>
+    <string name="invite_add_photos">أضف صوري</string>
+
+    <string name="recap_card_description">ملخّص، %1$s، %2$s</string>
 </resources>

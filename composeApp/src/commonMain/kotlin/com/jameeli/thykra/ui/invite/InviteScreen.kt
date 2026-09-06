@@ -35,6 +35,31 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.common_close
+import com.jameeli.thykra.resources.common_try_again
+import com.jameeli.thykra.resources.invite_add_photos
+import com.jameeli.thykra.resources.invite_already_body
+import com.jameeli.thykra.resources.invite_already_head
+import com.jameeli.thykra.resources.invite_already_tail
+import com.jameeli.thykra.resources.invite_check_failed_head
+import com.jameeli.thykra.resources.invite_check_failed_tail
+import com.jameeli.thykra.resources.invite_dead_body
+import com.jameeli.thykra.resources.invite_dead_head
+import com.jameeli.thykra.resources.invite_dead_tail
+import com.jameeli.thykra.resources.invite_expired_body
+import com.jameeli.thykra.resources.invite_expired_head
+import com.jameeli.thykra.resources.invite_expired_tail
+import com.jameeli.thykra.resources.invite_go_to_trips
+import com.jameeli.thykra.resources.invite_joined_head
+import com.jameeli.thykra.resources.invite_joined_tail
+import com.jameeli.thykra.resources.invite_message
+import com.jameeli.thykra.resources.invite_message_text
+import com.jameeli.thykra.resources.invite_open_trip
+import com.jameeli.thykra.resources.invite_pitch
+import com.jameeli.thykra.resources.invite_someone
+import com.jameeli.thykra.resources.invite_them
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.model.InvitePreviewDto
 import com.jameeli.thykra.model.InviteStatus
 import com.jameeli.thykra.ui.kit.AvatarSize
@@ -93,7 +118,10 @@ fun InviteScreen(
                 contentAlignment = Alignment.Center,
             ) {
                 EmptyState(
-                    headline = clayPhrase("Couldn't check ", "this link."),
+                    headline = clayPhrase(
+                        stringResource(Res.string.invite_check_failed_head),
+                        stringResource(Res.string.invite_check_failed_tail),
+                    ),
                     body = if (current.offline) {
                         "You're offline. Try again when you're back."
                     } else {
@@ -101,7 +129,7 @@ fun InviteScreen(
                     },
                     glyph = if (current.offline) EmptyGlyph.Offline else EmptyGlyph.Plate,
                     primary = ThykraButtonSpec(
-                        label = "Try again",
+                        label = stringResource(Res.string.common_try_again),
                         onClick = { viewModel.load(token) },
                         variant = ThykraButtonVariant.Outlined,
                         icon = ThykraIcons.Retry,
@@ -127,7 +155,13 @@ fun InviteScreen(
                 onJustLook = { onJoined(current.album.id) },
             )
 
-            is InviteUiState.Ready -> InvitePreviewBody(
+            is InviteUiState.Ready -> {
+                // Both resolved in composition: the share handler below is a plain
+                // lambda, and the inviter's name is already known here.
+                val inviterDisplay = current.preview.invitedBy?.displayName
+                    ?: stringResource(Res.string.invite_them)
+                val askForFreshLink = stringResource(Res.string.invite_message_text, inviterDisplay)
+                InvitePreviewBody(
                 preview = current.preview,
                 signedIn = signedIn,
                 joining = false,
@@ -138,11 +172,9 @@ fun InviteScreen(
                 onSignIn = onSignIn,
                 onClose = onClose,
                 onOpenTrip = onOpenTrip,
-                onMessageInviter = {
-                    val name = current.preview.invitedBy?.displayName ?: "them"
-                    shareText("Could you send me a fresh Thykra link? Thanks, $name.")
-                },
-            )
+                onMessageInviter = { shareText(askForFreshLink) },
+                )
+            }
         }
 
         CloseButton(onClose = onClose, modifier = Modifier.align(Alignment.TopStart))
@@ -227,18 +259,29 @@ private fun InvitePreviewBody(
             when (status) {
                 InviteStatus.VALID -> ValidBody(preview, album?.title)
                 InviteStatus.ALREADY_MEMBER -> DeadEndBody(
-                    headline = clayPhrase("You're ", "already in."),
-                    body = "This trip is already yours to open.",
+                    headline = clayPhrase(
+                        stringResource(Res.string.invite_already_head),
+                        stringResource(Res.string.invite_already_tail),
+                    ),
+                    body = stringResource(Res.string.invite_already_body),
                 )
                 InviteStatus.EXPIRED -> DeadEndBody(
-                    headline = clayPhrase("Link ", "expired."),
-                    body = "This link has run out. Ask ${preview?.invitedBy?.displayName ?: "whoever sent it"} " +
-                        "for a fresh one — the trip is still there.",
+                    headline = clayPhrase(
+                        stringResource(Res.string.invite_expired_head),
+                        stringResource(Res.string.invite_expired_tail),
+                    ),
+                    body = stringResource(
+                        Res.string.invite_expired_body,
+                        preview?.invitedBy?.displayName ?: stringResource(Res.string.invite_someone),
+                    ),
                 )
                 InviteStatus.REVOKED, InviteStatus.BLOCKED -> DeadEndBody(
                     // Byte-identical for a blocked person and for an unknown token.
-                    headline = clayPhrase("This link ", "isn't available."),
-                    body = "Ask whoever sent it for a new one.",
+                    headline = clayPhrase(
+                        stringResource(Res.string.invite_dead_head),
+                        stringResource(Res.string.invite_dead_tail),
+                    ),
+                    body = stringResource(Res.string.invite_dead_body),
                 )
             }
 
@@ -278,8 +321,7 @@ private fun ValidBody(preview: InvitePreviewDto?, title: String?) {
     Text(
         // Fixed copy: the preview payload carries no description, and inventing one from
         // the trip's own would leak more than the invite should.
-        text = "Everyone's photos in one place. Join and yours land in the right day " +
-            "on their own.",
+        text = stringResource(Res.string.invite_pitch),
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.thykra.textMeta,
     )
@@ -377,14 +419,18 @@ private fun InviteActions(
             }
 
             InviteStatus.ALREADY_MEMBER -> ThykraButton(
-                label = "Open the trip",
+                label = stringResource(Res.string.invite_open_trip),
                 onClick = onOpenTrip,
                 modifier = Modifier.fillMaxWidth(),
             )
 
             InviteStatus.EXPIRED -> {
                 ThykraButton(
-                    label = "Message ${inviterName?.substringBefore(' ') ?: "them"}",
+                    label = stringResource(
+                        Res.string.invite_message,
+                        inviterName?.substringBefore(' ')
+                            ?: stringResource(Res.string.invite_them),
+                    ),
                     onClick = onMessageInviter,
                     variant = ThykraButtonVariant.Outlined,
                     modifier = Modifier.fillMaxWidth(),
@@ -394,7 +440,7 @@ private fun InviteActions(
 
             // Revoked and blocked offer nothing but a way out — there is nothing to do here.
             InviteStatus.REVOKED, InviteStatus.BLOCKED -> ThykraButton(
-                label = "Go to my trips",
+                label = stringResource(Res.string.invite_go_to_trips),
                 onClick = onClose,
                 variant = ThykraButtonVariant.Outlined,
                 modifier = Modifier.fillMaxWidth(),
@@ -420,7 +466,10 @@ private fun JoinedCelebration(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = clayPhrase("You're ", "in."),
+            text = clayPhrase(
+                stringResource(Res.string.invite_joined_head),
+                stringResource(Res.string.invite_joined_tail),
+            ),
             style = MaterialTheme.typography.displayLarge,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
@@ -440,7 +489,7 @@ private fun JoinedCelebration(
         )
         Spacer(Modifier.height(28.dp))
         ThykraButton(
-            label = "Add my photos",
+            label = stringResource(Res.string.invite_add_photos),
             onClick = onAddPhotos,
             icon = ThykraIcons.Plus,
             modifier = Modifier.fillMaxWidth(),
@@ -466,7 +515,7 @@ private fun CloseButton(onClose: () -> Unit, modifier: Modifier = Modifier) {
     ) {
         Icon(
             imageVector = ThykraIcons.Close,
-            contentDescription = "Close",
+            contentDescription = stringResource(Res.string.common_close),
             tint = extended.onScrim,
             modifier = Modifier.size(20.dp),
         )
