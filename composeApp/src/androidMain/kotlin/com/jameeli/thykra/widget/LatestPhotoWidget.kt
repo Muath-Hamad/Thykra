@@ -32,7 +32,7 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
-import com.jameeli.thykra.API_HOST
+import com.jameeli.thykra.resolveAgainstApiOrigin
 import com.jameeli.thykra.MainActivity
 import com.jameeli.thykra.model.MediaDto
 import com.jameeli.thykra.model.MediaStatus
@@ -102,8 +102,7 @@ class LatestPhotoWidget : GlanceAppWidget() {
     private suspend fun downloadThumbnail(api: WidgetApi, media: MediaDto): Bitmap? =
         withContext(Dispatchers.IO) {
             try {
-                val url = (media.thumbnailUrl ?: media.url)
-                    .replace("://localhost:", "://$API_HOST:")
+                val url = resolveAgainstApiOrigin(media.thumbnailUrl ?: media.url)
                 val bytes = api.client.get(url).bodyAsBytes()
                 BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
             } catch (_: Throwable) {

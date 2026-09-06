@@ -8,6 +8,6 @@ class JsPlatform: Platform {
 
 actual fun getPlatform(): Platform = JsPlatform()
 
-actual val API_HOST: String = "localhost"
+actual val API_BASE_URL: String = "http://localhost:$SERVER_PORT"
 
 actual val WEB_BASE_URL: String = window.location.origin

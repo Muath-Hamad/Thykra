@@ -1,7 +1,7 @@
 package com.jameeli.thykra.api
 
 import com.jameeli.thykra.API_BASE_URL
-import com.jameeli.thykra.API_HOST
+import com.jameeli.thykra.resolveAgainstApiOrigin
 import com.jameeli.thykra.model.ApiResponse
 import com.jameeli.thykra.model.ConfirmUploadRequest
 import com.jameeli.thykra.model.MediaDto
@@ -52,9 +52,10 @@ class MediaApi(
         contentType: String,
         onProgress: ((sent: Long, total: Long) -> Unit)? = null
     ) {
-        // Replace localhost with the platform-specific API host so Android emulator
-        // (which uses 10.0.2.2) and other platforms work without extra server config.
-        val fixedUrl = uploadUrl.replace("://localhost:", "://$API_HOST:")
+        // The dev server mints presigned URLs from its own point of view, so an
+        // emulator, a device and a tunnel each need the origin swapped for one they
+        // can reach.
+        val fixedUrl = resolveAgainstApiOrigin(uploadUrl)
         val response = rawClient.request(fixedUrl) {
             this.method = HttpMethod.parse(method)
             headers.forEach { (key, value) -> this.header(key, value) }
