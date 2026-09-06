@@ -67,6 +67,12 @@ fun TripsScreen(
     uploadQueueManager: UploadQueueManager,
     modifier: Modifier = Modifier,
     networkMonitor: NetworkMonitor? = null,
+    /**
+     * Opens the create sheet as soon as the screen appears. Set when someone shared
+     * photos in and chose "New trip" — they asked for the sheet already, and making them
+     * find the button again would be asking twice.
+     */
+    openCreateOnEntry: Boolean = false,
 ) {
     val trips by viewModel.trips.collectAsState()
     val profile by viewModel.profile.collectAsState()
@@ -77,7 +83,7 @@ fun TripsScreen(
     val connected by viewModel.connected.collectAsState()
     val chrome = LocalThykraChrome.current
 
-    var createOpen by remember { mutableStateOf(false) }
+    var createOpen by remember { mutableStateOf(openCreateOnEntry) }
     val listState = rememberLazyListState()
 
     // The pinned title arrives only once the big one has gone.

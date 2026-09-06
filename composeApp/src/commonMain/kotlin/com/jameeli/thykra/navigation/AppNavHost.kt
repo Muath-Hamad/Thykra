@@ -14,7 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -52,6 +54,7 @@ import com.jameeli.thykra.ui.landing.LandingScreenContent
 import com.jameeli.thykra.ui.trip.TripScreen
 import com.jameeli.thykra.ui.trip.TripViewModel
 import com.jameeli.thykra.ui.trips.TripsScreen
+import com.jameeli.thykra.ui.upload.IncomingShareHost
 import com.jameeli.thykra.ui.trips.TripsViewModel
 import com.jameeli.thykra.ui.me.DevicePreferences
 import com.jameeli.thykra.ui.me.MeScreen
@@ -114,6 +117,10 @@ fun AppNavHost(
     AuthRouting(authState, navController)
     DeepLinkRouting(authState, navController)
 
+    // Raised by the share host when someone picks "New trip"; consumed by the Trips root
+    // on its next composition so the create sheet is already open when they land.
+    var openCreateOnEntry by remember { mutableStateOf(false) }
+
     CompositionLocalProvider(LocalThykraChrome provides chrome) {
         ThykraShell(
             chrome = chrome,
@@ -142,11 +149,14 @@ fun AppNavHost(
                     val viewModel = remember {
                         TripsViewModel(albumApi, profileApi, networkMonitor)
                     }
+                    val openCreate = openCreateOnEntry
+                    LaunchedEffect(openCreate) { if (openCreate) openCreateOnEntry = false }
                     TripsScreen(
                         viewModel = viewModel,
                         onOpenTrip = { albumId -> navController.navigate(Trip(albumId)) },
                         uploadQueueManager = uploadQueueManager,
                         networkMonitor = networkMonitor,
+                        openCreateOnEntry = openCreate,
                     )
                 }
 
@@ -313,6 +323,23 @@ fun AppNavHost(
                 }
             }
         }
+
+        // Outside the shell's content slot on purpose: photos shared in from another app
+        // arrive on a cold start, so the sheet cannot depend on which screen happens to
+        // be composed when the intent lands.
+        IncomingShareHost(
+            signedOut = signedOut,
+            albumApi = albumApi,
+            uploadQueueManager = uploadQueueManager,
+            currentTripId = backStackEntry
+                ?.takeIf { destination?.isRoute<Trip>() == true }
+                ?.toRoute<Trip>()?.albumId,
+            onOpenTrip = { albumId -> navController.navigate(Trip(albumId)) },
+            onCreateTrip = {
+                openCreateOnEntry = true
+                navController.switchTab(RootTab.Trips)
+            },
+        )
     }
 }
 

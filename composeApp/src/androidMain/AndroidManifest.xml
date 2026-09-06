@@ -38,6 +38,28 @@
                 <data android:scheme="https" android:host="thykra.com" android:pathPrefix="/r" />
             </intent-filter>
 
+            <!--
+                Share-to-Thykra. A photo shared from the gallery lands here, and the app
+                asks which trip it belongs to.
+
+                mimeType is image/* and video/* rather than */*: appearing in the share
+                sheet for a PDF and then refusing it is worse than not appearing at all.
+                SEND carries one item in EXTRA_STREAM, SEND_MULTIPLE a list, and both are
+                delivered to the existing singleTop activity through onNewIntent.
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+                <data android:mimeType="video/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+                <data android:mimeType="video/*" />
+            </intent-filter>
+
             <!-- The custom scheme the widgets already emit. No verification needed. -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

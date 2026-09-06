@@ -22,6 +22,8 @@
     <string name="common_retry_all">أعد محاولة الكل</string>
     <string name="common_more_options">خيارات أخرى</string>
     <string name="common_in_progress">جارٍ التنفيذ</string>
+    <string name="common_photos_count">%1$d صور</string>
+    <string name="common_people_count">%1$d أشخاص</string>
 
     <!-- ── Trip action bar ── -->
     <string name="trip_add_photos">إضافة صور</string>
@@ -36,5 +38,15 @@
     <!-- ── Upload dock ── -->
     <string name="upload_batch_done">أُضيفت %1$d صور.</string>
     <string name="upload_see_them">شاهدها</string>
+
+    <!-- ── Share into the app ── -->
+    <string name="share_pick_trip_title">أضِفها إلى أي رحلة؟</string>
+    <string name="share_pick_trip_one">صورة واحدة في الانتظار</string>
+    <string name="share_pick_trip_many">%1$d صور في الانتظار</string>
+    <string name="share_new_trip">رحلة جديدة</string>
+    <string name="share_no_trips">لا رحلات لديك بعد. أنشئ واحدة وتذهب الصور إليها مباشرة.</string>
+    <string name="share_sign_in">سجّل الدخول لإضافة هذه الصور.</string>
+    <string name="share_cancel">ليس الآن</string>
+    <string name="share_too_large">%1$s تتجاوز الحد المسموح وتُركت خارجاً</string>
 
 </resources>

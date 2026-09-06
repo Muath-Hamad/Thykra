@@ -1,8 +1,10 @@
 package com.jameeli.thykra
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.core.content.IntentCompat
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
@@ -33,7 +35,9 @@ import com.jameeli.thykra.auth.AuthViewModel
 import com.jameeli.thykra.navigation.DeepLinkBus
 import com.jameeli.thykra.navigation.DeepLinkTarget
 import com.jameeli.thykra.navigation.handleDeepLink
+import com.jameeli.thykra.ui.media.mediaFileFromUri
 import com.jameeli.thykra.ui.me.AndroidDevicePreferences
+import com.jameeli.thykra.ui.upload.IncomingShareBus
 import com.jameeli.thykra.ui.share.SharingHost
 import com.jameeli.thykra.ui.theme.ThemePreference
 import com.jameeli.thykra.widget.WidgetDeepLinks
@@ -96,6 +100,7 @@ class MainActivity : ComponentActivity() {
 
         // Handle deep links delivered as part of the launching intent (cold start from widget).
         deliverDeepLinkFrom(intent)
+        deliverSharedMediaFrom(intent)
     }
 
     /**
@@ -105,6 +110,38 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         deliverDeepLinkFrom(intent)
+        deliverSharedMediaFrom(intent)
+    }
+
+    /**
+     * Forwards photos shared into the app to [IncomingShareBus], which the shell drains
+     * by asking which trip they belong to.
+     *
+     * Read permission on these URIs is granted to *this activity* and dies with it, so
+     * the files are held as lazy readers and drained while it is alive rather than
+     * copied here — staging every shared video to disk before anyone has said which trip
+     * they are for would be a lot of I/O for a share that may be cancelled.
+     */
+    private fun deliverSharedMediaFrom(intent: Intent?) {
+        if (intent == null) return
+        val uris: List<Uri> = when (intent.action) {
+            Intent.ACTION_SEND ->
+                listOfNotNull(IntentCompat.getParcelableExtra(intent, Intent.EXTRA_STREAM, Uri::class.java))
+
+            Intent.ACTION_SEND_MULTIPLE ->
+                IntentCompat.getParcelableArrayListExtra(intent, Intent.EXTRA_STREAM, Uri::class.java)
+                    .orEmpty()
+
+            else -> return
+        }
+        if (uris.isEmpty()) return
+
+        IncomingShareBus.offer(uris.mapNotNull { mediaFileFromUri(applicationContext, it) })
+
+        // Consumed. Without this a configuration change re-delivers the same intent and
+        // the trip picker reappears over a share that was already dealt with.
+        intent.action = null
+        intent.removeExtra(Intent.EXTRA_STREAM)
     }
 
     /**
