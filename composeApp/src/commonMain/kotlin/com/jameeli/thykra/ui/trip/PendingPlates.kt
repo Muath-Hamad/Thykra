@@ -61,7 +61,13 @@ fun PendingPlate(upload: UploadState, modifier: Modifier = Modifier) {
             .skeleton()
             // Named rather than silent: a screen reader on a half-uploaded trip should
             // hear that something is arriving, not skip an unlabelled box.
-            .semantics { contentDescription = description },
+            //
+            // mergeDescendants matters here even with nothing to merge. A plain Box that
+            // is neither clickable nor focusable does not get promoted to its own
+            // accessibility node just for carrying a contentDescription — verified on
+            // device, where the plates rendered but never appeared in the tree. The
+            // surrounding photo plates are exposed only because they are clickable.
+            .semantics(mergeDescendants = true) { contentDescription = description },
     )
 }
 
