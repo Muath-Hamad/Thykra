@@ -27,6 +27,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.common_in_progress
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.ui.theme.thykra
 
 /**
@@ -171,12 +174,14 @@ fun ThykraButton(
 
 @Composable
 private fun ButtonContent(label: String, icon: ImageVector?, loading: Boolean) {
+    // Resolved before the semantics lambda, which is not a composable scope.
+    val inProgress = stringResource(Res.string.common_in_progress)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = if (loading) {
             // TalkBack hears the label plus its progress rather than a silent disable.
-            Modifier.semantics { stateDescription = "In progress" }
+            Modifier.semantics { stateDescription = inProgress }
         } else {
             Modifier
         },

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Arabic. Copy is lifted from webApp/src/i18n/ar.ts wherever a key has a counterpart
+  there (THY-148 took that table to 403 keys at parity with en.ts), so the two products
+  say the same thing in the same words rather than drifting into two dialects.
+
+  Keys with no web counterpart — the mobile-only ones — are translated here in the same
+  voice: second person, present tense, no exclamation marks.
+-->
+<resources>
+
+    <!-- ── Chrome ── -->
+    <string name="nav_trips">الرحلات</string>
+    <string name="nav_activity">النشاط</string>
+    <string name="nav_recaps">الملخّصات</string>
+    <string name="nav_you">أنت</string>
+    <string name="nav_activity_unseen">جديد</string>
+
+    <!-- ── Common ── -->
+    <string name="common_back">رجوع</string>
+    <string name="common_share">مشاركة</string>
+    <string name="common_retry_all">أعد محاولة الكل</string>
+    <string name="common_more_options">خيارات أخرى</string>
+    <string name="common_in_progress">جارٍ التنفيذ</string>
+
+    <!-- ── Trip action bar ── -->
+    <string name="trip_add_photos">إضافة صور</string>
+
+    <!-- ── Viewer ── -->
+    <string name="viewer_photo_info">معلومات الصورة</string>
+    <string name="viewer_filmstrip">شريط الصور، %1$d من %2$d؛ اسحب للتنقل</string>
+
+    <!-- ── Reactions ── -->
+    <string name="reaction_react">تفاعل</string>
+
+    <!-- ── Upload dock ── -->
+    <string name="upload_batch_done">أُضيفت %1$d صور.</string>
+    <string name="upload_see_them">شاهدها</string>
+
+</resources>

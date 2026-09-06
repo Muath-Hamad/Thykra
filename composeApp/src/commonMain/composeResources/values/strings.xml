@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Every user-facing string in the mobile app. Flat, no library — the same shape the web
+  uses in webApp/src/i18n/en.ts, and deliberately the same key names with dots swapped for
+  underscores (Res.string accessors cannot carry a dot). Keeping them mechanically
+  parallel is what lets the Arabic in ar.ts be reused rather than re-translated, and lets
+  the two products be diffed for drift.
+
+  Voice rules, from design doc 1 and unchanged here: say "Trip", never "Album"; second
+  person, present tense; errors name the thing and the fix; no exclamation marks except
+  the two celebration moments.
+
+  Animation labels (navIndicator, skeletonSweep, dockChevron and friends) are NOT strings
+  in this sense — they are debug identifiers Compose never shows anyone. They stay inline.
+-->
+<resources>
+
+    <!-- ── Chrome ── -->
+    <string name="nav_trips">Trips</string>
+    <string name="nav_activity">Activity</string>
+    <string name="nav_recaps">Recaps</string>
+    <string name="nav_you">Me</string>
+    <!-- Spoken by TalkBack on the Activity tab when something is unseen. A dot carries
+         no meaning to a screen reader, so it gets a word. -->
+    <string name="nav_activity_unseen">new</string>
+
+    <!-- ── Common ── -->
+    <string name="common_back">Back</string>
+    <string name="common_share">Share</string>
+    <string name="common_retry_all">Retry all</string>
+    <string name="common_more_options">More options</string>
+    <!-- stateDescription while a button is working; not a visible label. -->
+    <string name="common_in_progress">In progress</string>
+
+    <!-- ── Trip action bar ── -->
+    <string name="trip_add_photos">Add photos</string>
+
+    <!-- ── Viewer ── -->
+    <string name="viewer_photo_info">Photo info</string>
+    <string name="viewer_filmstrip">Filmstrip, %1$d of %2$d; swipe to move</string>
+
+    <!-- ── Reactions ── -->
+    <string name="reaction_react">React</string>
+
+    <!-- ── Upload dock ── -->
+    <string name="upload_batch_done">%1$d photos are in.</string>
+    <string name="upload_see_them">See them</string>
+
+</resources>

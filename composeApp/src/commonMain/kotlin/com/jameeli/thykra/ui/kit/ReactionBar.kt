@@ -21,6 +21,9 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.reaction_react
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.model.ReactionSummaryDto
 import com.jameeli.thykra.model.ReactionType
 import com.jameeli.thykra.ui.social.ReactionEmoji
@@ -84,7 +87,7 @@ fun ReactionBar(
         ) {
             Icon(
                 imageVector = ThykraIcons.React,
-                contentDescription = "React",
+                contentDescription = stringResource(Res.string.reaction_react),
                 tint = if (overMedia) {
                     extended.onScrim
                 } else {

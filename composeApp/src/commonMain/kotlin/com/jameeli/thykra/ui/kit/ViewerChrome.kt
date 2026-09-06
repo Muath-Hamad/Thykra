@@ -40,6 +40,12 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.common_back
+import com.jameeli.thykra.resources.common_more_options
+import com.jameeli.thykra.resources.viewer_filmstrip
+import com.jameeli.thykra.resources.viewer_photo_info
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.model.MediaDto
 import com.jameeli.thykra.model.ReactionSummaryDto
 import com.jameeli.thykra.model.ReactionType
@@ -107,12 +113,12 @@ fun ViewerChrome(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                ChromePill(icon = ThykraIcons.Back, contentDescription = "Back", onClick = onBack)
+                ChromePill(icon = ThykraIcons.Back, contentDescription = stringResource(Res.string.common_back), onClick = onBack)
                 Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
                     ChromeLabel(positionLabel)
                 }
-                ChromePill(icon = ThykraIcons.Info, contentDescription = "Photo info", onClick = onInfo)
-                ChromePill(icon = ThykraIcons.More, contentDescription = "More options", onClick = onMore)
+                ChromePill(icon = ThykraIcons.Info, contentDescription = stringResource(Res.string.viewer_photo_info), onClick = onInfo)
+                ChromePill(icon = ThykraIcons.More, contentDescription = stringResource(Res.string.common_more_options), onClick = onMore)
             }
 
             if (landscape) {
@@ -296,14 +302,17 @@ private fun Filmstrip(
     state: LazyListState,
 ) {
     val extended = MaterialTheme.thykra
+    // Resolved before the semantics lambda, which is not a composable scope.
+    val filmstripDescription =
+        stringResource(Res.string.viewer_filmstrip, currentIndex + 1, media.size)
+
     LazyRow(
         state = state,
         modifier = Modifier
             .fillMaxWidth()
             .height(44.dp)
             .semantics(mergeDescendants = true) {
-                contentDescription =
-                    "Filmstrip, ${currentIndex + 1} of ${media.size}; swipe to move"
+                contentDescription = filmstripDescription
             },
         horizontalArrangement = Arrangement.spacedBy(2.dp),
         verticalAlignment = Alignment.CenterVertically,
