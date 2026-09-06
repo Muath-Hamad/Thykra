@@ -47,7 +47,7 @@ class ChaptersTest {
     }
 
     @Test
-    fun `rule 2 - ordinals are ordinal within the trip, gaps make no empty chapters`() {
+    fun `rule 2 - ordinals are ordinal within the trip and gaps make no empty chapters`() {
         val chapters = groupIntoChapters(
             listOf(
                 Media("a", takenAt = at("2026-04-11T10:00:00Z"), uploadedAt = at("2026-04-11T10:00:00Z")),
@@ -61,7 +61,7 @@ class ChaptersTest {
     }
 
     @Test
-    fun `rule 3 - no takenAt groups by uploadedAt, no numeral, sorted after dated`() {
+    fun `rule 3 - no takenAt groups by uploadedAt with no numeral and sorts after dated`() {
         val chapters = groupIntoChapters(
             listOf(
                 Media("undated", uploadedAt = at("2026-04-10T10:00:00Z")),
@@ -151,7 +151,7 @@ class ChaptersTest {
     }
 
     @Test
-    fun `heroCandidate is the largest-area photo, and never a video`() {
+    fun `heroCandidate is the largest-area photo and never a video`() {
         val chapters = groupIntoChapters(
             listOf(
                 Media("small", takenAt = at("2026-04-12T06:00:00Z"), uploadedAt = at("2026-04-12T06:00:00Z"), width = 800, height = 600),
@@ -188,9 +188,16 @@ class ChaptersTest {
 
     @Test
     fun `localDateOf returns the viewer-local calendar date`() {
-        // 23:30 UTC on the 12th is the 13th in Amman (UTC+3).
+        // 23:30 UTC on the 12th is already the 13th three hours east.
+        //
+        // A fixed offset rather than "Asia/Amman" for two reasons: Kotlin/JS carries no
+        // timezone database unless @js-joda/timezone is bundled, and named zones throw
+        // there — the chapters port is only ever called from mobile, so shipping a tzdb
+        // into the web bundle to satisfy a test would be the wrong trade. It is also the
+        // sounder assertion: Jordan moved to permanent UTC+3 in 2022, and a test pinned
+        // to a named zone quietly depends on which tzdb version each platform ships.
         val instant = at("2026-04-12T23:30:00Z")
         assertEquals(LocalDate(2026, 4, 12), localDateOf(instant, TimeZone.UTC))
-        assertEquals(LocalDate(2026, 4, 13), localDateOf(instant, TimeZone.of("Asia/Amman")))
+        assertEquals(LocalDate(2026, 4, 13), localDateOf(instant, TimeZone.of("UTC+03:00")))
     }
 }
