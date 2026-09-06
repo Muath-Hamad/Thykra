@@ -50,4 +50,43 @@
     <string name="share_cancel">ليس الآن</string>
     <string name="share_too_large">%1$s تتجاوز الحد المسموح وتُركت خارجاً</string>
 
+    <!-- ── Trips ── -->
+    <string name="trips_new">رحلة جديدة</string>
+    <string name="trips_greeting">رحلاتك</string>
+    <string name="trips_greeting_first">سعدنا بعودتك يا %1$s.</string>
+    <string name="trips_empty_head">لا رحلات </string>
+    <string name="trips_empty_tail">بعد.</string>
+    <string name="trips_empty_body">ابدأ واحدة وادعُ من كانوا معك. أو افتح رابط دعوة أرسله أحدهم إليك.</string>
+    <string name="trips_empty_cta">ابدأ رحلة</string>
+    <string name="trips_count">%1$d رحلات</string>
+    <string name="trips_just_you">أنت وحدك</string>
+
+    <!-- ── Errors ── -->
+    <string name="error_head">حدث </string>
+    <string name="error_tail">خلل.</string>
+    <string name="error_load_body">تعذّر تحميل هذا. أعد المحاولة بعد قليل.</string>
+    <string name="common_try_again">أعد المحاولة</string>
+
+    <!-- ── Create a trip ── -->
+    <string name="create_trip_title">ابدأ رحلة</string>
+    <string name="create_trip_name_label">اسم الرحلة</string>
+    <string name="create_trip_name_placeholder">إلى أين ذهبتم؟</string>
+    <string name="create_trip_name_helper">سيراه أصدقاؤك</string>
+    <string name="create_trip_desc_label">الوصف · اختياري</string>
+    <string name="create_trip_desc_placeholder">سطر عن المكان والزمان</string>
+    <string name="create_trip_submit">أنشئ الرحلة</string>
+    <string name="create_trip_private">خاصة · من تدعوهم فقط</string>
+
+    <!-- ── Landing ── -->
+    <string name="landing_headline_head">سافروا معاً. </string>
+    <string name="landing_headline_tail">واحفظوها للأبد.</string>
+    <string name="landing_tagline">رحلة واحدة، صور الجميع، مرتّبة بالأيام.</string>
+    <string name="landing_terms">بالمتابعة فإنك توافق على الشروط وسياسة الخصوصية.</string>
+
+    <string-array name="month_short">
+        <item>يناير</item><item>فبراير</item><item>مارس</item><item>أبريل</item>
+        <item>مايو</item><item>يونيو</item><item>يوليو</item><item>أغسطس</item>
+        <item>سبتمبر</item><item>أكتوبر</item><item>نوفمبر</item><item>ديسمبر</item>
+    </string-array>
+
 </resources>

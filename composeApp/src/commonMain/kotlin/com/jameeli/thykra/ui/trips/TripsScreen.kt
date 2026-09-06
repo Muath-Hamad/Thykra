@@ -33,6 +33,26 @@ import androidx.compose.ui.unit.dp
 import com.jameeli.thykra.api.NetworkMonitor
 import com.jameeli.thykra.api.UploadQueueManager
 import com.jameeli.thykra.model.AlbumDto
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.common_people_count
+import com.jameeli.thykra.resources.common_photos_count
+import com.jameeli.thykra.resources.common_try_again
+import com.jameeli.thykra.resources.error_head
+import com.jameeli.thykra.resources.error_load_body
+import com.jameeli.thykra.resources.error_tail
+import com.jameeli.thykra.resources.month_short
+import com.jameeli.thykra.resources.nav_trips
+import com.jameeli.thykra.resources.trips_count
+import com.jameeli.thykra.resources.trips_empty_body
+import com.jameeli.thykra.resources.trips_empty_cta
+import com.jameeli.thykra.resources.trips_empty_head
+import com.jameeli.thykra.resources.trips_empty_tail
+import com.jameeli.thykra.resources.trips_greeting
+import com.jameeli.thykra.resources.trips_greeting_first
+import com.jameeli.thykra.resources.trips_just_you
+import com.jameeli.thykra.resources.trips_new
+import org.jetbrains.compose.resources.stringArrayResource
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.navigation.LocalThykraChrome
 import com.jameeli.thykra.ui.kit.EmptyGlyph
 import com.jameeli.thykra.ui.kit.EmptyState
@@ -124,12 +144,12 @@ fun TripsScreen(
         TopAppBar(
             title = {
                 if (showPinnedTitle) {
-                    Text("Trips", style = MaterialTheme.typography.headlineSmall)
+                    Text(stringResource(Res.string.nav_trips), style = MaterialTheme.typography.headlineSmall)
                 }
             },
             actions = {
                 IconButton(onClick = { createOpen = true }) {
-                    Icon(ThykraIcons.Plus, contentDescription = "New trip")
+                    Icon(ThykraIcons.Plus, contentDescription = stringResource(Res.string.trips_new))
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(
@@ -159,11 +179,14 @@ fun TripsScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     EmptyState(
-                        headline = clayPhrase("Something ", "slipped."),
-                        body = "We couldn't load this. Try again in a moment.",
+                        headline = clayPhrase(
+                            stringResource(Res.string.error_head),
+                            stringResource(Res.string.error_tail),
+                        ),
+                        body = stringResource(Res.string.error_load_body),
                         glyph = if (connected) EmptyGlyph.Plate else EmptyGlyph.Offline,
                         primary = ThykraButtonSpec(
-                            label = "Try again",
+                            label = stringResource(Res.string.common_try_again),
                             onClick = { viewModel.load() },
                             variant = ThykraButtonVariant.Outlined,
                             icon = ThykraIcons.Retry,
@@ -260,12 +283,14 @@ private fun LoadingList() {
 private fun EmptyTrips(firstName: String?, onStart: () -> Unit) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         EmptyState(
-            headline = clayPhrase("No trips ", "yet."),
-            body = "Start one and invite the people who were there. " +
-                "Or open an invite link someone sent you.",
+            headline = clayPhrase(
+                stringResource(Res.string.trips_empty_head),
+                stringResource(Res.string.trips_empty_tail),
+            ),
+            body = stringResource(Res.string.trips_empty_body),
             glyph = EmptyGlyph.Plate,
             primary = ThykraButtonSpec(
-                label = "Start a trip",
+                label = stringResource(Res.string.trips_empty_cta),
                 onClick = onStart,
                 icon = ThykraIcons.Plus,
             ),
@@ -274,40 +299,48 @@ private fun EmptyTrips(firstName: String?, onStart: () -> Unit) {
 }
 
 /** "Good to see you, Maya." on a first run, "Your trips" once there are any. */
+@Composable
 private fun greetingFor(displayName: String?, trips: List<AlbumDto>): String {
     val first = displayName?.trim()?.substringBefore(' ')?.takeIf { it.isNotBlank() }
-    return if (trips.isEmpty() && first != null) "Good to see you, $first." else "Your trips"
+    return if (trips.isEmpty() && first != null) {
+        stringResource(Res.string.trips_greeting_first, first)
+    } else {
+        stringResource(Res.string.trips_greeting)
+    }
 }
 
 /** "3 trips · 412 photos · 11 people", summed over the list. */
-private fun summaryOf(trips: List<AlbumDto>): String {
-    val photos = trips.sumOf { it.mediaCount }
-    val people = trips.sumOf { it.memberCount }
-    return listOf(
-        plural(trips.size, "trip"),
-        plural(photos, "photo"),
-        plural(people, "person", "people"),
-    ).joinToString(" · ")
-}
+@Composable
+private fun summaryOf(trips: List<AlbumDto>): String = listOf(
+    stringResource(Res.string.trips_count, trips.size),
+    stringResource(Res.string.common_photos_count, trips.sumOf { it.mediaCount }),
+    stringResource(Res.string.common_people_count, trips.sumOf { it.memberCount }),
+).joinToString(" · ")
 
 /** "84 photos · 6 people · Apr 2026" for one card. */
+@Composable
 private fun tripMeta(album: AlbumDto): String {
     val parts = mutableListOf<String>()
-    if (album.mediaCount > 0) parts += plural(album.mediaCount, "photo")
-    parts += if (album.memberCount <= 1) "just you" else plural(album.memberCount, "person", "people")
+    if (album.mediaCount > 0) {
+        parts += stringResource(Res.string.common_photos_count, album.mediaCount)
+    }
+    parts += if (album.memberCount <= 1) {
+        stringResource(Res.string.trips_just_you)
+    } else {
+        stringResource(Res.string.common_people_count, album.memberCount)
+    }
     parts += monthYearOf(album.lastActivityAt ?: album.createdAt)
     return parts.joinToString(" · ")
 }
 
-private fun plural(count: Int, singular: String, plural: String = "${singular}s") =
-    "$count ${if (count == 1) singular else plural}"
-
-private val MonthNames = listOf(
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-)
-
+/**
+ * "Apr 2026". The month name comes from a string array rather than a formatter so the
+ * abbreviations are the product's own in both languages, and do not vary with whichever
+ * ICU version the platform happens to ship.
+ */
+@Composable
 private fun monthYearOf(instant: Instant): String {
+    val months = stringArrayResource(Res.array.month_short)
     val date = instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
-    return "${MonthNames[date.monthNumber - 1]} ${date.year}"
+    return "${months[date.monthNumber - 1]} ${date.year}"
 }

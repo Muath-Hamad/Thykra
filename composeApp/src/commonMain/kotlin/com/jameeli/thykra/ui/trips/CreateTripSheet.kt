@@ -20,6 +20,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.jameeli.thykra.resources.Res
+import com.jameeli.thykra.resources.create_trip_desc_label
+import com.jameeli.thykra.resources.create_trip_desc_placeholder
+import com.jameeli.thykra.resources.create_trip_name_helper
+import com.jameeli.thykra.resources.create_trip_name_label
+import com.jameeli.thykra.resources.create_trip_name_placeholder
+import com.jameeli.thykra.resources.create_trip_private
+import com.jameeli.thykra.resources.create_trip_submit
+import com.jameeli.thykra.resources.create_trip_title
+import org.jetbrains.compose.resources.stringResource
 import com.jameeli.thykra.model.AlbumDto
 import com.jameeli.thykra.ui.kit.ThykraButton
 import com.jameeli.thykra.ui.kit.ThykraSheet
@@ -54,7 +64,7 @@ fun CreateTripSheet(
             viewModel.clearCreateError()
             onDismiss()
         },
-        title = "Start a trip",
+        title = stringResource(Res.string.create_trip_title),
     ) {
         Column(
             modifier = Modifier
@@ -68,9 +78,9 @@ fun CreateTripSheet(
                     title = it
                     if (error != null) viewModel.clearCreateError()
                 },
-                label = "Trip title",
-                placeholder = "Where did you go?",
-                helper = "Friends will see this",
+                label = stringResource(Res.string.create_trip_name_label),
+                placeholder = stringResource(Res.string.create_trip_name_placeholder),
+                helper = stringResource(Res.string.create_trip_name_helper),
                 error = error,
                 maxLength = 60,
             )
@@ -78,8 +88,8 @@ fun CreateTripSheet(
             ThykraTextField(
                 value = description,
                 onValueChange = { description = it },
-                label = "Description · optional",
-                placeholder = "A line about where and when",
+                label = stringResource(Res.string.create_trip_desc_label),
+                placeholder = stringResource(Res.string.create_trip_desc_placeholder),
                 maxLength = 200,
                 singleLine = false,
                 minLines = 2,
@@ -88,7 +98,7 @@ fun CreateTripSheet(
             PrivacyLine()
 
             ThykraButton(
-                label = "Create trip",
+                label = stringResource(Res.string.create_trip_submit),
                 onClick = {
                     viewModel.createTrip(title, description.ifBlank { null }, onCreated)
                 },
@@ -114,7 +124,7 @@ private fun PrivacyLine() {
             modifier = Modifier.size(18.dp),
         )
         Text(
-            text = "Private · only people you invite",
+            text = stringResource(Res.string.create_trip_private),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.thykra.textMeta,
         )
