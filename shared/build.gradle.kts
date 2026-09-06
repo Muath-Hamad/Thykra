@@ -48,7 +48,8 @@ kotlin {
             implementation(libs.ktor.client.mock)
         }
         androidMain.dependencies {
-            implementation(libs.ktor.client.cio)
+            // OkHttp, not CIO — see HttpClientFactory.android.kt for why.
+            implementation(libs.ktor.client.okhttp)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
